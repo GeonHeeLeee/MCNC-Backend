@@ -23,8 +23,8 @@ public class SurveyInquiryController {
     @GetMapping("/inquiry/created")
     public ResponseEntity<Map<String, List<UserCreatedSurveyDTO>>> inquiryUserCreatedSurveyList() {
         String userId = SessionContext.getCurrentUser();
-        List<UserCreatedSurveyDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId);
-        return ResponseEntity.ok(Collections.singletonMap("surveyList", userCreatedSurveyList));
+        Map<String, List<UserCreatedSurveyDTO>> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId);
+        return ResponseEntity.ok(userCreatedSurveyList);
     }
 
 }
