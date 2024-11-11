@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.dto.CreateSurveyDTO;
-import mcnc.survwey.api.survey.dto.UserCreatedSurveyDTO;
 import mcnc.survwey.api.survey.service.SurveyManageService;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.global.config.SessionContext;

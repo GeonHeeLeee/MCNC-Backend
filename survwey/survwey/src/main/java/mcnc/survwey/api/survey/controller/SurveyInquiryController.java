@@ -2,7 +2,8 @@ package mcnc.survwey.api.survey.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.survey.dto.UserCreatedSurveyDTO;
+import mcnc.survwey.api.survey.dto.SurveyDTO;
+import mcnc.survwey.api.survey.dto.SurveyWithCountDTO;
 import mcnc.survwey.api.survey.service.SurveyInquiryService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.data.domain.Page;
@@ -20,10 +21,17 @@ public class SurveyInquiryController {
     private final SurveyInquiryService surveyInquiryService;
 
     @GetMapping("/inquiry/created")
-    public ResponseEntity<Page<UserCreatedSurveyDTO>> inquiryUserCreatedSurveyList(@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<Page<SurveyWithCountDTO>> inquiryUserCreatedSurveyList(@PageableDefault(size = 10) Pageable pageable) {
         String userId = SessionContext.getCurrentUser();
-        Page<UserCreatedSurveyDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId, pageable);
+        Page<SurveyWithCountDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId, pageable);
         return ResponseEntity.ok(userCreatedSurveyList);
+    }
+
+    @GetMapping("/inquiry/respond")
+    public ResponseEntity<Object> inquiryUserRespondSurveyList(@PageableDefault(size = 10) Pageable pageable) {
+        String userId = SessionContext.getCurrentUser();
+        Page<SurveyDTO> userRespondSurveyList = surveyInquiryService.getUserRespondSurveyList(userId, pageable);
+        return ResponseEntity.ok(userRespondSurveyList);
     }
 
 }
