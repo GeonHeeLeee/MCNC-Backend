@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.dto.CreateSurveyDTO;
+import mcnc.survwey.api.survey.dto.UserCreatedSurveyDTO;
 import mcnc.survwey.api.survey.service.SurveyManageService;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.global.config.SessionContext;
@@ -27,7 +28,7 @@ public class SurveyManageController {
         try {
             String userId = SessionContext.getCurrentUser();
             Survey survey = surveyManageService.createSurveyWithDetails(createSurveyDTO, userId);
-            return ResponseEntity.ok().body(survey);
+            return ResponseEntity.ok().body(Collections.singletonMap("surveyId", survey.getSurveyId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

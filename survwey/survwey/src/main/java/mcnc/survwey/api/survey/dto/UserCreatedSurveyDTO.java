@@ -3,7 +3,6 @@ package mcnc.survwey.api.survey.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.survey.Survey;
 
 import java.time.LocalDateTime;
@@ -17,6 +16,7 @@ public class UserCreatedSurveyDTO {
     private String description;
     private LocalDateTime createDate;
     private LocalDateTime expireDate;
+    private long respondCount;
 
     public UserCreatedSurveyDTO(Survey survey) {
         this.surveyId = survey.getSurveyId();

@@ -17,8 +17,14 @@ public class SurveyInquiryService {
     private final SurveyRepository surveyRepository;
 
     public List<UserCreatedSurveyDTO> getUserCreatedSurveyList(String userId) {
-        return surveyRepository.findByUser_UserId(userId)
-                .stream().map(UserCreatedSurveyDTO::new)
-                .toList();
+        return surveyRepository.findSurveyListWithRespondCountByUserId(userId)
+                .stream().map(record -> new UserCreatedSurveyDTO(
+                        (Long) record[0],
+                        (String) record[1],
+                        (String) record[2],
+                        ((java.sql.Timestamp) record[3]).toLocalDateTime(),
+                        ((java.sql.Timestamp) record[4]).toLocalDateTime(),
+                        ((Number) record[5]).intValue()
+                )).toList();
     }
 }
