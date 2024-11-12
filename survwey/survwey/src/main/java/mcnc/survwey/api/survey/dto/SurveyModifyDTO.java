@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import mcnc.survwey.domain.question.Question;
 
 import java.time.LocalDateTime;
@@ -16,10 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
+@SuperBuilder
 public class SurveyModifyDTO {
 
-    private Long id;
+    private Long surveyId;
 
     @NotNull(message = "만료일 지정은 필수입니다.")
     private LocalDateTime expireDate;
@@ -28,10 +29,6 @@ public class SurveyModifyDTO {
     private String title;
 
     private String description;
-
-    @NotBlank(message = "아이디는 필수입니다.")
-    @Email(message = "유효한 아이디를 입력해주세요.")
-    private String userId;
 
     private List<QuestionDTO> questionList;
 }

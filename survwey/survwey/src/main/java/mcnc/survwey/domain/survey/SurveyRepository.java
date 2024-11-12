@@ -1,6 +1,7 @@
 package mcnc.survwey.domain.survey;
 
 import mcnc.survwey.api.survey.dto.SurveyDTO;
+import mcnc.survwey.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
@@ -47,4 +49,8 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
             "LEFT JOIN FETCH Selection se ON q = se.question " +
             "WHERE s.surveyId = :surveyId")
     Survey getSurveyWithDetail(@Param("surveyId") Long surveyId);
+
+    Optional<Survey> findBySurveyId(Long surveyId);
+
+    Optional<Survey> findBySurveyIdAndUser_UserId(Long surveyId, String userId);
 }
