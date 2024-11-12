@@ -1,10 +1,9 @@
 package mcnc.survwey.api.survey.service;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.survey.dto.CreateSurveyDTO;
+import mcnc.survwey.api.survey.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.QuestionService;
 import mcnc.survwey.domain.selection.SelectionService;
@@ -27,10 +26,10 @@ public class SurveyManageService {
     private final UserService userService;
 
     @Transactional
-    public Survey createSurveyWithDetails(CreateSurveyDTO createSurveyDTO, String userId) {
+    public Survey createSurveyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
         User creator = userService.findByUserId(userId);
-        Survey createdSurvey = surveyService.initializeSurvey(createSurveyDTO, creator);
-        createSurveyDTO.getQuestionList()
+        Survey createdSurvey = surveyService.initializeSurvey(surveyWithDetailDTO, creator);
+        surveyWithDetailDTO.getQuestionList()
                 .forEach(questionDTO -> {
                     Question createdQuestion = questionService.buildAndSaveQuestion(questionDTO, createdSurvey);
                     selectionService.addSelectionsToQuestion(createdQuestion, questionDTO.getSelectionList());
