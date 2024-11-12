@@ -19,7 +19,7 @@ public class SelectionService {
         List<Selection> selectionList = selectionDTOList.stream()
                 .map(selectionDTO -> {
                     SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), selectionDTOList.indexOf(selectionDTO));
-                    return SelectionDTO.toEntity(selectionDTO, selectionId, createdQuestion);
+                    return selectionDTO.toEntity(selectionId, createdQuestion);
                 })
                 .toList();
         selectionRepository.saveAll(selectionList);

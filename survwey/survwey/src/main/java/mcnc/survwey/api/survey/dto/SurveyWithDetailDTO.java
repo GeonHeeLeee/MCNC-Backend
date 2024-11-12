@@ -33,11 +33,11 @@ public class SurveyWithDetailDTO extends SurveyDTO {
                 .build();
     }
 
-    public static Survey toEntity(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
+    public Survey toEntity(User creator) {
         return Survey.builder()
-                .title(surveyWithDetailDTO.getTitle())
-                .expireDate(surveyWithDetailDTO.getExpireDate())
-                .description(surveyWithDetailDTO.getDescription())
+                .title(this.getTitle())
+                .expireDate(this.getExpireDate())
+                .description(this.getDescription())
                 .user(creator)
                 .createDate(LocalDateTime.now())
                 .build();

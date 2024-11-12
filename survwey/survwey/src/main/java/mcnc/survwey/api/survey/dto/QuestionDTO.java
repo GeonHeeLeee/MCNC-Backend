@@ -38,10 +38,10 @@ public class QuestionDTO {
                 .build();
     }
 
-    public static Question toEntity(QuestionDTO questionDTO, Survey survey) {
+    public Question toEntity(Survey survey) {
         return Question.builder()
-                .body(questionDTO.getBody())
-                .type(questionDTO.getQuestionType())
+                .body(this.getBody())
+                .type(this.getQuestionType())
                 .survey(survey)
                 .build();
     }

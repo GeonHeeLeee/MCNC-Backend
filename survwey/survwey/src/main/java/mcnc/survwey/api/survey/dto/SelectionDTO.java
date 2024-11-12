@@ -27,10 +27,10 @@ public class SelectionDTO {
                 .build();
     }
 
-    public static Selection toEntity(SelectionDTO selectionDTO, SelectionId selectionId, Question question) {
+    public Selection toEntity(SelectionId selectionId, Question question) {
         return Selection.builder()
                 .id(selectionId)
-                .body(selectionDTO.getBody())
+                .body(this.getBody())
                 .question(question)
                 .build();
     }

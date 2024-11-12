@@ -14,7 +14,7 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
 
     public Survey buildAndSaveSurvey(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
-        Survey createdSurvey = SurveyWithDetailDTO.toEntity(surveyWithDetailDTO, creator);
+        Survey createdSurvey = surveyWithDetailDTO.toEntity(creator);
         surveyRepository.save(createdSurvey);
         return createdSurvey;
     }
