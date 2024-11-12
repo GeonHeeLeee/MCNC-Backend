@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mcnc.survwey.api.survey.dto.ResponseDTO;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.user.User;
 

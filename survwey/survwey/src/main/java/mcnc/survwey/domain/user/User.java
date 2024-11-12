@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.respond.Respond;
+import mcnc.survwey.domain.enums.Gender;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
