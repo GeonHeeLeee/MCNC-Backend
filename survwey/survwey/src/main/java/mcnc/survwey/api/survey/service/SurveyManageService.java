@@ -9,17 +9,14 @@ import mcnc.survwey.api.survey.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.objAnswer.ObjAnswerRepository;
-import mcnc.survwey.domain.objAnswer.ObjAnswerService;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.QuestionService;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.respond.RespondRepository;
-import mcnc.survwey.domain.respond.RespondService;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.SelectionService;
 import mcnc.survwey.domain.subjAnswer.SubjAnswer;
 import mcnc.survwey.domain.subjAnswer.SubjAnswerRepository;
-import mcnc.survwey.domain.subjAnswer.SubjAnswerService;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.SurveyService;
 import mcnc.survwey.domain.user.User;
@@ -45,13 +42,13 @@ public class SurveyManageService {
 
 
     @Transactional
-    public Survey createSurveyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
+    public Survey saveSurveyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
         User creator = userService.findByUserId(userId);
-        Survey createdSurvey = surveyService.initializeSurvey(surveyWithDetailDTO, creator);
+        Survey createdSurvey = surveyService.buildAndSaveSurvey(surveyWithDetailDTO, creator);
         surveyWithDetailDTO.getQuestionList()
                 .forEach(questionDTO -> {
                     Question createdQuestion = questionService.buildAndSaveQuestion(questionDTO, createdSurvey);
-                    selectionService.addSelectionsToQuestion(createdQuestion, questionDTO.getSelectionList());
+                    selectionService.buildAndSaveSelection(createdQuestion, questionDTO.getSelectionList());
                 });
         return createdSurvey;
     }

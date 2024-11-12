@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.question.Question;
+import mcnc.survwey.domain.survey.Survey;
 
 
 import java.util.List;
@@ -35,6 +36,13 @@ public class QuestionDTO {
                 .questionType(question.getType())
                 .selectionList(selectionDTOList)
                 .build();
+    }
 
+    public static Question toEntity(QuestionDTO questionDTO, Survey survey) {
+        return Question.builder()
+                .body(questionDTO.getBody())
+                .type(questionDTO.getQuestionType())
+                .survey(survey)
+                .build();
     }
 }

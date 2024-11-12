@@ -36,7 +36,7 @@ public class SurveyManageController {
     public ResponseEntity<Object> createSurvey(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         try {
             String userId = SessionContext.getCurrentUser();
-            Survey survey = surveyManageService.createSurveyWithDetails(surveyWithDetailDTO, userId);
+            Survey survey = surveyManageService.saveSurveyWithDetails(surveyWithDetailDTO, userId);
             return ResponseEntity.ok().body(Collections.singletonMap("surveyId", survey.getSurveyId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

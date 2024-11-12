@@ -15,21 +15,16 @@ import java.util.List;
 public class SelectionService {
     private final SelectionRepository selectionRepository;
 
-    public void addSelectionsToQuestion(Question createdQuestion, List<SelectionDTO> selectionDTOList) {
+    public void buildAndSaveSelection(Question createdQuestion, List<SelectionDTO> selectionDTOList) {
         List<Selection> selectionList = selectionDTOList.stream()
-                .map(selectionDTO -> buildSelection(createdQuestion, selectionDTOList.indexOf(selectionDTO), selectionDTO))
+                .map(selectionDTO -> {
+                    SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), selectionDTOList.indexOf(selectionDTO));
+                    return SelectionDTO.toEntity(selectionDTO, selectionId, createdQuestion);
+                })
                 .toList();
         selectionRepository.saveAll(selectionList);
     }
 
-    private Selection buildSelection(Question createdQuestion, int sequence, SelectionDTO selectionDTO) {
-        SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), sequence + 1);
-        return Selection.builder()
-                .id(selectionId)
-                .body(selectionDTO.getBody())
-                .question(createdQuestion)
-                .build();
-    }
 
     public Selection findBySelectionId(SelectionId selectionId) {
         return selectionRepository.findById(selectionId)

@@ -3,7 +3,9 @@ package mcnc.survwey.api.survey.dto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import mcnc.survwey.domain.survey.Survey;
+import mcnc.survwey.domain.user.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -28,6 +30,16 @@ public class SurveyWithDetailDTO extends SurveyDTO {
                 .createDate(survey.getCreateDate())
                 .expireDate(survey.getExpireDate())
                 .questionList(questionDTOList)
+                .build();
+    }
+
+    public static Survey toEntity(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
+        return Survey.builder()
+                .title(surveyWithDetailDTO.getTitle())
+                .expireDate(surveyWithDetailDTO.getExpireDate())
+                .description(surveyWithDetailDTO.getDescription())
+                .user(creator)
+                .createDate(LocalDateTime.now())
                 .build();
     }
 }

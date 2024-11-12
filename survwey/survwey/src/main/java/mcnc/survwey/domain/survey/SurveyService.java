@@ -8,21 +8,13 @@ import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class SurveyService {
     private final SurveyRepository surveyRepository;
 
-    public Survey initializeSurvey(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
-        Survey createdSurvey = Survey.builder()
-                .title(surveyWithDetailDTO.getTitle())
-                .expireDate(surveyWithDetailDTO.getExpireDate())
-                .description(surveyWithDetailDTO.getDescription())
-                .user(creator)
-                .createDate(LocalDateTime.now())
-                .build();
+    public Survey buildAndSaveSurvey(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
+        Survey createdSurvey = SurveyWithDetailDTO.toEntity(surveyWithDetailDTO, creator);
         surveyRepository.save(createdSurvey);
         return createdSurvey;
     }

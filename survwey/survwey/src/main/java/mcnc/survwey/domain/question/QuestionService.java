@@ -16,11 +16,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     public Question buildAndSaveQuestion(QuestionDTO questionDTO, Survey createdSurvey) {
-        Question createdQuestion = Question.builder()
-                .body(questionDTO.getBody())
-                .type(questionDTO.getQuestionType())
-                .survey(createdSurvey)
-                .build();
+        Question createdQuestion = QuestionDTO.toEntity(questionDTO, createdSurvey);
         questionRepository.save(createdQuestion);
         return createdQuestion;
     }
