@@ -28,9 +28,8 @@ public class SurveyModifyService {
 
         log.info(surveyWithDetailDTO.toString());
         if (surveyManageService.deleteSurvey(surveyWithDetailDTO.getSurveyId())) {
-            Survey updatedSurvey = surveyManageService.createSurveyWithDetails(surveyWithDetailDTO, userId);
+            Survey updatedSurvey = surveyManageService.saveSurveyWithDetails(surveyWithDetailDTO, userId);
             return updatedSurvey;
-            //asd
         } else {
             return null;
         }

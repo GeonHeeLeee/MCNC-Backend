@@ -38,7 +38,7 @@ public class SurveyModifyController {
         String userId = SessionContext.getCurrentUser();
 
         Survey survey = Optional.ofNullable(surveyModifyService.surveyModifyWithDetails(surveyWithDetailDTO, userId))
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE));
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
                 //임시 에러 코드
         log.info(survey.toString());
         SurveyWithDetailDTO updatedSurvey = SurveyWithDetailDTO.of(survey);
