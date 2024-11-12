@@ -14,8 +14,5 @@ import lombok.NoArgsConstructor;
 public class SearchDTO {
 
     private String title;
-    @NotBlank(message = "아이디는 필수입니다.")
-    @Email(message = "유효한 아이디를 입력해주세요.")
-    private String userId;
 
 }
