@@ -43,6 +43,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Page<SurveyDTO> findRespondedSurveyByUserId(@Param("userId") String userId, Pageable pageable);
 
 
+
     @Query("SELECT DISTINCT s " +
             "FROM Survey s " +
             "LEFT JOIN FETCH Question q ON s = q.survey " +

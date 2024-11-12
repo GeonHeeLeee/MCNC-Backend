@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface RespondRepository extends JpaRepository<Respond, Long> {
     boolean existsBySurvey_SurveyId(Long surveyId);
+
 }

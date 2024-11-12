@@ -30,6 +30,7 @@ public class SurveySearchController {
     public ResponseEntity<Object> surveySearch(@RequestBody SearchDTO searchDTO){
         log.info("Received title: {}", searchDTO.getTitle());
 
+
         List<Survey> surveys = surveySearchService.surveySearch(searchDTO);
         List<SurveyInfoDTO> surveyDTOs = surveys.stream().map(survey -> {
             SurveyInfoDTO dto = SurveyInfoDTO.builder()
