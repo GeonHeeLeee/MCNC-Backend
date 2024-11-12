@@ -11,8 +11,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum QuestionType {
-    SUBJ("주관식"),
-    OBJ("객관식");
+    SUBJECTIVE("주관식"),
+    OBJ_SINGLE("단일 객관식"),
+    OBJ_MULTI("다중 객관식");
 
     private final String value;
 

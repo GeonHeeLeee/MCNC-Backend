@@ -1,6 +1,9 @@
 package mcnc.survwey.domain.respond;
 
 import lombok.RequiredArgsConstructor;
+
+import mcnc.survwey.domain.survey.Survey;
+import mcnc.survwey.domain.user.User;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;

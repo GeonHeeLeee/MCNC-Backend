@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.SelectionId;
 
@@ -23,6 +24,14 @@ public class SelectionDTO {
         return SelectionDTO.builder()
                 .selectionId(selection.getId())
                 .body(selection.getBody())
+                .build();
+    }
+
+    public Selection toEntity(SelectionId selectionId, Question question) {
+        return Selection.builder()
+                .id(selectionId)
+                .body(this.getBody())
+                .question(question)
                 .build();
     }
 }

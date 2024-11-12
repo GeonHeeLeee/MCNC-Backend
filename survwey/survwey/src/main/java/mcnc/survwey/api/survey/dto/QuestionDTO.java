@@ -1,18 +1,16 @@
 package mcnc.survwey.api.survey.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.question.Question;
-import mcnc.survwey.domain.selection.Selection;
+import mcnc.survwey.domain.survey.Survey;
 
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +22,7 @@ public class QuestionDTO {
     @NotBlank(message = "질문 내용은 필수입니다.")
     private String body;
 
-    private QuestionType type;
+    private QuestionType questionType;
 
     private List<SelectionDTO> selectionList;
 
@@ -35,9 +33,16 @@ public class QuestionDTO {
         return QuestionDTO.builder()
                 .quesId(question.getQuesId())
                 .body(question.getBody())
-                .type(question.getType())
+                .questionType(question.getType())
                 .selectionList(selectionDTOList)
                 .build();
+    }
 
+    public Question toEntity(Survey survey) {
+        return Question.builder()
+                .body(this.getBody())
+                .type(this.getQuestionType())
+                .survey(survey)
+                .build();
     }
 }
