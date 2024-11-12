@@ -20,17 +20,14 @@ public class SurveySearchService {
 
 
     private final SurveyRepository surveyRepository;
-    private final UserService userService;
 
     /**
      * 설문 제목 검색
-     * @param title
+     * @param searchDTO
      * @return
      */
-    public List<Survey> surveySearch(String title){
-        List<Survey> surveys = surveyRepository.findByTitleContaining(title);
-
-        return surveys.isEmpty() ? null : surveys;
+    public List<Survey> surveySearch(SearchDTO searchDTO){
+        return surveyRepository.findByTitleContainingIgnoreCase(searchDTO.getTitle());
     }
 
 }

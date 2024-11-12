@@ -21,4 +21,5 @@ public class SurveyDTO {
     private LocalDateTime createDate;
     @NotNull(message = "만료일 지정은 필수입니다.")
     private LocalDateTime expireDate;
+    private String username;
 }
