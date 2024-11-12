@@ -8,6 +8,8 @@ import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SurveyService {
@@ -18,6 +20,7 @@ public class SurveyService {
         surveyRepository.save(createdSurvey);
         return createdSurvey;
     }
+
 
     public boolean deleteSurveyById(Long surveyId) {
         if (surveyRepository.existsById(surveyId)) {
@@ -32,4 +35,9 @@ public class SurveyService {
         return surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
     }
+
+    public List<Survey> findByUser_UserId(String userId) {
+        return surveyRepository.findByUser_UserId(userId);
+    }
+
 }

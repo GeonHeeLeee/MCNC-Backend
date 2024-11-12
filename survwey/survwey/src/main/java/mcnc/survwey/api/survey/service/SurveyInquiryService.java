@@ -20,7 +20,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SurveyInquiryService {
 
+
     private final SurveyRepository surveyRepository;
+
 
 
     public Page<SurveyWithCountDTO> getUserCreatedSurveyList(String userId, Pageable pageable) {

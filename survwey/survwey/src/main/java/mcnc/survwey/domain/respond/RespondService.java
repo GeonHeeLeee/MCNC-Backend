@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 public class RespondService {
     private final RespondRepository respondRepository;
 
-    public Respond respondExist(Long id){
-
-        return respondRepository.findBySurvey_SurveyId(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE));
-        //임시 에러 코드
+    public void existsBySurveyId(Long surveyId){
+        if(respondRepository.existsBySurvey_SurveyId(surveyId)){
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.RESPOND_ALREADY_EXISTS);
+            //
+        }
     }
 }
