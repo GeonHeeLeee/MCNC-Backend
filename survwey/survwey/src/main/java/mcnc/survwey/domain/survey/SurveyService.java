@@ -1,7 +1,7 @@
 package mcnc.survwey.domain.survey;
 
 import lombok.RequiredArgsConstructor;
-import mcnc.survwey.api.survey.dto.CreateSurveyDTO;
+import mcnc.survwey.api.survey.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.user.User;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 public class SurveyService {
     private final SurveyRepository surveyRepository;
 
-    public Survey initializeSurvey(CreateSurveyDTO createSurveyDTO, User creator) {
+    public Survey initializeSurvey(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
         Survey createdSurvey = Survey.builder()
-                .title(createSurveyDTO.getTitle())
-                .expireDate(createSurveyDTO.getExpireDate())
-                .description(createSurveyDTO.getDescription())
+                .title(surveyWithDetailDTO.getTitle())
+                .expireDate(surveyWithDetailDTO.getExpireDate())
+                .description(surveyWithDetailDTO.getDescription())
                 .user(creator)
                 .createDate(LocalDateTime.now())
                 .build();
