@@ -3,13 +3,10 @@ package mcnc.survwey.api.survey.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.survey.dto.SurveyDTO;
-import mcnc.survwey.api.survey.dto.SurveyModifyDTO;
 import mcnc.survwey.api.survey.dto.SurveyWithDetailDTO;
 import mcnc.survwey.api.survey.service.SurveyModifyService;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.SurveyService;
-import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.UserService;
 import mcnc.survwey.global.config.SessionContext;
 import mcnc.survwey.global.exception.custom.CustomException;
@@ -18,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
