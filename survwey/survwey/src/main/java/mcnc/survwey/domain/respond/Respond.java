@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mcnc.survwey.domain.survey.Survey;
+import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.user.User;
 
 import java.time.LocalDateTime;

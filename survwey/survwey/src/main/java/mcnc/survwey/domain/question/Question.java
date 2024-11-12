@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.selection.Selection;
-import mcnc.survwey.domain.survey.Survey;
+import mcnc.survwey.domain.survey.common.Survey;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

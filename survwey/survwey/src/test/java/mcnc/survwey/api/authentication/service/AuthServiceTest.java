@@ -1,12 +1,12 @@
 package mcnc.survwey.api.authentication.service;
 
-import mcnc.survwey.api.authentication.dto.AuthDTO;
-import mcnc.survwey.api.authentication.dto.ChangePasswordDTO;
-import mcnc.survwey.api.authentication.dto.ModifyDTO;
+import mcnc.survwey.domain.user.dto.AuthDTO;
+import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
+import mcnc.survwey.domain.user.dto.ModifyDTO;
 import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.UserRepository;
-import org.assertj.core.api.Assertions;
+import mcnc.survwey.domain.user.repository.UserRepository;
+import mcnc.survwey.domain.user.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,10 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
