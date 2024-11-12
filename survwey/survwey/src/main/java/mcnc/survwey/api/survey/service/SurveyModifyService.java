@@ -28,11 +28,12 @@ public class SurveyModifyService {
     private final SurveyService surveyService;
     private final RespondService respondService;
 
-//    @Transactional
-//    public Survey surveyModifyWithDetails(SurveyDTO surveyDTO, Long surveyId, String userId) {
-//
-//
-//        return updatedSurvey;
-//    }
+    @Transactional
+    public Survey surveyModifyWithDetails(SurveyDTO surveyDTO, Long surveyId, String userId) {
+
+
+
+        return updatedSurvey;
+    }
 
 }
