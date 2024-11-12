@@ -3,6 +3,9 @@ package mcnc.survwey.domain.survey;
 import lombok.RequiredArgsConstructor;
 import mcnc.survwey.api.survey.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.user.User;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,5 +34,10 @@ public class SurveyService {
         } else {
             return false;
         }
+    }
+
+    public Survey findBySurveyId(Long surveyId) {
+        return surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
     }
 }

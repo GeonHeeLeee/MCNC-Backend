@@ -31,3 +31,4 @@ public class SurveyWithDetailDTO extends SurveyDTO {
                 .build();
     }
 }
+

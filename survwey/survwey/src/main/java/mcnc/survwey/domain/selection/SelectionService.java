@@ -3,6 +3,9 @@ package mcnc.survwey.domain.selection;
 import lombok.RequiredArgsConstructor;
 import mcnc.survwey.api.survey.dto.SelectionDTO;
 import mcnc.survwey.domain.question.Question;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,5 +29,10 @@ public class SelectionService {
                 .body(selectionDTO.getBody())
                 .question(createdQuestion)
                 .build();
+    }
+
+    public Selection findBySelectionId(SelectionId selectionId) {
+        return selectionRepository.findById(selectionId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SELECTION_NOT_FOUND_BY_ID));
     }
 }
