@@ -47,6 +47,11 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(userRespondSurveyList);
     }
 
+    /**
+     * 설문 응답을 위한 설문, 질문, 보기 조회
+     * @param surveyId
+     * @return
+     */
     @GetMapping("/detail/{surveyId}")
     public ResponseEntity<Object> inquirySurveyWithDetail(@PathVariable("surveyId") Long surveyId) {
         SurveyWithDetailDTO surveyWithDetailDTO = surveyInquiryService.getSurveyWithDetail(surveyId);

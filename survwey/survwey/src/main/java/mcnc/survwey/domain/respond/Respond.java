@@ -2,6 +2,8 @@ package mcnc.survwey.domain.respond;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.survey.Survey;
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(
         name = "respond",
         uniqueConstraints = @UniqueConstraint(columnNames = {"surveyId", "userId"})
@@ -32,4 +36,17 @@ public class Respond {
     @JoinColumn(name = "surveyId", nullable = false)
     private Survey survey;
 
+    @PrePersist
+    protected void onCreate() {
+        if (this.respondDate == null) {
+            this.respondDate = LocalDateTime.now();
+        }
+    }
+
+    public static Respond create(User user, Survey survey) {
+        return Respond.builder()
+                .user(user)
+                .survey(survey)
+                .build();
+    }
 }
