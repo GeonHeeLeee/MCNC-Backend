@@ -1,5 +1,6 @@
 package mcnc.survwey.domain.user.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "사용자 관련", description = "회원가입/로그인/프로필 수정 API")
 public class AuthController {
 
     private final AuthService authService;
