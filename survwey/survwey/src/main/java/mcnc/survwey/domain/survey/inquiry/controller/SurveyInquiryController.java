@@ -17,6 +17,7 @@ import mcnc.survwey.global.config.SessionContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
@@ -82,9 +83,19 @@ public class SurveyInquiryController {
     @GetMapping("/search")
     public ResponseEntity<Object> surveySearch(@RequestParam String title, @PageableDefault(size = 10) Pageable pageable) {
         String userId = SessionContext.getCurrentUser();
-        log.info(title);
+
         Page<Survey> surveys = surveyInquiryService.surveySearch(userId, title, pageable);
         Page<SurveyInfoDTO> surveyDTOs = surveys.map(SurveyInfoDTO::of);
         return ResponseEntity.ok(surveyDTOs);
+    }
+
+    @GetMapping("/search/respond")
+    public ResponseEntity<Object> respondedSurveySearch (@RequestParam String title, @PageableDefault(size = 10) Pageable pageable){
+        String userId = SessionContext.getCurrentUser();
+
+        Page<Survey> surveys = surveyInquiryService.respondedSurveySearch(userId, title, pageable);
+        Page<SurveyInfoDTO> surveyInfoDTOS = surveys.map(SurveyInfoDTO::of);
+        return ResponseEntity.ok(surveyInfoDTOS);
+
     }
 }
