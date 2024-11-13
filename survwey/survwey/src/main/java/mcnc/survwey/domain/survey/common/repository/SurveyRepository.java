@@ -18,7 +18,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
 
     List<Survey> findByUser_Email(String email);
 
-    List<Survey> findByTitleContainingIgnoreCase(String title);
+    Page<Survey> findByUser_UserIdAndTitleContainingIgnoreCase(String userId, String title, Pageable pageable);
 
     @Query(value = "SELECT s.survey_id, s.title, s.description, s.create_date, s.expire_date, " +
             "COALESCE(r.respond_count, 0) AS respond_count " +

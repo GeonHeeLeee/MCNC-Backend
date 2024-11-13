@@ -45,6 +45,8 @@ public class AuthService {
         if (userRepository.existsByEmail(authDTO.getEmail())) {//해당 이메일 존재
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_EMAIL_ALREADY_EXISTS);
         }
+        
+        //ID, EMAIL 중복이 없을 경우 저장
         userRepository.save(User.builder()
                 .userId(authDTO.getUserId())
                 .email(authDTO.getEmail())
@@ -62,18 +64,21 @@ public class AuthService {
      *
      * @param modifyDTO
      */
-    public void modifyUser(ModifyDTO modifyDTO) {
-        User user = userService.findByUserId(modifyDTO.getUserId());
+    public void modifyUser(ModifyDTO modifyDTO, String userId) {
+        User user = userService.findByUserId(userId);
 
-        if (modifyDTO.getName().isEmpty() || modifyDTO.getName().isBlank()) {
+        if (modifyDTO.getName() == null || modifyDTO.getName().isEmpty() || modifyDTO.getName().isBlank()) {
             modifyDTO.setName(user.getName());
         }
-        if (modifyDTO.getGender().getValue().isEmpty() || modifyDTO.getGender().getValue().isBlank()) {
+        if (modifyDTO.getGender() == null || modifyDTO.getGender().getValue().isEmpty()
+                || modifyDTO.getGender().getValue().isBlank()) {
             modifyDTO.setGender(user.getGender());
         }
         if (modifyDTO.getBirth() == null) {
             modifyDTO.setBirth(user.getBirth());
         }
+        //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
+        
         user.setName(modifyDTO.getName());
         user.setGender(modifyDTO.getGender());
         user.setBirth(modifyDTO.getBirth());
@@ -89,7 +94,9 @@ public class AuthService {
      */
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
         User user = userService.findByUserId(changePasswordDTO.getUserId());
+        //사용자 Id 찾은 후
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getPassword()));
+        //사용자 password 재설정
         userRepository.save(user);
     }
 
