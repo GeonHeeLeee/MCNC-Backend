@@ -49,4 +49,8 @@ public class SurveyInquiryService {
         return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCase(userId, title, pageable);
     }
 
+    public Page<Survey> respondedSurveySearch(String userId, String title, Pageable pageable){
+        return surveyRepository.findSurveysUserHasRespondedTo(userId, title, pageable);
+    }
+
 }
