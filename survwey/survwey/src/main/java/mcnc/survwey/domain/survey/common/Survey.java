@@ -44,20 +44,30 @@ public class Survey {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "survey")
     @JsonIgnore
     @Builder.Default
     private List<Question> questionList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "survey")
     @JsonIgnore
     @Builder.Default
     private List<Respond> respondList = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {
         if (this.createDate == null) {
             this.createDate = LocalDateTime.now();
         }
+    }
+
+    /**
+     * 연관관계 편의 메서드
+     * @param question
+     */
+    public void addQuestion(Question question) {
+        questionList.add(question);
+        question.setSurvey(this);
     }
 }

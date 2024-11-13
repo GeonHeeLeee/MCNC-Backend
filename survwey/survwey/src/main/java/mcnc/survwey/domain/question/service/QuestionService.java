@@ -21,9 +21,7 @@ public class QuestionService {
 
     public Question buildAndSaveQuestion(QuestionDTO questionDTO, Survey createdSurvey) {
         Question createdQuestion = questionDTO.toEntity(createdSurvey);
-        log.info(questionDTO.toString());
-        log.info(createdQuestion.toString());
-
+        createdSurvey.addQuestion(createdQuestion);
         questionRepository.save(createdQuestion);
         return createdQuestion;
     }

@@ -45,7 +45,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     @JsonIgnore
     @Builder.Default
     private List<Respond> respondList = new ArrayList<>();

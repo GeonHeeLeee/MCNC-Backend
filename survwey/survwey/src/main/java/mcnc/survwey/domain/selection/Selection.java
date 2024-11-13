@@ -38,7 +38,7 @@ public class Selection implements Persistable<SelectionId> {
     @JoinColumn(name = "ques_id", insertable = false, updatable = false)
     private Question question;
 
-    @OneToMany(mappedBy = "selection", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "selection")
     @JsonIgnore
     @Builder.Default
     private List<ObjAnswer> objAnswerList = new ArrayList<>();

@@ -40,7 +40,7 @@ public class Question {
     @Column(nullable = false)
     private QuestionType type;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "question")
     @JsonIgnore
     @Builder.Default
     private List<Selection> selectionList = new ArrayList<>();
@@ -50,5 +50,14 @@ public class Question {
         if (this.createDate == null) {
             this.createDate = LocalDateTime.now();
         }
+    }
+
+    /**
+     * 연관관계 편의 메서드
+     * @param selection
+     */
+    public void addSelection(Selection selection) {
+        selectionList.add(selection);
+        selection.setQuestion(this);
     }
 }
