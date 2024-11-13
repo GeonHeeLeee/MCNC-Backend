@@ -27,6 +27,7 @@ import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,6 +68,9 @@ public class SurveyManageService {
     public void saveSurveyResponses(SurveyResponseDTO surveyResponseDTO, String userId) {
         User respondedUser = userService.findByUserId(userId);
         Survey respondedSurvey = surveyService.findBySurveyId(surveyResponseDTO.getSurveyId());
+        if (respondedSurvey.getExpireDate().isAfter(LocalDateTime.now())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRED_SURVEY);
+        }
         Respond respond = Respond.create(respondedUser, respondedSurvey);
         respondRepository.save(respond);
 
