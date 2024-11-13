@@ -1,6 +1,7 @@
 package mcnc.survwey.domain.survey.manage.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,8 @@ public class SurveyManageController {
      * @return
      */
     @PostMapping("/create")
+    @Operation(summary = "설문 생성", description = "현재 하단에 있는 surveyId, creatorId, quesId, selectionId는 제외하고 요청(백엔드에서 DTO를 재사용하느라 사용)<br>" +
+            "또한 주관식(SUBJECTIVE인 경우 selectionList를 빈배열([])로 요청<br>OBJ_MULTI, OBJ_SINGLE 인 경우 selectionList안에 selectionId 제외하고 요청하면 됨(body만 포함)")
     public ResponseEntity<Object> createSurvey(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         try {
             String userId = SessionContext.getCurrentUser();
@@ -47,6 +50,7 @@ public class SurveyManageController {
     }
 
     @DeleteMapping("/delete/{surveyId}")
+    @Operation(summary = "설문 삭제", description = "PathVariable에 설문 ID를 넣어 요청하면 해당 설문에 해당하는 질문/보기/응답 모두 삭제")
     public ResponseEntity<Object> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
         if (surveyManageService.deleteSurvey(surveyId)) {
             return ResponseEntity.ok(null);
@@ -55,6 +59,8 @@ public class SurveyManageController {
     }
 
     @PostMapping("/response")
+    @Operation(summary = "설문 응답", description = "SUBJECTIVE인 경우, SelectionId는 주지 않고, response에 응답을 담아서 주면 됨<br>" +
+            "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
     public ResponseEntity<Object> responseSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
         try {
             String userId = SessionContext.getCurrentUser();
