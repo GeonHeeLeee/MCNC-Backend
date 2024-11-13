@@ -51,4 +51,13 @@ public class Question {
             this.createDate = LocalDateTime.now();
         }
     }
+
+    /**
+     * 연관관계 편의 메서드
+     * @param selection
+     */
+    public void addSelection(Selection selection) {
+        selectionList.add(selection);
+        selection.setQuestion(this);
+    }
 }

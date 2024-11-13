@@ -54,10 +54,20 @@ public class Survey {
     @Builder.Default
     private List<Respond> respondList = new ArrayList<>();
 
+
     @PrePersist
     protected void onCreate() {
         if (this.createDate == null) {
             this.createDate = LocalDateTime.now();
         }
+    }
+
+    /**
+     * 연관관계 편의 메서드
+     * @param question
+     */
+    public void addQuestion(Question question) {
+        questionList.add(question);
+        question.setSurvey(this);
     }
 }
