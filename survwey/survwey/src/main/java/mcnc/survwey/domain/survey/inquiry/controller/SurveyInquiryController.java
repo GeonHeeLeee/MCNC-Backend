@@ -1,5 +1,10 @@
 package mcnc.survwey.domain.survey.inquiry.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.common.Survey;
@@ -20,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/survey/inquiry")
+@Tag(name = "설문 조회", description = "응답/생성한 설문 리스트 조회, 상세 조회 및 검색 API")
 public class SurveyInquiryController {
 
     private final SurveyInquiryService surveyInquiryService;
@@ -27,26 +33,30 @@ public class SurveyInquiryController {
     /**
      * 사용자가 생성한 설문 목록 조회
      *
-     * @param pageable
+     * @param
      * @return
      */
     @GetMapping("/created")
-    public ResponseEntity<Page<SurveyWithCountDTO>> inquiryUserCreatedSurveyList(@PageableDefault(size = 10) Pageable pageable) {
+    @Operation(summary = "사용자 본인이 생성한 설문 리스트 조회", description = "쿼리 파라미터 형식으로 size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
+    public ResponseEntity<Page<SurveyWithCountDTO>> inquiryUserCreatedSurveyList(@RequestParam(defaultValue = "0") int page,
+                                                                                 @RequestParam(defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
-        Page<SurveyWithCountDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId, pageable);
+        Page<SurveyWithCountDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId, page, size);
         return ResponseEntity.ok(userCreatedSurveyList);
     }
 
     /**
      * 사용자가 응답한 설문 목록 조회
      *
-     * @param pageable
+     * @param
      * @return
      */
     @GetMapping("/respond")
-    public ResponseEntity<Object> inquiryUserRespondSurveyList(@PageableDefault(size = 10) Pageable pageable) {
+    @Operation(summary = "사용자 본인이 응답한 설문 리스트 조회", description = "쿼리 파라미터 형식으로 size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
+    public ResponseEntity<Page<SurveyDTO>> inquiryUserRespondSurveyList(@RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
-        Page<SurveyDTO> userRespondSurveyList = surveyInquiryService.getUserRespondSurveyList(userId, pageable);
+        Page<SurveyDTO> userRespondSurveyList = surveyInquiryService.getUserRespondSurveyList(userId, page, size);
         return ResponseEntity.ok(userRespondSurveyList);
     }
 
@@ -57,7 +67,8 @@ public class SurveyInquiryController {
      * @return
      */
     @GetMapping("/detail/{surveyId}")
-    public ResponseEntity<Object> inquirySurveyWithDetail(@PathVariable("surveyId") Long surveyId) {
+    @Operation(summary = "특정 설문/질문/보기 조회", description = "surveyId(설문 아이디)로 조회")
+    public ResponseEntity<SurveyWithDetailDTO> inquirySurveyWithDetail(@PathVariable("surveyId") Long surveyId) {
         SurveyWithDetailDTO surveyWithDetailDTO = surveyInquiryService.getSurveyWithDetail(surveyId);
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
@@ -74,7 +85,6 @@ public class SurveyInquiryController {
         log.info(title);
         Page<Survey> surveys = surveyInquiryService.surveySearch(userId, title, pageable);
         Page<SurveyInfoDTO> surveyDTOs = surveys.map(SurveyInfoDTO::of);
-
         return ResponseEntity.ok(surveyDTOs);
     }
 }
