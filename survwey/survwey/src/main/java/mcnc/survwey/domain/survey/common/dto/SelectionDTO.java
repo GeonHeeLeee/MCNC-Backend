@@ -1,5 +1,6 @@
 package mcnc.survwey.domain.survey.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +21,13 @@ public class SelectionDTO {
     @NotBlank(message = "보기 내용은 필수입니다.")
     private String body;
 
+    @JsonProperty("isEtc")
+    private boolean isEtc;
+
     public static SelectionDTO of(Selection selection) {
         return SelectionDTO.builder()
                 .selectionId(selection.getId())
+                .isEtc(selection.isEtc())
                 .body(selection.getBody())
                 .build();
     }
@@ -31,6 +36,7 @@ public class SelectionDTO {
         return Selection.builder()
                 .id(selectionId)
                 .body(this.getBody())
+                .isEtc(this.isEtc())
                 .question(question)
                 .build();
     }
