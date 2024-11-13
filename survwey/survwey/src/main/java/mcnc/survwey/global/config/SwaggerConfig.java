@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI springCapstoneOpenAPI() {
+    public OpenAPI springSurvweyOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("MCNC - Survwey API")
                         .description("모빌씨앤씨 인턴쉽 프로젝트 API 명세서")
