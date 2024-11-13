@@ -98,10 +98,14 @@ public class SurveyManageService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 설문 수정
+     * @param surveyWithDetailDTO
+     * @param userId
+     * @return
+     */
     @Transactional
     public SurveyWithDetailDTO surveyModifyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
-        User updater = userService.findByUserId(userId);
-        //변경할 설문
         respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
         //설문 응답자가 존재하면 error
 

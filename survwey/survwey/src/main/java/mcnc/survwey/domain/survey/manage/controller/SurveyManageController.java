@@ -49,6 +49,11 @@ public class SurveyManageController {
         }
     }
 
+    /**
+     * 설문 삭제
+     * @param surveyId
+     * @return
+     */
     @DeleteMapping("/delete/{surveyId}")
     @Operation(summary = "설문 삭제", description = "PathVariable에 설문 ID를 넣어 요청하면 해당 설문에 해당하는 질문/보기/응답 모두 삭제")
     public ResponseEntity<Object> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
@@ -58,6 +63,11 @@ public class SurveyManageController {
         return ResponseEntity.badRequest().body(Collections.singletonMap("errorMessage", "해당 아이디의 설문이 존재하지 않습니다."));
     }
 
+    /**
+     * 응답 저장
+     * @param surveyResponseDTO
+     * @return
+     */
     @PostMapping("/response")
     @Operation(summary = "설문 응답", description = "SUBJECTIVE인 경우, SelectionId는 주지 않고, response에 응답을 담아서 주면 됨<br>" +
             "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
@@ -71,6 +81,12 @@ public class SurveyManageController {
         }
     }
 
+    /**
+     * 사용자가 자신이 만든 설문을 수정을 위해 삭제 후 생성
+     * -해당 설문에 응답한 사람이 1명이라도 존재하면 설문 수정 불가
+     * @param surveyWithDetailDTO
+     * @return
+     */
     @PostMapping("/modify")
     public ResponseEntity<Object> surveyModify(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         String userId = SessionContext.getCurrentUser();

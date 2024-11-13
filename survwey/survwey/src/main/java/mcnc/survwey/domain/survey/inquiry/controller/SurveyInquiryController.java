@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.inquiry.dto.SearchDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyInfoDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
@@ -21,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -36,7 +33,7 @@ public class SurveyInquiryController {
     /**
      * 사용자가 생성한 설문 목록 조회
      *
-     * @param pageable
+     * @param
      * @return
      */
     @GetMapping("/created")
@@ -51,7 +48,7 @@ public class SurveyInquiryController {
     /**
      * 사용자가 응답한 설문 목록 조회
      *
-     * @param pageable
+     * @param
      * @return
      */
     @GetMapping("/respond")
@@ -76,12 +73,18 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<List<SurveyInfoDTO>> surveySearch(@RequestBody SearchDTO searchDTO) {
-        log.info("Received title: {}", searchDTO.getTitle());
-        List<Survey> surveys = surveyInquiryService.surveySearch(searchDTO);
-        List<SurveyInfoDTO> surveyDTOs = surveys.stream().map(SurveyInfoDTO::of)
-                .collect(Collectors.toList());
+    /**
+     * 사용자가 특정 키워드로 설문을 찾기 위해 설문 조회
+     *
+     * @param title, pageable
+     * @return
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Object> surveySearch(@RequestParam String title, @PageableDefault(size = 10) Pageable pageable) {
+        String userId = SessionContext.getCurrentUser();
+        log.info(title);
+        Page<Survey> surveys = surveyInquiryService.surveySearch(userId, title, pageable);
+        Page<SurveyInfoDTO> surveyDTOs = surveys.map(SurveyInfoDTO::of);
         return ResponseEntity.ok(surveyDTOs);
     }
 }
