@@ -34,7 +34,7 @@ public class Selection implements Persistable<SelectionId> {
     @Column(nullable = false)
     private LocalDateTime createDate;
 
-    private Boolean isEtc;
+    private boolean isEtc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ques_id", insertable = false, updatable = false)
