@@ -40,7 +40,7 @@ public class Question {
     @Column(nullable = false)
     private QuestionType type;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "question")
     @JsonIgnore
     @Builder.Default
     private List<Selection> selectionList = new ArrayList<>();

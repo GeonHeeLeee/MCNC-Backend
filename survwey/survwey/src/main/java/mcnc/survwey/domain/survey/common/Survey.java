@@ -44,12 +44,12 @@ public class Survey {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "survey")
     @JsonIgnore
     @Builder.Default
     private List<Question> questionList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "survey")
     @JsonIgnore
     @Builder.Default
     private List<Respond> respondList = new ArrayList<>();
