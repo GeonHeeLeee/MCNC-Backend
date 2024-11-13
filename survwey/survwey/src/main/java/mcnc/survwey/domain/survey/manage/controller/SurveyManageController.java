@@ -1,6 +1,7 @@
 package mcnc.survwey.domain.survey.manage.controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/survey/manage")
+@Tag(name = "설문 관리", description = "설문 생성/삭제/응답/수정 API")
 public class SurveyManageController {
 
     private final SurveyManageService surveyManageService;
