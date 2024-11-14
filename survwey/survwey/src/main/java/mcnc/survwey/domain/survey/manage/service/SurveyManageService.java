@@ -119,7 +119,7 @@ public class SurveyManageService {
                     .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
             return SurveyWithDetailDTO.of(survey);
         } else {
-            return null;
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND);
         }
     }
 }

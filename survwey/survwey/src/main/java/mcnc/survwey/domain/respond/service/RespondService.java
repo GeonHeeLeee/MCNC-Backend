@@ -16,7 +16,7 @@ public class RespondService {
     public void existsBySurveyId(Long surveyId){
         if(respondRepository.existsBySurvey_SurveyId(surveyId)){
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.RESPOND_ALREADY_EXISTS);
-            //
+            //응답한 사람이 존재하면 BAD_REQUEST
         }
     }
 }
