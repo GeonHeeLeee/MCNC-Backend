@@ -15,7 +15,8 @@ public enum ErrorCode {
     SELECTION_NOT_FOUND_BY_ID("해당 아이디의 보기가 존재하지 않습니다."),
     RESPOND_ALREADY_EXISTS("해당 설문에 답한 사용자가 이미 존재합니다."),
     EXPIRED_SURVEY("해당 설문은 종료된 설문입니다."),
-    SURVEY_NOT_FOUND("해당 설문이 존재하지 않습니다.");
+    SURVEY_NOT_FOUND("해당 설문이 존재하지 않습니다."),
+    USER_NOT_MATCH("본인이 만든 설문만 종료할 수 있습니다.");
     private final String errorMessage;
 
     ErrorCode(String errorMessage) {

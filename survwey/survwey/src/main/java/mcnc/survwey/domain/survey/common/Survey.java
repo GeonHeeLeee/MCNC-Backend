@@ -2,10 +2,7 @@ package mcnc.survwey.domain.survey.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.user.User;
@@ -16,7 +13,8 @@ import java.util.List;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
