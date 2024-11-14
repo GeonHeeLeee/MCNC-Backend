@@ -2,6 +2,8 @@ package mcnc.survwey.domain.survey.manage.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,11 @@ public class SurveyManageController {
     @PostMapping("/create")
     @Operation(summary = "설문 생성", description = "현재 하단에 있는 surveyId, creatorId, quesId, selectionId는 제외하고 요청(백엔드에서 DTO를 재사용하느라 사용)<br>" +
             "또한 주관식(SUBJECTIVE인 경우 selectionList를 빈배열([])로 요청<br>OBJ_MULTI, OBJ_SINGLE 인 경우 selectionList안에 selectionId 제외하고 요청하면 됨(body만 포함)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "설문 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "해당 아이디의 사용자가 존재하지 않습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+    })
     public ResponseEntity<Object> createSurvey(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         try {
             String userId = SessionContext.getCurrentUser();
@@ -56,6 +63,11 @@ public class SurveyManageController {
      */
     @DeleteMapping("/delete/{surveyId}")
     @Operation(summary = "설문 삭제", description = "PathVariable에 설문 ID를 넣어 요청하면 해당 설문에 해당하는 질문/보기/응답 모두 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "설문 삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "해당 아이디의 사용자가 존재하지 않습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+    })
     public ResponseEntity<Object> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
         if (surveyManageService.deleteSurvey(surveyId)) {
             return ResponseEntity.ok(null);
@@ -71,6 +83,17 @@ public class SurveyManageController {
     @PostMapping("/response")
     @Operation(summary = "설문 응답", description = "SUBJECTIVE인 경우, SelectionId는 주지 않고, response에 응답을 담아서 주면 됨<br>" +
             "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "설문 응답 성공"),
+            @ApiResponse(responseCode = "400", description = """
+                잘못된 요청:
+                - 해당 아이디의 사용자가 존재하지 않습니다.
+                - 해당 아이디의 설문이 존재하지 않습니다.
+                - 이미 종료된 설문입니다.
+                """),
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+    })
+
     public ResponseEntity<Object> responseSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
         try {
             String userId = SessionContext.getCurrentUser();
@@ -87,12 +110,24 @@ public class SurveyManageController {
      * @param surveyWithDetailDTO
      * @return
      */
+
     @PostMapping("/modify")
+    @Operation(summary = "설문 수정", description = "해당 설문에 1명이라도 응답한 사람이 존재하면 설문 수정 불가, 설문 수정 페이지에서 수정한 내용들을 바탕으로 기존 설문 삭제 후 새롭게 생성")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "설문 수정 성공"),
+            @ApiResponse(responseCode = "400", description = """
+                잘못된 요청:
+                - 설문에 응답한 사람이 존재할 경우: 해당 설문에 답한 사용자가 이미 존재합니다.
+                - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
+                - 삭제할 설문을 찾았지만 아이디가 다를 때: 해당 아이디의 설문이 존재하지 않습니다.
+                """),
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+    })
+
     public ResponseEntity<Object> surveyModify(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         String userId = SessionContext.getCurrentUser();
 
         SurveyWithDetailDTO updatedSurvey = surveyManageService.surveyModifyWithDetails(surveyWithDetailDTO, userId);
-        log.info(updatedSurvey.toString());
         return ResponseEntity.ok().body(updatedSurvey);
     }
 }
