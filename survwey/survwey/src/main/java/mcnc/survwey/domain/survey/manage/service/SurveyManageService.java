@@ -68,7 +68,8 @@ public class SurveyManageService {
     public void saveSurveyResponses(SurveyResponseDTO surveyResponseDTO, String userId) {
         User respondedUser = userService.findByUserId(userId);
         Survey respondedSurvey = surveyService.findBySurveyId(surveyResponseDTO.getSurveyId());
-        if (respondedSurvey.getExpireDate().isAfter(LocalDateTime.now())) {
+        if (respondedSurvey.getExpireDate().isAfter(LocalDateTime.now())
+                || respondedSurvey.getExpireDate().isEqual(LocalDateTime.now())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRED_SURVEY);
         }
         Respond respond = Respond.create(respondedUser, respondedSurvey);
