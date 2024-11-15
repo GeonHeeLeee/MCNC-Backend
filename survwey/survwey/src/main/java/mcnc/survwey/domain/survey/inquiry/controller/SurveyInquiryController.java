@@ -131,6 +131,12 @@ public class SurveyInquiryController {
         Page<Survey> surveys = surveyInquiryService.respondedSurveySearch(userId, title, page, size);
         Page<SurveyInfoDTO> surveyInfoDTOS = surveys.map(SurveyInfoDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
-
     }
+
+//    @GetMapping("/result/{surveyId}")
+//    public ResponseEntity<Object> inquirySurveyResults(@PathVariable Long surveyId) {
+//
+//    }
+
+
 }

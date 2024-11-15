@@ -3,6 +3,7 @@ package mcnc.survwey.domain.survey.manage.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import mcnc.survwey.domain.respond.dto.ResponseDTO;
 
 import java.util.List;
 

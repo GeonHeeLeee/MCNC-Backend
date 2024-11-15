@@ -1,4 +1,4 @@
-package mcnc.survwey.domain.survey.manage.dto;
+package mcnc.survwey.domain.respond.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

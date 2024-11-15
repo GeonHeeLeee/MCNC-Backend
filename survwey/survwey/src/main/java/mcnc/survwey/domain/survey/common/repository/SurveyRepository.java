@@ -57,4 +57,5 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
 
     @Query("SELECT s FROM Survey s JOIN s.respondList r WHERE r.user.userId = :userId AND s.title LIKE %:title%")
     Page<Survey> findSurveysUserHasRespondedTo(@Param("userId") String userId, @Param("title") String title, Pageable pageable);
+
 }

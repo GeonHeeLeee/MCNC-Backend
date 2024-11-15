@@ -1,4 +1,4 @@
-package mcnc.survwey.domain.survey.common.dto;
+package mcnc.survwey.domain.selection.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;

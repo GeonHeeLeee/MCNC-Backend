@@ -2,6 +2,7 @@ package mcnc.survwey.domain.survey.common.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import mcnc.survwey.domain.question.dto.QuestionDTO;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.user.User;
 
