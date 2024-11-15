@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
 import mcnc.survwey.domain.survey.manage.dto.ResponseDTO;
-import mcnc.survwey.domain.survey.manage.dto.SurveyExpirationDTO;
 import mcnc.survwey.domain.survey.manage.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.enums.QuestionType;
@@ -131,17 +130,9 @@ public class SurveyManageService {
     public void enforceCloseSurvey(String userId, Long surveyId){
         Survey survey = surveyService.findBySurveyId(surveyId);
         //해당 설문 찾아서
-        log.info("{}", survey);
-
-        if(survey == null){
-            //해당 설문이 존재하지 않을 때
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID);
-        }
-
         if(!survey.getUser().getUserId().equals(userId)){
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_MATCH);
         }//user가 생성한 설문이 아닐 때
-
         survey.setExpireDate(LocalDateTime.now());
         //만료일 현재로 변경
         surveyRepository.save(survey);
