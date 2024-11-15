@@ -32,9 +32,6 @@ jobs:
       - name: List working directory
         run: ls -la
 
-      - name: Change directory to project root
-        run: cd ./survwey/survwey
-
       - name: Set up JDK 17  # 원하는 Java 버전
         uses: actions/setup-java@v4  # 최신 버전으로 업데이트
         with:
@@ -42,16 +39,16 @@ jobs:
           distribution: 'temurin'
 
       - name: Grant execute permission for Gradle Wrapper
-        run: chmod +x ./gradlew
+        run: cd ./survwey/survwey && chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: cd ./survwey/survwey && ./gradlew build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: app-jar
-          path: build/libs/*.jar  # 빌드된 JAR 파일 경로
+          path: survwey/survwey/build/libs/*.jar  # 빌드된 JAR 파일 경로
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,7 +65,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
-          scp -i /tmp/ssh_key -o StrictHostKeyChecking=no build/libs/*.jar intern2team@218.55.79.80:/home/intern2team
+          scp -i /tmp/ssh_key -o StrictHostKeyChecking=no survwey/survwey/build/libs/*.jar intern2team@218.55.79.80:/home/intern2team
 
       - name: Run app on RockyOS server
         env:
