@@ -11,8 +11,11 @@ jobs:
     runs-on: ubuntu-latest  # GitHub Actions의 빌드 환경
 
     steps:
+      - name: List files for debugging
+        run: ls -R
+          
       - name: Change directory to project root
-        run: cd survwey/survwey
+        run: cd survwey
         
       - name: Check out repository
         uses: actions/checkout@v4  # 최신 버전으로 업데이트
