@@ -8,13 +8,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.survey.manage.dto.SurveyExpirationDTO;
 import mcnc.survwey.domain.survey.manage.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.manage.service.SurveyManageService;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.global.config.SessionContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -136,10 +134,10 @@ public class SurveyManageController {
 
     /**
      * 설문 강제 종료
-     * @param surveyExpirationDTO
+     * @param surveyId
      * @return
      */
-    @PostMapping("/expired")
+    @GetMapping("/expired/{surveyId}")
     @Operation(summary = "설문 강제 종료", description = "해당 설문의 생성자가 강제 종료를 원할경우 만료일을 현재 시간으로 변경하여 강제 종료")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = """
@@ -152,16 +150,9 @@ public class SurveyManageController {
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> surveyExpiration(@Valid @RequestBody SurveyExpirationDTO surveyExpirationDTO) {
+    public ResponseEntity<Object> surveyExpiration(@PathVariable(value = "surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
-        log.info("{}", surveyExpirationDTO.isForceClose());
-        if(surveyExpirationDTO.isForceClose()){
-            //강제 종료 버튼 확인
-            surveyManageService.enforceCloseSurvey(userId, surveyExpirationDTO.getSurveyId());
-            return ResponseEntity.ok().body(surveyExpirationDTO.getSurveyId());
-        }else{
-            //강제 종료 버튼 X
-            return ResponseEntity.ok("설문 종료가 취소되었습니다.");
-        }
+        surveyManageService.enforceCloseSurvey(userId, surveyId);
+        return ResponseEntity.ok().body(surveyId);
     }
 }
