@@ -137,7 +137,7 @@ public class SurveyManageController {
      * @param surveyId
      * @return
      */
-    @GetMapping("/expired/{surveyId}")
+    @PostMapping("/expired/{surveyId}")
     @Operation(summary = "설문 강제 종료", description = "해당 설문의 생성자가 강제 종료를 원할경우 만료일을 현재 시간으로 변경하여 강제 종료")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = """
