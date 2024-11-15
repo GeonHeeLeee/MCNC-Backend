@@ -43,10 +43,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: app-jar
-        
-      - name: Test SSH connection with verbose output
-        run: |
-          ssh -vvv -i /tmp/ssh_key -o StrictHostKeyChecking=no intern2team@218.55.79.80 "echo 'SSH connection successful'"
 
       - name: Copy to RockyOS server
         env:
@@ -59,11 +55,19 @@ jobs:
       - name: Run app on RockyOS server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}  # GitHub Secrets에서 DB_URL을 가져옴
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}  # GitHub Secrets에서 DB_USERNAME을 가져옴
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # GitHub Secrets에서 DB_PASSWORD를 가져옴
         run: |
           ssh -i /tmp/ssh_key -o StrictHostKeyChecking=no intern2team@218.55.79.80 << EOF
           cd /home/intern2team
+          
           # 기존 애플리케이션 중지
           pkill -f 'java -jar'
+          
           # 새 JAR 파일 실행
           nohup java -jar survwey-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+          
+          # DB 연결 시 환경 변수를 사용하여 연결
+          # 예: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD를 활용하여 DB 연결
           EOF
