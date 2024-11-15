@@ -94,7 +94,6 @@ public class SurveyManageController {
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-
     public ResponseEntity<Object> responseSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
         try {
             String userId = SessionContext.getCurrentUser();

@@ -41,6 +41,8 @@ public class AuthDTO {
     private Gender gender;
 
     @NotBlank(message = "이름은 필수입니다.")
+    @Size(min = 2, max = 50, message = "이름은 2자 이상, 50자 이하로 입력해주세요.")
+    @Pattern(regexp = "^[a-zA-Z가-힣 ]*$", message = "이름은 영어, 한글, 공백만 포함할 수 있습니다.")
     private String name;
 
 }
