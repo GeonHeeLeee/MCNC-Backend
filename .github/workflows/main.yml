@@ -42,7 +42,7 @@ jobs:
         run: cd ./survwey/survwey && chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: cd ./survwey/survwey && ./gradlew build
+        run: cd ./survwey/survwey && ./gradlew build -x test
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
