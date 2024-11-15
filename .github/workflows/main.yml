@@ -43,9 +43,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: app-jar
-
-      - name: Test connection to your server
-        run: ping -c 4 218.55.79.80
         
       - name: Test SSH connection with verbose output
         run: |
