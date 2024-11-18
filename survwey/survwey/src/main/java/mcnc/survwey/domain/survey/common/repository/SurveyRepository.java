@@ -43,7 +43,6 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Page<SurveyDTO> findRespondedSurveyByUserId(@Param("userId") String userId, Pageable pageable);
 
 
-
     @Query("SELECT DISTINCT s " +
             "FROM Survey s " +
             "LEFT JOIN FETCH Question q ON s = q.survey " +
@@ -57,5 +56,19 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
 
     @Query("SELECT s FROM Survey s JOIN s.respondList r WHERE r.user.userId = :userId AND s.title LIKE %:title%")
     Page<Survey> findSurveysUserHasRespondedTo(@Param("userId") String userId, @Param("title") String title, Pageable pageable);
+
+//    @Query(value = "SELECT s.survey_id, s.title, s.description, s.createDate, s.expireDate, q.ques_id, " +
+//            "q.body AS questionBody, q.type AS questionType, se.sequence, se.body AS selectionBody, " +
+//            "COUNT(ob.obj_id) AS selectionCount, sa.response AS subjectiveResponse, ob.etc_answer " +
+//            "FROM survey s " +
+//            "RIGHT JOIN question q ON s.survey_id = q.survey_id " +
+//            "LEFT JOIN selection se ON q.ques_id = se.ques_id " +
+//            "LEFT JOIN obj_answer ob ON se.ques_id = ob.ques_id AND se.sequence = ob.sequence " +
+//            "LEFT JOIN subj_answer sa ON q.ques_id = sa.ques_id " +
+//            "WHERE s.survey_id = :surveyId " +
+//            "GROUP BY s.survey_id, q.ques_id, se.sequence, se.body, sa.response, ob.etc_answer " +
+//            "ORDER BY q.ques_id, se.sequence", nativeQuery = true)
+//    List<Object[]> findSurveyResponsesBySurveyId(@Param("surveyId") Long surveyId);
+
 
 }
