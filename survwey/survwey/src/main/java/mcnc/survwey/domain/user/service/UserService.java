@@ -57,7 +57,7 @@ public class UserService {
         for (LocalDate birthDate : birthList) {
             int decade = calculateAge(birthDate) / 10;
             if (decade < 8) {
-                ageMap.put(decade / 10, ageMap.getOrDefault(decade / 10, 0) + 1);
+                ageMap.put(decade, ageMap.getOrDefault(decade, 0) + 1);
             } else {
                 ageMap.put(8, ageMap.getOrDefault(8, 0) + 1);
             }
