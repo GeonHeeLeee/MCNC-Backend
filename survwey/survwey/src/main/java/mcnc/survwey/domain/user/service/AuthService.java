@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static mcnc.survwey.global.config.AuthInterceptor.LOGIN_USER;
 
@@ -57,6 +59,21 @@ public class AuthService {
                 .gender(authDTO.getGender())
                 .build()
         );
+    }
+
+    /**
+     * id, email 중복 검증
+     * @param userId
+     * @param email
+     * @return
+     */
+    public Map<String, Boolean> duplicatedUserNameAndEmail(String userId, String email){
+        Map<String, Boolean> map = new HashMap<>();
+
+        map.put("id", userRepository.existsById(userId));
+        map.put("email", userRepository.existsByEmail(email));
+
+        return map;
     }
 
     /**
