@@ -10,6 +10,7 @@ import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -42,4 +43,10 @@ public class SurveyService {
         return surveyRepository.findByUser_UserId(userId);
     }
 
+    public void checkSurveyExpiration(LocalDateTime expireDate) {
+        if (expireDate.isBefore(LocalDateTime.now())
+                || expireDate.isEqual(LocalDateTime.now())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRED_SURVEY);
+        }
+    }
 }

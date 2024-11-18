@@ -1,7 +1,7 @@
 package mcnc.survwey.domain.selection.service;
 
 import lombok.RequiredArgsConstructor;
-import mcnc.survwey.domain.survey.common.dto.SelectionDTO;
+import mcnc.survwey.domain.selection.dto.SelectionDTO;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.SelectionId;

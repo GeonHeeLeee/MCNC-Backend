@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,12 +80,13 @@ public class AuthController {
     /**
      * 프로필 수정 로직
      * 사용자 이름, 생일, 성별 변경
+     *
      * @param modifyDTO
      * @return
      */
     @PostMapping("/modify/profile")
     @Operation(summary = "프로필 수정", description = "name, birth, gender(M or F) (사용자 프로필 뭐 수정할지 말해주셈) <br>"
-                                        + "name, birth, gender에서 빈 값으로 들어오면 기존 사용자 정보 재사용" )
+            + "name, birth, gender에서 빈 값으로 들어오면 기존 사용자 정보 재사용")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공")
     })
@@ -97,6 +99,7 @@ public class AuthController {
     /**
      * 사용자 비밀번호 변경 로직
      * 해당 사용자의 ID를 조회 후 변경
+     *
      * @param changePasswordDTO
      * @return
      */
@@ -115,6 +118,7 @@ public class AuthController {
     /**
      * 사용자 로그인
      * 로그인 성공시 세션으로 저장
+     *
      * @param loginDTO
      * @param request
      * @return
@@ -124,18 +128,28 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = """
-                잘못된 요청:
-                - userId가 맞지 않을 때: "해당 아이디의 사용자가 존재하지 않습니다."
-                - password가 맞지 않을 때: "비밀번호가 일치하지 않습니다."
-                """)
+                    잘못된 요청:
+                    - userId가 맞지 않을 때: "해당 아이디의 사용자가 존재하지 않습니다."
+                    - password가 맞지 않을 때: "비밀번호가 일치하지 않습니다."
+                    """)
     })
-
     public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginDTO loginDTO, HttpServletRequest request) {
         boolean loginResult = authService.loginAndCreateSession(loginDTO, request);
         if (loginResult) {
             return ResponseEntity.ok(Collections.singletonMap("userId", loginDTO.getUserId()));
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "사용자 로그아웃", description = "요청 Body 없이 요청<br>세션이 유효하면 세션 값 파기, 세션이 없거나 유효하지 않으면 401 응답")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "message : 로그아웃 성공" )
+    })
+    public ResponseEntity<Map<String, String>> logoutUser(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.invalidate();
+        return ResponseEntity.ok().body(Map.of("message", "로그아웃 성공"));
     }
 
 }

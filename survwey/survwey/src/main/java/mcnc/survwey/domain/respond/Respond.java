@@ -43,10 +43,9 @@ public class Respond {
         }
     }
 
-    public static Respond create(User user, Survey survey) {
-        return Respond.builder()
-                .user(user)
-                .survey(survey)
-                .build();
+    public Respond(User user, Survey survey) {
+        this.user = user;
+        this.survey = survey;
     }
+
 }

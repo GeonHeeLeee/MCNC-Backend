@@ -1,4 +1,4 @@
-package mcnc.survwey.domain.survey.common.dto;
+package mcnc.survwey.domain.question.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.question.Question;
+import mcnc.survwey.domain.selection.dto.SelectionDTO;
 import mcnc.survwey.domain.survey.common.Survey;
 
 

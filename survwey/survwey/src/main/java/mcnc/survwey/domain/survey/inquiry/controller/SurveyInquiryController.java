@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyInfoDTO;
+import mcnc.survwey.domain.survey.inquiry.dto.SurveyResultDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.inquiry.service.SurveyInquiryService;
@@ -89,6 +90,7 @@ public class SurveyInquiryController {
 
     /**
      * 사용자가 특정 키워드로 설문을 찾기 위해 설문 조회
+     *
      * @param title
      * @param page
      * @param size
@@ -112,6 +114,7 @@ public class SurveyInquiryController {
 
     /**
      * 사용자가 특정 키워드로 참여한 설문 검색
+     *
      * @param title
      * @param page
      * @param size
@@ -131,6 +134,13 @@ public class SurveyInquiryController {
         Page<Survey> surveys = surveyInquiryService.respondedSurveySearch(userId, title, page, size);
         Page<SurveyInfoDTO> surveyInfoDTOS = surveys.map(SurveyInfoDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
-
     }
+
+    @GetMapping("/result/{surveyId}")
+    public ResponseEntity<SurveyResultDTO> inquirySurveyResults(@PathVariable Long surveyId) {
+        SurveyResultDTO surveyResponse = surveyInquiryService.getSurveyResponse(surveyId);
+        return ResponseEntity.ok(surveyResponse);
+    }
+
+
 }

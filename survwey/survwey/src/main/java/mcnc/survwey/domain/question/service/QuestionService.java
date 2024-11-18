@@ -2,7 +2,7 @@ package mcnc.survwey.domain.question.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.survey.common.dto.QuestionDTO;
+import mcnc.survwey.domain.question.dto.QuestionDTO;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.survey.common.Survey;
