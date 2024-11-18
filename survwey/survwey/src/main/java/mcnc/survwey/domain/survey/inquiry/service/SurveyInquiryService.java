@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static mcnc.survwey.domain.enums.QuestionType.*;
-
 
 @Service
 @Slf4j
@@ -74,6 +72,8 @@ public class SurveyInquiryService {
         return surveyRepository.findSurveysUserHasRespondedTo(userId, title, pageable);
     }
 
+
+
     public SurveyResultDTO getSurveyResponse(Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         List<ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId);
@@ -84,13 +84,13 @@ public class SurveyInquiryService {
         Map<Long, QuestionResultDTO> questionMap = new LinkedHashMap<>();
 
         for (ResponseDTO responseDTO : responseDTOList) {
-            addOrUpdateQuestionResult(responseDTO, questionMap, surveyResultDTO);
+            updateQuestionResult(responseDTO, questionMap, surveyResultDTO);
             addResponsesToQuestion(responseDTO, questionMap.get(responseDTO.getQuesId()));
         }
         return surveyResultDTO;
     }
 
-    private static void addOrUpdateQuestionResult(ResponseDTO responseDTO, Map<Long, QuestionResultDTO> questionMap, SurveyResultDTO surveyResultDTO) {
+    private void updateQuestionResult(ResponseDTO responseDTO, Map<Long, QuestionResultDTO> questionMap, SurveyResultDTO surveyResultDTO) {
         Long quesId = responseDTO.getQuesId();
         if (!questionMap.containsKey(quesId)) {
             QuestionResultDTO questionResult = new QuestionResultDTO(responseDTO);
@@ -101,14 +101,21 @@ public class SurveyInquiryService {
 
     private void addResponsesToQuestion(ResponseDTO responseDTO, QuestionResultDTO question) {
         QuestionType questionType = responseDTO.getQuestionType();
-        if (questionType == OBJ_MULTI || questionType == OBJ_SINGLE) {
-            SelectionResultDTO selection = new SelectionResultDTO(responseDTO);
-            if (responseDTO.getIsEtc() && responseDTO.getEtcAnswer() != null) {
-                selection.getEtcAnswer().add(responseDTO.getEtcAnswer());
-            }
-            question.getSelectionList().add(selection);
-        } else if (questionType == SUBJECTIVE) {
-            question.getSubjAnswerList().add(responseDTO.getSubjectiveResponse());
+        switch (questionType) {
+            case OBJ_MULTI:
+            case OBJ_SINGLE:
+                SelectionResultDTO selection = new SelectionResultDTO(responseDTO);
+                if (responseDTO.getIsEtc() && responseDTO.getEtcAnswer() != null) {
+                    selection.getEtcAnswer().add(responseDTO.getEtcAnswer());
+                }
+                question.getSelectionList().add(selection);
+                break;
+            case SUBJECTIVE:
+                question.getSubjAnswerList().add(responseDTO.getSubjectiveResponse());
+                break;
+            default:
+                //TO-DO 예외처리 로직 작성
+                break;
         }
     }
 
