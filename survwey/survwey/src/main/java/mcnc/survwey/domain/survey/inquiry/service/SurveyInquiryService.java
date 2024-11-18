@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.question.dto.QuestionResultDTO;
+import mcnc.survwey.domain.question.dto.ResponseDTO;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
-import mcnc.survwey.domain.selection.SelectionId;
 import mcnc.survwey.domain.selection.dto.SelectionResultDTO;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
@@ -76,43 +76,48 @@ public class SurveyInquiryService {
 
     public SurveyResultDTO getSurveyResponse(Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        List<Object[]> results = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId);
+        List<ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId);
+
         SurveyResultDTO surveyResultDTO = SurveyResultDTO.of(survey);
-        List<GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);
-        List<AgeCountDTO> ageCountDTOList = userService.getAgeGroupCountBySurveyId(surveyId);
-        surveyResultDTO.setAgeCountList(ageCountDTOList);
-        surveyResultDTO.setGenderCountList(genderCountDTOList);
+        setAgeAndGenderCount(surveyId, surveyResultDTO);
+
         Map<Long, QuestionResultDTO> questionMap = new LinkedHashMap<>();
 
-        for (Object[] row : results) {
-            Long quesId = (Long) row[0]; // q.ques_id
-            String questionBody = (String) row[1]; // questionBody
-            QuestionType questionType = valueOf((String) row[2]); // questionType
-            Integer sequence = (Integer) row[3]; // se.sequence
-            Boolean isEtc = (Boolean) row[4]; // se.is_etc
-            String selectionBody = (String) row[5]; // selectionBody
-            Long selectionCount = (Long) row[6]; // selectionCount
-            String subjectiveResponse = (String) row[7]; // sa.response
-            String etcAnswer = (String) row[8]; // ob.etc_answer
-
-            if (!questionMap.containsKey(quesId)) {
-                QuestionResultDTO questionResult = new QuestionResultDTO(quesId, questionBody, questionType);
-                questionMap.put(quesId, questionResult);
-                surveyResultDTO.getQuestionList().add(questionResult);
-            }
-
-            QuestionResultDTO question = questionMap.get(quesId);
-            if (questionType == OBJ_MULTI || questionType == OBJ_SINGLE) {
-                SelectionResultDTO selection = new SelectionResultDTO(sequence, selectionBody, isEtc, selectionCount);
-                if (isEtc != null && isEtc && etcAnswer != null) {
-                    selection.getEtcAnswer().add(etcAnswer);
-                }
-                question.getSelectionList().add(selection);
-            } else if (questionType == SUBJECTIVE) {
-                question.getSubjAnswerList().add(subjectiveResponse);
-            }
+        for (ResponseDTO responseDTO : responseDTOList) {
+            addOrUpdateQuestionResult(responseDTO, questionMap, surveyResultDTO);
+            addResponsesToQuestion(responseDTO, questionMap.get(responseDTO.getQuesId()));
         }
         return surveyResultDTO;
+    }
+
+    private static void addOrUpdateQuestionResult(ResponseDTO responseDTO, Map<Long, QuestionResultDTO> questionMap, SurveyResultDTO surveyResultDTO) {
+        Long quesId = responseDTO.getQuesId();
+        if (!questionMap.containsKey(quesId)) {
+            QuestionResultDTO questionResult = new QuestionResultDTO(responseDTO);
+            questionMap.put(quesId, questionResult);
+            surveyResultDTO.getQuestionList().add(questionResult);
+        }
+    }
+
+    private void addResponsesToQuestion(ResponseDTO responseDTO, QuestionResultDTO question) {
+        QuestionType questionType = responseDTO.getQuestionType();
+        if (questionType == OBJ_MULTI || questionType == OBJ_SINGLE) {
+            SelectionResultDTO selection = new SelectionResultDTO(responseDTO);
+            if (responseDTO.getIsEtc() && responseDTO.getEtcAnswer() != null) {
+                selection.getEtcAnswer().add(responseDTO.getEtcAnswer());
+            }
+            question.getSelectionList().add(selection);
+        } else if (questionType == SUBJECTIVE) {
+            question.getSubjAnswerList().add(responseDTO.getSubjectiveResponse());
+        }
+    }
+
+    private void setAgeAndGenderCount(Long surveyId, SurveyResultDTO surveyResultDTO) {
+        List<GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);
+        List<AgeCountDTO> ageCountDTOList = userService.getAgeGroupCountBySurveyId(surveyId);
+
+        surveyResultDTO.setAgeCountList(ageCountDTOList);
+        surveyResultDTO.setGenderCountList(genderCountDTOList);
     }
 
 }

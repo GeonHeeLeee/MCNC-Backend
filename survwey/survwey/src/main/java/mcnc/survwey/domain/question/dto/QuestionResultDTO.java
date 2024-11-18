@@ -23,10 +23,11 @@ public class QuestionResultDTO {
     private List<SelectionResultDTO> selectionList;
     private List<String> subjAnswerList;
 
-    public QuestionResultDTO(Long quesId, String body, QuestionType questionType) {
-        this.quesId = quesId;
-        this.body = body;
-        this.questionType = questionType;
+
+    public QuestionResultDTO(ResponseDTO responseDTO) {
+        this.quesId = responseDTO.getQuesId();
+        this.body = responseDTO.getQuestionBody();
+        this.questionType = responseDTO.getQuestionType();
         this.selectionList = new ArrayList<>();
         this.subjAnswerList = new ArrayList<>();
     }
