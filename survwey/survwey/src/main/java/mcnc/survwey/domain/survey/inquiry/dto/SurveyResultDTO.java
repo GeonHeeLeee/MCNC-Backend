@@ -8,10 +8,12 @@ import lombok.experimental.SuperBuilder;
 import mcnc.survwey.domain.question.dto.QuestionResultDTO;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
+import mcnc.survwey.domain.user.dto.AgeCountDTO;
+import mcnc.survwey.domain.user.dto.GenderCountDTO;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -19,8 +21,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyResultDTO extends SurveyDTO {
-    List<QuestionResultDTO> questionList;
     private String creatorId;
+    List<GenderCountDTO> genderCountList;
+    List<AgeCountDTO> ageCountList;
+    List<QuestionResultDTO> questionList;
 
     public static SurveyResultDTO of(Survey survey) {
         return SurveyResultDTO.builder()

@@ -14,6 +14,9 @@ import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyResultDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
+import mcnc.survwey.domain.user.dto.AgeCountDTO;
+import mcnc.survwey.domain.user.dto.GenderCountDTO;
+import mcnc.survwey.domain.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +35,7 @@ public class SurveyInquiryService {
     private final SurveyRepository surveyRepository;
     private final QuestionRepository questionRepository;
     private final SurveyService surveyService;
+    private final UserService userService;
 
     public Page<SurveyWithCountDTO> getUserCreatedSurveyList(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -74,7 +78,10 @@ public class SurveyInquiryService {
         Survey survey = surveyService.findBySurveyId(surveyId);
         List<Object[]> results = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId);
         SurveyResultDTO surveyResultDTO = SurveyResultDTO.of(survey);
-
+        List<GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);
+        List<AgeCountDTO> ageCountDTOList = userService.getAgeGroupCountBySurveyId(surveyId);
+        surveyResultDTO.setAgeCountList(ageCountDTOList);
+        surveyResultDTO.setGenderCountList(genderCountDTOList);
         Map<Long, QuestionResultDTO> questionMap = new LinkedHashMap<>();
 
         for (Object[] row : results) {
@@ -96,7 +103,7 @@ public class SurveyInquiryService {
 
             QuestionResultDTO question = questionMap.get(quesId);
             if (questionType == OBJ_MULTI || questionType == OBJ_SINGLE) {
-                SelectionResultDTO selection = new SelectionResultDTO(quesId, sequence, selectionBody, isEtc, selectionCount);
+                SelectionResultDTO selection = new SelectionResultDTO(sequence, selectionBody, isEtc, selectionCount);
                 if (isEtc != null && isEtc && etcAnswer != null) {
                     selection.getEtcAnswer().add(etcAnswer);
                 }

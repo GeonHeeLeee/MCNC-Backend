@@ -15,12 +15,12 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
 
-    @Query("SELECT new mcnc.survwey.domain.user.dto.GenderCountDTO(u.gender, COUNT(*)) " +
+    @Query("SELECT u.gender, COUNT(*) " +
             "FROM User u " +
             "JOIN Respond r ON u.userId = r.user.userId " +
             "WHERE r.survey.surveyId = :surveyId " +
             "GROUP BY u.gender ")
-    List<GenderCountDTO> findGenderCountBySurveyId(Long surveyId);
+    List<Object[]> findGenderCountBySurveyId(Long surveyId);
 
     @Query("SELECT u.birth " +
             "FROM User u " +

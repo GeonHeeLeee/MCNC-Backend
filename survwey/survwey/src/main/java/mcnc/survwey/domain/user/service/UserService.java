@@ -2,7 +2,9 @@ package mcnc.survwey.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.user.User;
+import mcnc.survwey.domain.user.dto.AgeCountDTO;
 import mcnc.survwey.domain.user.dto.GenderCountDTO;
 import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
@@ -12,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -34,31 +34,47 @@ public class UserService {
     }
 
     public List<GenderCountDTO> getGenderCountListBySurveyId(Long surveyId) {
-        return userRepository.findGenderCountBySurveyId(surveyId);
+        List<Object[]> recordList = userRepository.findGenderCountBySurveyId(surveyId);
+        Map<Gender, GenderCountDTO> genderCountDTOMap = new LinkedHashMap<>();
+        genderCountDTOMap.put(Gender.M, new GenderCountDTO(Gender.M.getValue(), 0));
+        genderCountDTOMap.put(Gender.F, new GenderCountDTO(Gender.F.getValue(), 0));
+        for (Object[] record : recordList) {
+            Gender gender = (Gender) record[0];
+            Long count = (Long) record[1];
+            genderCountDTOMap.get(gender).setCount(count);
+        }
+        return genderCountDTOMap.values().stream().toList();
     }
 
-    public Map<String, Integer> getAgeGroupCountBySurveyId(Long surveyId) {
+    public List<AgeCountDTO> getAgeGroupCountBySurveyId(Long surveyId) {
         List<LocalDate> birthList = userRepository.findBirthBySurveyId(surveyId);
+        Map<Integer, Integer> ageMap = groupAgesByDecade(birthList);
+        return mapAgeGroupsToDTO(ageMap);
+    }
 
-        Map<String, Integer> ageMap = initializeAgeMap();
-
+    private Map<Integer, Integer> groupAgesByDecade(List<LocalDate> birthList) {
+        Map<Integer, Integer> ageMap = new LinkedHashMap<>();
         for (LocalDate birthDate : birthList) {
-            int age = calculateAge(birthDate);
-            String ageGroup = getAgeGroup(age);
-            ageMap.computeIfPresent(ageGroup, (key, value) -> value + 1); // 해당 연령대 수 증가
+            int decade = calculateAge(birthDate) / 10;
+            if (decade < 8) {
+                ageMap.put(decade / 10, ageMap.getOrDefault(decade / 10, 0) + 1);
+            } else {
+                ageMap.put(8, ageMap.getOrDefault(8, 0) + 1);
+            }
         }
         return ageMap;
     }
 
 
-    private Map<String, Integer> initializeAgeMap() {
-        Map<String, Integer> ageMap = new HashMap<>();
-        ageMap.put("10대 미만", 0);
-        for (int age = 10; age <= 80; age += 10) {
-            ageMap.put(age + "대", 0);
+    private List<AgeCountDTO> mapAgeGroupsToDTO(Map<Integer, Integer> ageMap) {
+        List<AgeCountDTO> ageCountDTOList = new ArrayList<>();
+        ageCountDTOList.add(new AgeCountDTO("10대 미만", ageMap.getOrDefault(0, 0)));
+        for (int decade = 1; decade <= 7; decade++) {
+            String ageGroup = decade * 10 + "대";
+            ageCountDTOList.add(new AgeCountDTO(ageGroup, ageMap.getOrDefault(decade, 0)));
         }
-        ageMap.put("80세 이상", 0);
-        return ageMap;
+        ageCountDTOList.add(new AgeCountDTO("80세 이상", ageMap.getOrDefault(8, 0)));
+        return ageCountDTOList;
     }
 
 
@@ -68,28 +84,6 @@ public class UserService {
             return Period.between(birthDate, currentDate).getYears();
         } else {
             return 0;  // 생년월일이 없으면 0세로 처리
-        }
-    }
-
-    private String getAgeGroup(int age) {
-        if (age < 10) {
-            return "10대 미만";
-        } else if (age >= 10 && age < 20) {
-            return "10대";
-        } else if (age >= 20 && age < 30) {
-            return "20대";
-        } else if (age >= 30 && age < 40) {
-            return "30대";
-        } else if (age >= 40 && age < 50) {
-            return "40대";
-        } else if (age >= 50 && age < 60) {
-            return "50대";
-        } else if (age >= 60 && age < 70) {
-            return "60대";
-        } else if (age >= 70 && age < 80) {
-            return "70대";
-        } else {
-            return "80세 이상";
         }
     }
 }

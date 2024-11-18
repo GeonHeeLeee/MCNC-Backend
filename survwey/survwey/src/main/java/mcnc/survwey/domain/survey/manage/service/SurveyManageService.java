@@ -71,20 +71,18 @@ public class SurveyManageService {
     public void saveSurveyResponses(SurveyResponseDTO surveyResponseDTO, String userId) {
         User respondedUser = userService.findByUserId(userId);
         Survey respondedSurvey = surveyService.findBySurveyId(surveyResponseDTO.getSurveyId());
-        if (respondedSurvey.getExpireDate().isBefore(LocalDateTime.now())
-                || respondedSurvey.getExpireDate().isEqual(LocalDateTime.now())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRED_SURVEY);
-        }
-        Respond respond = Respond.create(respondedUser, respondedSurvey);
-        respondRepository.save(respond);
+        surveyService.checkSurveyExpiration(respondedSurvey.getExpireDate());
+        respondRepository.save(new Respond(respondedUser, respondedSurvey));
 
         List<ResponseDTO> responseList = surveyResponseDTO.getResponseList();
         List<ObjAnswer> objAnswerList = createObjectiveAnswers(responseList, respondedUser);
         List<SubjAnswer> subjAnswerList = createSubjectiveAnswers(responseList, respondedUser);
+
         subjAnswerRepository.saveAll(subjAnswerList);
         objAnswerRepository.saveAll(objAnswerList);
 
     }
+
 
     private List<SubjAnswer> createSubjectiveAnswers(List<ResponseDTO> responseList, User respondedUser) {
         return responseList.stream()
@@ -108,6 +106,7 @@ public class SurveyManageService {
 
     /**
      * 설문 수정
+     *
      * @param surveyWithDetailDTO
      * @param userId
      * @return
@@ -128,10 +127,10 @@ public class SurveyManageService {
     }
 
     @Transactional
-    public void enforceCloseSurvey(String userId, Long surveyId){
+    public void enforceCloseSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         //해당 설문 찾아서
-        if(!survey.getUser().getUserId().equals(userId)){
+        if (!survey.getUser().getUserId().equals(userId)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_MATCH);
         }//user가 생성한 설문이 아닐 때
         survey.setExpireDate(LocalDateTime.now());
