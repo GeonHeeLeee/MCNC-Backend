@@ -15,10 +15,7 @@ import mcnc.survwey.domain.user.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -67,6 +64,16 @@ public class AuthController {
         HttpSession session = request.getSession();
         session.invalidate();
         return ResponseEntity.ok().body(Map.of("message", "로그아웃 성공"));
+    }
+
+    @GetMapping("/session")
+    @Operation(summary = "세션 체크", description = "세션이 유효한지 체크")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "세션 유효"),
+            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
+    })
+    public ResponseEntity<Object> checkSession() {
+        return ResponseEntity.ok(null);
     }
 
 }
