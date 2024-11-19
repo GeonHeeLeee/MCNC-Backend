@@ -17,9 +17,12 @@ import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
 import mcnc.survwey.domain.user.dto.AgeCountDTO;
 import mcnc.survwey.domain.user.dto.GenderCountDTO;
 import mcnc.survwey.domain.user.service.UserService;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -73,8 +76,9 @@ public class SurveyInquiryService {
     }
 
 
-    public SurveyResultDTO getSurveyResponse(Long surveyId) {
+    public SurveyResultDTO getSurveyResponse(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
+        surveyService.verifyUserMadeSurvey(userId, survey);
         List<ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
                 .stream().map(ResponseDTO::new).toList();
 

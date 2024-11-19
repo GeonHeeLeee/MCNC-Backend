@@ -129,10 +129,8 @@ public class SurveyManageService {
     @Transactional
     public void enforceCloseSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        //해당 설문 찾아서
-        if (!survey.getUser().getUserId().equals(userId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_MATCH);
-        }//user가 생성한 설문이 아닐 때
+        //본인이 만든 설문인지 검증
+        surveyService.verifyUserMadeSurvey(userId, survey);
         survey.setExpireDate(LocalDateTime.now());
         //만료일 현재로 변경
         surveyRepository.save(survey);
