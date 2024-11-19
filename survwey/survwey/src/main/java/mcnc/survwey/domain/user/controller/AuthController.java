@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.user.dto.LoginDTO;
 import mcnc.survwey.domain.user.service.AccountService;
 import mcnc.survwey.domain.user.service.AuthService;
+import mcnc.survwey.global.exception.custom.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -50,7 +51,7 @@ public class AuthController {
         try {
             authService.loginUser(loginDTO, request);
             return ResponseEntity.ok().body(null);
-        } catch (UsernameNotFoundException | BadCredentialsException e) {
+        } catch (CustomException e) {
             return ResponseEntity.badRequest().body(Map.of("errorMessage", "아이디/비밀번호가 일치하지 않습니다."));
         }
     }
