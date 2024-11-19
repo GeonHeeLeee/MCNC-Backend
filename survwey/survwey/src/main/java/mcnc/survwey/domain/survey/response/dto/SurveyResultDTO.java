@@ -1,4 +1,4 @@
-package mcnc.survwey.domain.survey.inquiry.dto;
+package mcnc.survwey.domain.survey.response.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,6 @@ import mcnc.survwey.domain.user.dto.GenderCountDTO;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter

@@ -1,4 +1,4 @@
-package mcnc.survwey.domain.survey.manage.dto;
+package mcnc.survwey.domain.survey.response.dto;
 
 
 import jakarta.validation.constraints.NotNull;

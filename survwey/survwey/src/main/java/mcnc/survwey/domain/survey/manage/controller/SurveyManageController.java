@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.survey.manage.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.manage.service.SurveyManageService;
 import mcnc.survwey.domain.survey.common.Survey;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.Map;
 
 
 
@@ -75,34 +73,7 @@ public class SurveyManageController {
         return ResponseEntity.badRequest().body(Collections.singletonMap("errorMessage", "해당 아이디의 설문이 존재하지 않습니다."));
     }
 
-    /**
-     * 응답 저장
-     * @param surveyResponseDTO
-     * @return
-     */
-    @PostMapping("/response")
-    @Operation(summary = "설문 응답", description = "SUBJECTIVE인 경우, SelectionId는 주지 않고, response에 응답을 담아서 주면 됨<br>" +
-            "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "설문 응답 성공"),
-            @ApiResponse(responseCode = "400", description = """
-                잘못된 요청:
-                - 해당 아이디의 사용자가 존재하지 않습니다.
-                - 해당 아이디의 설문이 존재하지 않습니다.
-                - 해당 설문은 종료된 설문입니다.
-                - try catch 쓰면 응답 저장에 실패했습니다.
-                """),
-            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
-    })
-    public ResponseEntity<Object> responseSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
-        try {
-            String userId = SessionContext.getCurrentUser();
-            surveyManageService.saveSurveyResponses(surveyResponseDTO, userId);
-            return ResponseEntity.ok(null);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("errorMessage", "응답 저장에 실패했습니다."));
-        }
-    }
+
 
     /**
      * 사용자가 자신이 만든 설문을 수정을 위해 삭제 후 생성
@@ -110,7 +81,6 @@ public class SurveyManageController {
      * @param surveyWithDetailDTO
      * @return
      */
-
     @PostMapping("/modify")
     @Operation(summary = "설문 수정", description = "해당 설문에 1명이라도 응답한 사람이 존재하면 설문 수정 불가, 설문 수정 페이지에서 수정한 내용들을 바탕으로 기존 설문 삭제 후 새롭게 생성")
     @ApiResponses({
@@ -136,7 +106,7 @@ public class SurveyManageController {
      * @param surveyId
      * @return
      */
-    @PostMapping("/expired/{surveyId}")
+    @PatchMapping("/expire/{surveyId}")
     @Operation(summary = "설문 강제 종료", description = "해당 설문의 생성자가 강제 종료를 원할경우 만료일을 현재 시간으로 변경하여 강제 종료")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = """

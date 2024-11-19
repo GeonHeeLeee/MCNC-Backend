@@ -131,8 +131,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청:
-                    - userId가 맞지 않을 때: "해당 아이디의 사용자가 존재하지 않습니다."
-                    - password가 맞지 않을 때: "비밀번호가 일치하지 않습니다."
+                    - userId 또는 password 불일치 - errorMessage : 아이디/비밀번호가 일치하지 않습니다."
                     """)
     })
     public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginDTO loginDTO, HttpServletRequest request) {

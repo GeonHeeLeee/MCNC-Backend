@@ -1,8 +1,6 @@
 package mcnc.survwey.domain.survey.inquiry.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,18 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.inquiry.dto.SurveyInfoDTO;
-import mcnc.survwey.domain.survey.inquiry.dto.SurveyResultDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.inquiry.service.SurveyInquiryService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
 
 
 @Slf4j
@@ -108,7 +101,7 @@ public class SurveyInquiryController {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.surveySearch(userId, title, page, size);
-        Page<SurveyInfoDTO> surveyDTOs = surveys.map(SurveyInfoDTO::of);
+        Page<SurveyDTO> surveyDTOs = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyDTOs);
     }
 
@@ -132,25 +125,9 @@ public class SurveyInquiryController {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.respondedSurveySearch(userId, title, page, size);
-        Page<SurveyInfoDTO> surveyInfoDTOS = surveys.map(SurveyInfoDTO::of);
+        Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
     }
 
-    /**
-     * 설문 결과(통계) 조회
-     * @param surveyId
-     * @return
-     */
-    @GetMapping("/result/{surveyId}")
-    @Operation(summary = "본인이 생성한 설문 결과 조회", description = "PathVariable로 설문 아이디를 넣어 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "400", description = "errorMessage : 해당 아이디의 설문이 존재하지 않습니다."),
-            @ApiResponse(responseCode = "401", description = "errorMessage : 본인이 생성한 설문이 아닙니다.")
-    })
-    public ResponseEntity<SurveyResultDTO> inquirySurveyResults(@PathVariable Long surveyId) {
-        String userId = SessionContext.getCurrentUser();
-        SurveyResultDTO surveyResponse = surveyInquiryService.getSurveyResponse(surveyId, userId);
-        return ResponseEntity.ok(surveyResponse);
-    }
 
 }

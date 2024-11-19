@@ -5,24 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
-import mcnc.survwey.domain.respond.dto.ResponseDTO;
-import mcnc.survwey.domain.survey.manage.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
-import mcnc.survwey.domain.enums.QuestionType;
-import mcnc.survwey.domain.objAnswer.ObjAnswer;
-import mcnc.survwey.domain.objAnswer.repository.ObjAnswerRepository;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.service.QuestionService;
-import mcnc.survwey.domain.respond.Respond;
-import mcnc.survwey.domain.respond.repository.RespondRepository;
-import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.service.SelectionService;
-import mcnc.survwey.domain.subjAnswer.SubjAnswer;
-import mcnc.survwey.domain.subjAnswer.repository.SubjAnswerRepository;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
@@ -30,9 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -45,9 +32,6 @@ public class SurveyManageService {
     private final SelectionService selectionService;
     private final UserService userService;
     private final RespondService respondService;
-    private final RespondRepository respondRepository;
-    private final ObjAnswerRepository objAnswerRepository;
-    private final SubjAnswerRepository subjAnswerRepository;
     private final SurveyRepository surveyRepository;
 
 
@@ -67,42 +51,6 @@ public class SurveyManageService {
         return surveyService.deleteSurveyById(surveyId);
     }
 
-    @Transactional
-    public void saveSurveyResponses(SurveyResponseDTO surveyResponseDTO, String userId) {
-        User respondedUser = userService.findByUserId(userId);
-        Survey respondedSurvey = surveyService.findBySurveyId(surveyResponseDTO.getSurveyId());
-        surveyService.checkSurveyExpiration(respondedSurvey.getExpireDate());
-        respondRepository.save(new Respond(respondedUser, respondedSurvey));
-
-        List<ResponseDTO> responseList = surveyResponseDTO.getResponseList();
-        List<ObjAnswer> objAnswerList = createObjectiveAnswers(responseList, respondedUser);
-        List<SubjAnswer> subjAnswerList = createSubjectiveAnswers(responseList, respondedUser);
-
-        subjAnswerRepository.saveAll(subjAnswerList);
-        objAnswerRepository.saveAll(objAnswerList);
-
-    }
-
-
-    private List<SubjAnswer> createSubjectiveAnswers(List<ResponseDTO> responseList, User respondedUser) {
-        return responseList.stream()
-                .filter(responseDTO -> responseDTO.getQuestionType() == QuestionType.SUBJECTIVE)
-                .map(responseDTO -> {
-                    Question question = questionService.findByQuesId(responseDTO.getQuesId());
-                    return SubjAnswer.create(respondedUser, responseDTO.getResponse(), question);
-                })
-                .collect(Collectors.toList());
-    }
-
-    private List<ObjAnswer> createObjectiveAnswers(List<ResponseDTO> responseList, User respondedUser) {
-        return responseList.stream()
-                .filter(responseDTO -> responseDTO.getQuestionType() == QuestionType.OBJ_MULTI || responseDTO.getQuestionType() == QuestionType.OBJ_SINGLE)
-                .map(responseDTO -> {
-                    Selection selection = selectionService.findBySelectionId(responseDTO.getSelectionId());
-                    return ObjAnswer.create(respondedUser, responseDTO.getResponse(), selection);
-                })
-                .collect(Collectors.toList());
-    }
 
     /**
      * 설문 수정
