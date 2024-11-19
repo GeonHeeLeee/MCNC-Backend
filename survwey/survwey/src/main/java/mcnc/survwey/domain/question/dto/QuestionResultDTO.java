@@ -24,10 +24,10 @@ public class QuestionResultDTO {
     private List<String> subjAnswerList;
 
 
-    public QuestionResultDTO(ResponseDTO responseDTO) {
-        this.quesId = responseDTO.getQuesId();
-        this.body = responseDTO.getQuestionBody();
-        this.questionType = responseDTO.getQuestionType();
+    public QuestionResultDTO(SurveyResultMapper surveyResultMapper) {
+        this.quesId = surveyResultMapper.getQuesId();
+        this.body = surveyResultMapper.getQuestionBody();
+        this.questionType = surveyResultMapper.getQuestionType();
         this.selectionList = new ArrayList<>();
         this.subjAnswerList = new ArrayList<>();
     }

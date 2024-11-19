@@ -6,7 +6,7 @@ import mcnc.survwey.domain.user.dto.ModifyDTO;
 import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.repository.UserRepository;
-import mcnc.survwey.domain.user.service.AuthService;
+import mcnc.survwey.domain.user.service.AccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class AuthServiceTest {
+class AccountServiceTest {
 
     @Autowired
-    private AuthService authService;
+    private AccountService accountService;
 
     @Autowired
     private UserRepository userRepository;
@@ -42,7 +42,7 @@ class AuthServiceTest {
         authDTO.setBirth(LocalDate.now());
         authDTO.setGender(Gender.M);
 
-        authService.registerUser(authDTO);
+        accountService.registerUser(authDTO);
         User user = userRepository.findById(authDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -63,7 +63,7 @@ class AuthServiceTest {
         modifyDTO.setBirth(LocalDate.now());
         modifyDTO.setGender(Gender.M);
 
-        authService.modifyUser(modifyDTO);
+        accountService.modifyUser(modifyDTO);
 
         User user = userRepository.findById(modifyDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("User가 존재하지 않습니다."));
@@ -91,7 +91,7 @@ class AuthServiceTest {
         changePasswordDTO.setEmail("asd@asdasd.com12");
         changePasswordDTO.setPassword("qwerqwer1234@");
 
-        authService.changePassword(changePasswordDTO);
+        accountService.changePassword(changePasswordDTO);
 
         User findUser = userRepository.findById(user.getEmail())
                 .orElseThrow(() ->

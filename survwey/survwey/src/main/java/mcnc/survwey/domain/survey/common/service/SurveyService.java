@@ -49,4 +49,10 @@ public class SurveyService {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRED_SURVEY);
         }
     }
+
+    public void verifyUserMadeSurvey(String userId, Survey survey) {
+        if (!survey.getUser().getUserId().equals(userId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_CREATOR_NOT_MATCH);
+        }
+    }
 }

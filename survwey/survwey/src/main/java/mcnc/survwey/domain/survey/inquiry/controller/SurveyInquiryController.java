@@ -1,8 +1,6 @@
 package mcnc.survwey.domain.survey.inquiry.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,18 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.inquiry.dto.SurveyInfoDTO;
-import mcnc.survwey.domain.survey.inquiry.dto.SurveyResultDTO;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.inquiry.service.SurveyInquiryService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
 
 
 @Slf4j
@@ -108,7 +101,7 @@ public class SurveyInquiryController {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.surveySearch(userId, title, page, size);
-        Page<SurveyInfoDTO> surveyDTOs = surveys.map(SurveyInfoDTO::of);
+        Page<SurveyDTO> surveyDTOs = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyDTOs);
     }
 
@@ -132,14 +125,8 @@ public class SurveyInquiryController {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.respondedSurveySearch(userId, title, page, size);
-        Page<SurveyInfoDTO> surveyInfoDTOS = surveys.map(SurveyInfoDTO::of);
+        Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
-    }
-
-    @GetMapping("/result/{surveyId}")
-    public ResponseEntity<SurveyResultDTO> inquirySurveyResults(@PathVariable Long surveyId) {
-        SurveyResultDTO surveyResponse = surveyInquiryService.getSurveyResponse(surveyId);
-        return ResponseEntity.ok(surveyResponse);
     }
 
 
