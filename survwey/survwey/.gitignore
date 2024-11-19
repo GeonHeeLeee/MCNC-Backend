@@ -39,3 +39,6 @@ out/
 
 ### dotenv Ignore ###
 .env
+
+.idea/
+../.idea

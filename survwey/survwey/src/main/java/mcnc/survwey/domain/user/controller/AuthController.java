@@ -16,7 +16,9 @@ import mcnc.survwey.domain.user.dto.ModifyDTO;
 import mcnc.survwey.domain.user.service.AuthService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -134,17 +136,18 @@ public class AuthController {
                     """)
     })
     public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginDTO loginDTO, HttpServletRequest request) {
-        boolean loginResult = authService.loginAndCreateSession(loginDTO, request);
-        if (loginResult) {
-            return ResponseEntity.ok(Collections.singletonMap("userId", loginDTO.getUserId()));
+        try {
+            authService.loginAndCreateSession(loginDTO, request);
+            return ResponseEntity.badRequest().body(null);
+        } catch (UsernameNotFoundException | BadCredentialsException e) {
+            return ResponseEntity.badRequest().body(Map.of("errorMessage", "아이디/비밀번호가 일치하지 않습니다."));
         }
-        return ResponseEntity.badRequest().body(null);
     }
 
     @PostMapping("/logout")
     @Operation(summary = "사용자 로그아웃", description = "요청 Body 없이 요청<br>세션이 유효하면 세션 값 파기, 세션이 없거나 유효하지 않으면 401 응답")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "message : 로그아웃 성공" )
+            @ApiResponse(responseCode = "200", description = "message : 로그아웃 성공")
     })
     public ResponseEntity<Map<String, String>> logoutUser(HttpServletRequest request) {
         HttpSession session = request.getSession();

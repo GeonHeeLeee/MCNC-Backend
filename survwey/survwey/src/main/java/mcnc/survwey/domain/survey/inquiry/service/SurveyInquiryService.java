@@ -73,7 +73,6 @@ public class SurveyInquiryService {
     }
 
 
-
     public SurveyResultDTO getSurveyResponse(Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         List<ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
@@ -112,7 +111,9 @@ public class SurveyInquiryService {
                 question.getSelectionList().add(selection);
                 break;
             case SUBJECTIVE:
-                question.getSubjAnswerList().add(responseDTO.getSubjectiveResponse());
+                if (responseDTO.getSubjectiveResponse() != null) {
+                    question.getSubjAnswerList().add(responseDTO.getSubjectiveResponse());
+                }
                 break;
             default:
                 //TO-DO 예외처리 로직 작성

@@ -13,6 +13,8 @@ import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static mcnc.survwey.global.config.AuthInterceptor.LOGIN_USER;
 
@@ -118,14 +121,15 @@ public class AuthService {
     }
 
 
-    public boolean loginAndCreateSession(LoginDTO loginDTO, HttpServletRequest request) {
-        User foundUser = userService.findByUserId(loginDTO.getUserId());
-        if (passwordEncoder.matches(loginDTO.getPassword(), foundUser.getPassword())) {
-            HttpSession session = request.getSession();
-            session.setAttribute(LOGIN_USER, loginDTO.getUserId());
-            return true;
-        } else {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PASSWORD);
+    public void loginAndCreateSession(LoginDTO loginDTO, HttpServletRequest request) {
+        User foundUser = Optional.ofNullable(userService.findByUserId(loginDTO.getUserId()))
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 사용자입니다."));
+
+        if (!passwordEncoder.matches(loginDTO.getPassword(), foundUser.getPassword())) {
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
+
+        HttpSession session = request.getSession();
+        session.setAttribute(LOGIN_USER, loginDTO.getUserId());
     }
 }
