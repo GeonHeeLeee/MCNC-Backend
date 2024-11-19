@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ObjAnswerService {
-    private final ObjAnswerRepository objAnswerRepository;
+
     private final SelectionService selectionService;
 
 

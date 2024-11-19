@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SubjAnswerService {
-    private final SubjAnswerRepository subjAnswerRepository;
+
     private final QuestionService questionService;
 
     public List<SubjAnswer> createSubjectiveAnswers(List<ResponseDTO> responseList, User respondedUser) {
