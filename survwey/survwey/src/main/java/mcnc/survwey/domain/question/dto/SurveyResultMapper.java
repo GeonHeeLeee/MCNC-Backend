@@ -13,7 +13,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseDTO {
+public class SurveyResultMapper {
     private Long quesId;
     private String questionBody;
     private QuestionType questionType;
@@ -24,7 +24,7 @@ public class ResponseDTO {
     private String subjectiveResponse;
     private String etcAnswer;
 
-    public ResponseDTO(Map<String, Object> map) {
+    public SurveyResultMapper(Map<String, Object> map) {
         this.quesId = (Long) map.get("ques_id");
         this.questionBody = (String) map.get("question_body");
         this.questionType = QuestionType.valueOf(map.get("question_type").toString());

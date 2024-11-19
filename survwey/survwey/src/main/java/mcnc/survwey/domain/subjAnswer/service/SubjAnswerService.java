@@ -6,7 +6,6 @@ import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.service.QuestionService;
 import mcnc.survwey.domain.respond.dto.ResponseDTO;
 import mcnc.survwey.domain.subjAnswer.SubjAnswer;
-import mcnc.survwey.domain.subjAnswer.repository.SubjAnswerRepository;
 import mcnc.survwey.domain.user.User;
 import org.springframework.stereotype.Service;
 

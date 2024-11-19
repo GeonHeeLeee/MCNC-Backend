@@ -38,18 +38,14 @@ public class SurveyResponseController {
                 - 해당 아이디의 사용자가 존재하지 않습니다.
                 - 해당 아이디의 설문이 존재하지 않습니다.
                 - 해당 설문은 종료된 설문입니다.
-                - try catch 쓰면 응답 저장에 실패했습니다.
+                - 해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다.(다른 설문의 QuesId를 요청하거나 설문의 모든 질문에 답하지 않았을때)
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<Object> responseToSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
-        try {
-            String userId = SessionContext.getCurrentUser();
-            surveyResponseService.saveSurveyResponses(surveyResponseDTO, userId);
-            return ResponseEntity.ok(null);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("errorMessage", "응답 저장에 실패했습니다."));
-        }
+        String userId = SessionContext.getCurrentUser();
+        surveyResponseService.saveSurveyResponse(surveyResponseDTO, userId);
+        return ResponseEntity.ok(null);
     }
 
 
@@ -66,7 +62,7 @@ public class SurveyResponseController {
     })
     public ResponseEntity<SurveyResultDTO> inquirySurveyResults(@PathVariable Long surveyId) {
         String userId = SessionContext.getCurrentUser();
-        SurveyResultDTO surveyResponse = surveyResponseService.getSurveyResponse(surveyId, userId);
+        SurveyResultDTO surveyResponse = surveyResponseService.getSurveyResponsesResult(surveyId, userId);
         return ResponseEntity.ok(surveyResponse);
     }
 

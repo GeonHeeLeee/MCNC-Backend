@@ -3,7 +3,6 @@ package mcnc.survwey.domain.objAnswer.service;
 import lombok.RequiredArgsConstructor;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.objAnswer.ObjAnswer;
-import mcnc.survwey.domain.objAnswer.repository.ObjAnswerRepository;
 import mcnc.survwey.domain.respond.dto.ResponseDTO;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.service.SelectionService;

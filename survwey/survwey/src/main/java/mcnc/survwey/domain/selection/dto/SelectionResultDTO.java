@@ -1,7 +1,7 @@
 package mcnc.survwey.domain.selection.dto;
 
 import lombok.*;
-import mcnc.survwey.domain.question.dto.ResponseDTO;
+import mcnc.survwey.domain.question.dto.SurveyResultMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +18,11 @@ public class SelectionResultDTO {
     private int responseCount;
     private List<String> etcAnswer;
 
-    public SelectionResultDTO(ResponseDTO responseDTO) {
-        this.sequence = responseDTO.getSequence();
-        this.body = responseDTO.getSelectionBody();
-        this.isEtc = responseDTO.getIsEtc();
-        this.responseCount = responseDTO.getResponseCount().intValue();
+    public SelectionResultDTO(SurveyResultMapper surveyResultMapper) {
+        this.sequence = surveyResultMapper.getSequence();
+        this.body = surveyResultMapper.getSelectionBody();
+        this.isEtc = surveyResultMapper.getIsEtc();
+        this.responseCount = surveyResultMapper.getResponseCount().intValue();
         this.etcAnswer = new ArrayList<>();
     }
 }

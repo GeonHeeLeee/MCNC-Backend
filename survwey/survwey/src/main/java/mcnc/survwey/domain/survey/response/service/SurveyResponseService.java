@@ -7,7 +7,9 @@ import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.objAnswer.repository.ObjAnswerRepository;
 import mcnc.survwey.domain.objAnswer.service.ObjAnswerService;
+import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.dto.QuestionResultDTO;
+import mcnc.survwey.domain.question.dto.SurveyResultMapper;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.respond.dto.ResponseDTO;
@@ -24,11 +26,16 @@ import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.dto.AgeCountDTO;
 import mcnc.survwey.domain.user.dto.GenderCountDTO;
 import mcnc.survwey.domain.user.service.UserService;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,62 +53,77 @@ public class SurveyResponseService {
 
 
     @Transactional
-    public void saveSurveyResponses(SurveyResponseDTO surveyResponseDTO, String userId) {
+    public void saveSurveyResponse(SurveyResponseDTO surveyResponseDTO, String userId) {
         User respondedUser = userService.findByUserId(userId);
         Survey respondedSurvey = surveyService.findBySurveyId(surveyResponseDTO.getSurveyId());
+
+        isQuestionInputMatchToSurvey(surveyResponseDTO, respondedSurvey);
         surveyService.checkSurveyExpiration(respondedSurvey.getExpireDate());
-        respondRepository.save(new Respond(respondedUser, respondedSurvey));
 
         List<ResponseDTO> responseList = surveyResponseDTO.getResponseList();
         List<ObjAnswer> objAnswerList = objAnswerService.createObjectiveAnswers(responseList, respondedUser);
         List<SubjAnswer> subjAnswerList = subjAnswerService.createSubjectiveAnswers(responseList, respondedUser);
 
+        respondRepository.save(new Respond(respondedUser, respondedSurvey));
         subjAnswerRepository.saveAll(subjAnswerList);
         objAnswerRepository.saveAll(objAnswerList);
     }
 
+    private void isQuestionInputMatchToSurvey(SurveyResponseDTO surveyResponseDTO, Survey respondedSurvey) {
+        Set<Long> inputQuestionSet = respondedSurvey.getQuestionList()
+                .stream().map(Question::getQuesId).collect(Collectors.toSet());
 
-    public SurveyResultDTO getSurveyResponse(Long surveyId, String userId) {
+        Set<Long> existingQuestionSet = surveyResponseDTO.getResponseList()
+                .stream().map(ResponseDTO::getQuesId).collect(Collectors.toSet());
+
+        if(!inputQuestionSet.equals(existingQuestionSet)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.QUESTION_NOT_MATCH_TO_SURVEY);
+        }
+    }
+
+
+    public SurveyResultDTO getSurveyResponsesResult(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.verifyUserMadeSurvey(userId, survey);
-        List<mcnc.survwey.domain.question.dto.ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
-                .stream().map(mcnc.survwey.domain.question.dto.ResponseDTO::new).toList();
+
+        List<SurveyResultMapper> surveyResultMapperList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
+                .stream().map(SurveyResultMapper::new).toList();
 
         SurveyResultDTO surveyResultDTO = SurveyResultDTO.of(survey);
         setAgeAndGenderCount(surveyId, surveyResultDTO);
 
         Map<Long, QuestionResultDTO> questionMap = new LinkedHashMap<>();
 
-        for (mcnc.survwey.domain.question.dto.ResponseDTO responseDTO : responseDTOList) {
-            updateQuestionResult(responseDTO, questionMap, surveyResultDTO);
-            addResponsesToQuestion(responseDTO, questionMap.get(responseDTO.getQuesId()));
+        for (SurveyResultMapper surveyResultMapper : surveyResultMapperList) {
+            updateQuestionResult(surveyResultMapper, questionMap, surveyResultDTO);
+            addResponsesToQuestion(surveyResultMapper, questionMap.get(surveyResultMapper.getQuesId()));
         }
         return surveyResultDTO;
     }
 
-    private void updateQuestionResult(mcnc.survwey.domain.question.dto.ResponseDTO responseDTO, Map<Long, QuestionResultDTO> questionMap, SurveyResultDTO surveyResultDTO) {
-        Long quesId = responseDTO.getQuesId();
+    private void updateQuestionResult(SurveyResultMapper surveyResultMapper, Map<Long, QuestionResultDTO> questionMap, SurveyResultDTO surveyResultDTO) {
+        Long quesId = surveyResultMapper.getQuesId();
         if (!questionMap.containsKey(quesId)) {
-            QuestionResultDTO questionResult = new QuestionResultDTO(responseDTO);
+            QuestionResultDTO questionResult = new QuestionResultDTO(surveyResultMapper);
             questionMap.put(quesId, questionResult);
             surveyResultDTO.getQuestionList().add(questionResult);
         }
     }
 
-    private void addResponsesToQuestion(mcnc.survwey.domain.question.dto.ResponseDTO responseDTO, QuestionResultDTO question) {
-        QuestionType questionType = responseDTO.getQuestionType();
+    private void addResponsesToQuestion(SurveyResultMapper surveyResultMapper, QuestionResultDTO question) {
+        QuestionType questionType = surveyResultMapper.getQuestionType();
         switch (questionType) {
             case OBJ_MULTI:
             case OBJ_SINGLE:
-                SelectionResultDTO selection = new SelectionResultDTO(responseDTO);
-                if (responseDTO.getIsEtc() && responseDTO.getEtcAnswer() != null) {
-                    selection.getEtcAnswer().add(responseDTO.getEtcAnswer());
+                SelectionResultDTO selection = new SelectionResultDTO(surveyResultMapper);
+                if (surveyResultMapper.getIsEtc() && surveyResultMapper.getEtcAnswer() != null) {
+                    selection.getEtcAnswer().add(surveyResultMapper.getEtcAnswer());
                 }
                 question.getSelectionList().add(selection);
                 break;
             case SUBJECTIVE:
-                if (responseDTO.getSubjectiveResponse() != null) {
-                    question.getSubjAnswerList().add(responseDTO.getSubjectiveResponse());
+                if (surveyResultMapper.getSubjectiveResponse() != null) {
+                    question.getSubjAnswerList().add(surveyResultMapper.getSubjectiveResponse());
                 }
                 break;
             default:

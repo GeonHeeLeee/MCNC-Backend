@@ -52,7 +52,7 @@ public class AuthController {
     public ResponseEntity<Object> loginUser(@RequestBody @Valid LoginDTO loginDTO, HttpServletRequest request) {
         try {
             authService.loginUser(loginDTO, request);
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.ok().body(null);
         } catch (UsernameNotFoundException | BadCredentialsException e) {
             return ResponseEntity.badRequest().body(Map.of("errorMessage", "아이디/비밀번호가 일치하지 않습니다."));
         }

@@ -16,7 +16,8 @@ public enum ErrorCode {
     RESPOND_ALREADY_EXISTS("해당 설문에 답한 사용자가 이미 존재합니다."),
     EXPIRED_SURVEY("해당 설문은 종료된 설문입니다."),
     SURVEY_NOT_FOUND("해당 설문이 존재하지 않습니다."),
-    SURVEY_CREATOR_NOT_MATCH("본인이 생성한 설문이 아닙니다.");
+    SURVEY_CREATOR_NOT_MATCH("본인이 생성한 설문이 아닙니다."),
+    QUESTION_NOT_MATCH_TO_SURVEY("해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다.");
     private final String errorMessage;
 
     ErrorCode(String errorMessage) {
