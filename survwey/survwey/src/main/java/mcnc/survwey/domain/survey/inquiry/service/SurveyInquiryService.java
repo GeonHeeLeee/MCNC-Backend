@@ -76,7 +76,8 @@ public class SurveyInquiryService {
 
     public SurveyResultDTO getSurveyResponse(Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        List<ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId);
+        List<ResponseDTO> responseDTOList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
+                .stream().map(ResponseDTO::new).toList();
 
         SurveyResultDTO surveyResultDTO = SurveyResultDTO.of(survey);
         setAgeAndGenderCount(surveyId, surveyResultDTO);
