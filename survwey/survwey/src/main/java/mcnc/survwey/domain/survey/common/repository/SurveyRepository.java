@@ -2,6 +2,7 @@ package mcnc.survwey.domain.survey.common.repository;
 
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
 import mcnc.survwey.domain.survey.common.Survey;
+import mcnc.survwey.domain.survey.common.repository.queryDSL.SurveyRepositoryCustom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,41 +14,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SurveyRepository extends JpaRepository<Survey, Long> {
+public interface SurveyRepository extends JpaRepository<Survey, Long>, SurveyRepositoryCustom {
     List<Survey> findByUser_UserId(String userId);
 
     Page<Survey> findByUser_UserIdAndTitleContainingIgnoreCase(String userId, String title, Pageable pageable);
-
-    @Query(value = "SELECT s.survey_id, s.title, s.description, s.create_date, s.expire_date, " +
-            "COALESCE(r.respond_count, 0) AS respond_count " +
-            "FROM survey s " +
-            "LEFT JOIN (SELECT survey_id, COUNT(*) AS respond_count " +
-            "           FROM respond " +
-            "           GROUP BY survey_id) r ON s.survey_id = r.survey_id " +
-            "WHERE s.user_id = :userId " +
-            "ORDER BY " +
-            "   CASE " +
-            "       WHEN s.expire_date > NOW() THEN 0 " +
-            "       ELSE 1 " +
-            "   END," +
-            "   ABS(TIMESTAMPDIFF(SECOND, NOW(), s.expire_date)) ASC", nativeQuery = true)
-    Page<Object[]> findSurveyListWithRespondCountByUserId(@Param("userId") String userId, Pageable pageable);
-
-    @Query(value = "SELECT new mcnc.survwey.domain.survey.common.dto.SurveyDTO(s.surveyId, s.title, s.description, s.createDate, s.expireDate) " +
-            "FROM Survey s " +
-            "JOIN Respond r ON s = r.survey " +
-            "WHERE r.user.userId = :userId " +
-            "ORDER BY r.respondDate DESC")
-    Page<SurveyDTO> findRespondedSurveyByUserId(@Param("userId") String userId, Pageable pageable);
-
-
-    @Query("SELECT DISTINCT s " +
-            "FROM Survey s " +
-            "LEFT JOIN FETCH Question q ON s = q.survey " +
-            "LEFT JOIN FETCH Selection se ON q = se.question " +
-            "WHERE s.surveyId = :surveyId")
-    Survey getSurveyWithDetail(@Param("surveyId") Long surveyId);
-
 
     @Query("SELECT s FROM Survey s JOIN s.respondList r WHERE r.user.userId = :userId AND s.title LIKE %:title%")
     Page<Survey> findSurveysUserHasRespondedTo(@Param("userId") String userId, @Param("title") String title, Pageable pageable);
