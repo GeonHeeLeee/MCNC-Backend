@@ -2,6 +2,7 @@ package mcnc.survwey.domain.survey.common.repository;
 
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
 import mcnc.survwey.domain.survey.common.Survey;
+import mcnc.survwey.domain.survey.common.repository.queryDSL.SurveyRepositoryCustom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SurveyRepository extends JpaRepository<Survey, Long> {
+public interface SurveyRepository extends JpaRepository<Survey, Long>, SurveyRepositoryCustom {
     List<Survey> findByUser_UserId(String userId);
 
     Page<Survey> findByUser_UserIdAndTitleContainingIgnoreCase(String userId, String title, Pageable pageable);
