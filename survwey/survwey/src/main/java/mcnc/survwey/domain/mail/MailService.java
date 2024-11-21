@@ -9,6 +9,7 @@ import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 @RequiredArgsConstructor
 public class MailService {
-
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
@@ -44,15 +44,13 @@ public class MailService {
 
         try{
 
-            LocalDateTime surveyCreateDay = survey.getCreateDate();
+//            LocalDateTime surveyCreateDay = survey.getCreateDate();
             LocalDateTime surveyExpireDay = survey.getExpireDate();
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a hh:mm");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
 
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
-            context.setVariable("surveyDescription", survey.getDescription());
-            context.setVariable("createDate", surveyCreateDay.format(formatter));
             context.setVariable("expireDate", surveyExpireDay.format(formatter));
             context.setVariable("surveyLink", link);
 
@@ -65,10 +63,20 @@ public class MailService {
             helper.setSubject(survey.getTitle());
             helper.setTo(user.getEmail());
             helper.setText(htmlContent, true);
+
+            // 이미지 첨부 (첨부파일로 cid를 사용)
+            ClassPathResource logoResource = new ClassPathResource("static/images/icon_logo.png");
+            helper.addInline("logoImage", logoResource); // 이미지 ID 'logoImage'로 첨부
+
+            ClassPathResource titleResource = new ClassPathResource("static/images/title.png");
+            helper.addInline("titleImage", titleResource); // 이미지 ID 'titleImage'로 첨부
+
             mailSender.send(message);
 
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
