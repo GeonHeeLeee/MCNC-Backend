@@ -24,6 +24,9 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
+        if(request.getMethod().equals("OPTIONS")){
+            return true;
+        }
         if (session == null || session.getAttribute(LOGIN_USER) == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "세션이 유효하지 않습니다.");
             return false;
