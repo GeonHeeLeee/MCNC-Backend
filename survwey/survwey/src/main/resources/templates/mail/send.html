@@ -3,78 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>설문조사 초대</title>
+    <title>Document</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
             margin: 0;
-            padding: 0;
-            color: #333;
+            padding: 20px;
+            width: 100%;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .email-container {
+
+        .root-container {
             width: 100%;
             max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        .email-header {
-            text-align: center;
-            padding-bottom: 20px;
+
+        .logo {
+            margin-top: 40px;
         }
-        .email-header h1 {
-            font-size: 24px;
-            color: #2a7f62;
+
+        .title-logo {
+            margin-bottom: 12px;
         }
-        .email-content {
-            margin-bottom: 20px;
+
+        .title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
         }
-        .email-footer {
-            text-align: center;
-            font-size: 14px;
-            color: #777;
+
+        .sub-title {
+            margin-bottom: 12px;
         }
-        .button {
-            background-color: #2a7f62;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .button:hover {
-            background-color: #249455;
-        }
-        .highlight {
-            color: #2a7f62;
+
+        .user {
             font-weight: bold;
+            color: #7796E8;
         }
-        .date-info {
-            font-size: 14px;
-            margin-bottom: 10px;
+
+        .join-btn {
+            width: 100px;
+            color: #fff;
+            height: 40px;
+            background-color: #7796E8;
+            border-radius: 12px;
+            border: none;
+        }
+
+        .footer {
+            font-size: 0.75rem;
+            margin: 28px 0 20px 0;
         }
     </style>
 </head>
 <body>
-<div class="email-container">
-    <div class="email-header">
-        <h1>Survwey 설문조사 초대</h1>
+<div class="root-container">
+    <div class="logo">
+        <!-- cid 방식으로 이미지 표시 -->
+        <img src="cid:logoImage" alt="logo" width="100px" height="100px" />
     </div>
-    <div class="email-content">
-        <p>안녕하세요, <span class="highlight" th:text="${inviterName}"></span>님이 설문조사에 초대하셨습니다.</p>
-        <p>설문 설명: <span class="highlight" th:text="${surveyDescription}"></span></p>
-        <div class="date-info">
-            <p>설문 생성일: <span class="highlight" th:text="${createDate}"></span></p>
-            <p>설문 만료일: <span class="highlight" th:text="${expireDate}"></span></p>
-        </div>
-        <p>설문에 참여하려면 아래 버튼을 클릭하세요:</p>
-        <p><a th:href="${surveyLink}" class="button">설문 참여하기</a></p>
+    <div class="title">
+        <img src="cid:titleImage" alt="title" class="title-logo" width="120px">
+        <div>안녕하세요, <span class="user" th:text="${inviterName}"></span>님이 초대했습니다.</div>
     </div>
-    <div class="email-footer">
-        <p>이 이메일은 <strong>Survwey</strong>에서 발송된 것입니다.</p>
+    <div class="sub-title" th:text="${surveyTitle}">
+    </div>
+    <div class="button-section">
+        <button class="join-btn" th:href="${surveyLink}">버튼이요</button>
+    </div>
+
+    <div class="footer" th:text="${expireDate}">
     </div>
 </div>
 </body>
