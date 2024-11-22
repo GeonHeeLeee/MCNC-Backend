@@ -1,9 +1,10 @@
-package mcnc.survwey.domain.mail;
+package mcnc.survwey.domain.mail.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.domain.mail.utils.EncryptionUtil;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.user.User;
@@ -34,6 +35,12 @@ public class MailService {
     @Value("${MAIL_USER_NAME}")
     private String senderEmail;
 
+    /**
+     * 설문 초대
+     * @param userId
+     * @param surveyId
+     * @param link
+     */
     public void sendLinkMessage(String userId, Long surveyId, String link){
 
         User user = userService.findByUserId(userId);
@@ -43,8 +50,6 @@ public class MailService {
         //본인이 생성한 설문 확인
 
         try{
-
-//            LocalDateTime surveyCreateDay = survey.getCreateDate();
             LocalDateTime surveyExpireDay = survey.getExpireDate();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
@@ -79,4 +84,19 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
+
+
+    //링크 암호화
+    public String linkEncryption (String link, Long surveyId) throws Exception{
+        String originUrl = link + "/" + surveyId;
+        //기존 url
+        String encryptedUrl = EncryptionUtil.encrypt(originUrl);
+
+        return "http://localhost:8080/redirect?token="+encryptedUrl;
+    }
+
+
+
+    
+    
 }
