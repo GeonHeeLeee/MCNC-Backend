@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="990fe5d8-476c-460a-b87e-488d89fdf4cd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/survwey/survwey/src/main/resources/templates/mail/asdasdasdasd.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/survwey/survwey/src/main/resources/templates/mail/exam-send.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/survwey/survwey/src/main/resources/templates/mail/send.html" beforeDir="false" afterPath="$PROJECT_DIR$/survwey/survwey/src/main/resources/templates/mail/send.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,23 +68,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.SurvweyApplication.executor": "Run",
-    "Gradle.Build survwey.executor": "Run",
-    "Gradle.survwey [:mcnc.survwey.SurvweyApplication.main()].executor": "Run",
-    "Gradle.survwey [build].executor": "Run",
-    "Gradle.survwey [clean].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/study_spring/MCNC_InternShip_Backend",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.editor"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.SurvweyApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build survwey.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.survwey [:mcnc.survwey.SurvweyApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.survwey [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.survwey [clean].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/study_spring/MCNC_InternShip_Backend&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\study_spring\MCNC_InternShip_Backend\survwey\survwey\src\main\resources\static\images" />

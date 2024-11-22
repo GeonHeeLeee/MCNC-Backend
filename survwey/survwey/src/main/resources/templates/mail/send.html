@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-<div style="width: 100%; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #dddddd; text-align: center; padding: 20px;">
+<body style="background-color : #f9f9f9; padding : 12px 0;">
+<div style="width: 100%; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #dddddd; text-align: center; padding: 20px;  box-sizing : border-box;">
     <div>
         <img th:src="@{cid:logoImage}" alt="logo" style="width: 80px; height: 60px; margin: 40px auto 20px auto; display: block;" />
     </div>
@@ -21,7 +21,8 @@
     <div style="margin: 20px 0;">
         <a th:href="${surveyLink}" style="display: inline-block; width: 120px; text-align: center; color: #ffffff; background-color: #7796E8; text-decoration: none; padding: 10px 0; border-radius: 12px; font-size: 0.9rem;">설문 참여하기</a>
     </div>
-    <div style="font-size: 0.75rem; color: #888888; margin: 28px 0 20px 0;" th:text="${expireDate}">
+    <div style="font-size: 0.75rem; color: #888888; margin: 28px 0 20px 0;">
+        이 설문은 <span th:text="${expireDate}"></span> 까지 유효합니다.
     </div>
 </div>
 </body>
