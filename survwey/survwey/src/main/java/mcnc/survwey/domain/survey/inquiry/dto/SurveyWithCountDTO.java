@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class SurveyWithCountDTO extends SurveyDTO {
     private long respondCount;
 
