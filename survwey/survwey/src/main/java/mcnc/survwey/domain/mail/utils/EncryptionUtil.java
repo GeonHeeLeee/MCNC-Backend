@@ -33,8 +33,7 @@ public class EncryptionUtil {
         // URL-safe Base64 문자열에서 `-`와 `_`를 각각 `+`와 `/`로 변환
         String base64DecodedUrl = encryptedUrl.replace("-", "+").replace("_", "/");
 
-        // Base64 디코딩
-        byte[] decodedBytes = Base64.getDecoder().decode(base64DecodedUrl);
+        byte[] decodedBytes = Base64.getDecoder().decode(base64DecodedUrl);// Base64 디코딩
 
         // 복호화 진행
         SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
@@ -44,7 +43,6 @@ public class EncryptionUtil {
 
         byte[] decrypted = cipher.doFinal(decodedBytes); // 데이터 복호화
         String result = new String(decrypted);
-        log.info("복호화 결과: {}", result);
 
         return result; // 복호화된 URL 반환
     }
