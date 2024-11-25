@@ -46,20 +46,24 @@ public class SurveyInquiryService {
     /**
      * 설문 검색
      *
-     * @param userId
      * @param title
      * @param page
      * @param size
      * @return
      */
-    public Page<Survey> surveySearch(String userId, String title, int page, int size) {
+    public Page<Survey> surveySearch(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCase(userId, title, pageable);
+        return surveyRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 
     public Page<Survey> respondedSurveySearch(String userId, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findSurveysUserHasRespondedTo(userId, title, pageable);
+    }
+
+    public Page<Survey> createdSurveySearch(String userId, String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCase(userId, title, pageable);
     }
 
 
