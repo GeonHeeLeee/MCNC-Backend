@@ -81,6 +81,20 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "사용자 본인이 참여한 설문 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "참여한 설문 검색 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+    })
+    public ResponseEntity<Object> surveySearch(@RequestParam String title,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size) {
+        Page<Survey> surveys = surveyInquiryService.surveySearch(title, page, size);
+        Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
+        return ResponseEntity.ok(surveyInfoDTOS);
+    }
+
     /**
      * 사용자가 특정 키워드로 설문을 찾기 위해 설문 조회
      *
@@ -89,18 +103,18 @@ public class SurveyInquiryController {
      * @param size
      * @return
      */
-    @GetMapping("/search")
+    @GetMapping("/search/created")
     @Operation(summary = "사용자 본인이 생성한 설문 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "생성한 설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> surveySearch(@RequestParam String title,
+    public ResponseEntity<Object> createdSurveySearch(@RequestParam String title,
                                                @RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
 
-        Page<Survey> surveys = surveyInquiryService.surveySearch(userId, title, page, size);
+        Page<Survey> surveys = surveyInquiryService.createdSurveySearch(userId, title, page, size);
         Page<SurveyDTO> surveyDTOs = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyDTOs);
     }
