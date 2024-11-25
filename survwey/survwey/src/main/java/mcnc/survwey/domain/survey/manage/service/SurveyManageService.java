@@ -68,6 +68,7 @@ public class SurveyManageService {
         if (deleteSurvey(surveyWithDetailDTO.getSurveyId())) {
             Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))
                     .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
+            surveyService.verifyUserMadeSurvey(userId, survey);
             return SurveyWithDetailDTO.of(survey);
         } else {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND);
