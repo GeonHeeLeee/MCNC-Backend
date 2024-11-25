@@ -47,6 +47,10 @@ public class MailController {
                     - 잘못된 링크 : "해당 링크는 잘못된 링크입니다."
                     - 만료일 지났을 경우 : "해당 설문은 종료된 설문입니다."
                     - 존재하지 않은 설문 : "해당 아이디의 설문이 존재하지 않습니다."
+                    """),
+            @ApiResponse(responseCode = "403", description = """
+                    잘못된 요청:
+                    - 해당 설문의 생성자가 아닌 경우 : "본인이 생성한 설문이 아닙니다."
                     """)
     })
     public ResponseEntity<String> sendMail(@PathVariable Long surveyId) throws Exception{

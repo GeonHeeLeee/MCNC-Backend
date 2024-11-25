@@ -25,22 +25,9 @@ public class SurveyService {
     }
 
 
-    public boolean deleteSurveyById(Long surveyId) {
-        if (surveyRepository.existsById(surveyId)) {
-            surveyRepository.deleteById(surveyId);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public Survey findBySurveyId(Long surveyId) {
         return surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
-    }
-
-    public List<Survey> findByUser_UserId(String userId) {
-        return surveyRepository.findByUser_UserId(userId);
     }
 
     public void checkSurveyExpiration(LocalDateTime expireDate) {
@@ -52,7 +39,7 @@ public class SurveyService {
 
     public void verifyUserMadeSurvey(String userId, Survey survey) {
         if (!survey.getUser().getUserId().equals(userId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_CREATOR_NOT_MATCH);
+            throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.SURVEY_CREATOR_NOT_MATCH);
         }
     }
 }

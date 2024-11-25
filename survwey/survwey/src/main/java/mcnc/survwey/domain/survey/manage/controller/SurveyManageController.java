@@ -66,13 +66,13 @@ public class SurveyManageController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 삭제 성공"),
             @ApiResponse(responseCode = "400", description = "해당 아이디의 사용자가 존재하지 않습니다."),
-            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음"),
+            @ApiResponse(responseCode = "403", description = "본인이 생성한 설문이 아닙니다.")
     })
     public ResponseEntity<Object> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
-        if (surveyManageService.deleteSurvey(surveyId)) {
-            return ResponseEntity.ok(null);
-        }
-        return ResponseEntity.badRequest().body(Collections.singletonMap("errorMessage", "해당 아이디의 설문이 존재하지 않습니다."));
+        String creatorId = SessionContext.getCurrentUser();
+        surveyManageService.deleteSurvey(creatorId, surveyId);
+        return ResponseEntity.ok(null);
     }
 
 
@@ -134,8 +134,11 @@ public class SurveyManageController {
                     - 설문 강제 종료 취소"""),
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청:
-                    - 본인이 생성한 설문이 아닌 경우: 본인이 만든 설문만 종료할 수 있습니다.
                     - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
+                    """),
+            @ApiResponse(responseCode = "403", description = """
+                    잘못된 요청:
+                    - 본인이 생성한 설문이 아닌 경우: 본인이 생성한 설문이 아닙니다.
                     """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })

@@ -47,8 +47,10 @@ public class SurveyManageService {
         return createdSurvey;
     }
 
-    public boolean deleteSurvey(Long surveyId) {
-        return surveyService.deleteSurveyById(surveyId);
+    public void deleteSurvey(String userId, Long surveyId) {
+        Survey survey = surveyService.findBySurveyId(surveyId);
+        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyRepository.delete(survey);
     }
 
 
@@ -65,14 +67,13 @@ public class SurveyManageService {
         //설문 응답자가 존재하면 error
 
         log.info(surveyWithDetailDTO.toString());
-        if (deleteSurvey(surveyWithDetailDTO.getSurveyId())) {
-            Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))
-                    .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
-            surveyService.verifyUserMadeSurvey(userId, survey);
-            return SurveyWithDetailDTO.of(survey);
-        } else {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND);
-        }
+        //삭제(존재하는지 확인 및 생성자 검증 후)
+        deleteSurvey(userId, surveyWithDetailDTO.getSurveyId());
+        //다시 저장
+        Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
+        return SurveyWithDetailDTO.of(survey);
+
     }
 
     @Transactional
