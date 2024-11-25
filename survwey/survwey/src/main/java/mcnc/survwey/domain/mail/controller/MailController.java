@@ -1,5 +1,6 @@
 package mcnc.survwey.domain.mail.controller;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.mail.service.MailService;
@@ -10,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,12 +21,18 @@ import java.util.Collections;
 public class MailController {
 
     private final MailService mailService;
+    private final EncryptionUtil encryptionUtil;
+    private final Map<String, String> keyStorage = new HashMap<>();
 
     @PostMapping("/send/{surveyId}")
-    public ResponseEntity<String> sendMail(@RequestBody String link, @PathVariable Long surveyId) throws Exception{
+    public ResponseEntity<String> sendMail(@PathVariable Long surveyId) throws Exception{
         String userId = SessionContext.getCurrentUser();
         try{
-            String surveyLink = mailService.linkEncryption(link, surveyId);
+            String key = encryptionUtil.generatedRandomKey();
+            String token = encryptionUtil.encrypt(surveyId.toString(), key);
+            keyStorage.put(token, key);
+
+            String surveyLink = mailService.encryptedLink(surveyId, key);
             //링크 암호화
             mailService.sendLinkMessage(userId, surveyId, surveyLink);
             return ResponseEntity.ok("메일 발송!");
@@ -33,15 +41,26 @@ public class MailController {
         }
     }
 
-    @GetMapping("/redirect")
-    public ResponseEntity<String> handleRedirect(@RequestParam String token) throws IOException {
+    /**
+     * 링크 복호화 후 해당 설문으로 이동
+     * @param token
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/{token}")
+    public ResponseEntity<String> handleRedirect(@PathVariable String token) throws Exception {
+        log.info("handleRedirect 호출됨: surveyId={}", token);
         try {
-            String decryptedUrl = EncryptionUtil.decrypt(token);
+            String key = keyStorage.get(token);
+            String decryptedSurveyId = encryptionUtil.decrypt(token, key);
+
+            String decryptedUrl = mailService.decryptedLink(decryptedSurveyId);
+
             return ResponseEntity.status(HttpStatus.FOUND).header("Location", decryptedUrl).build();//302Found
         } catch (Exception e) {
+            log.error("Error during redirect handling: ", e);
             return ResponseEntity.badRequest().body("해당 링크는 잘못된 링크입니다.");
         }
-
     }
 
 }

@@ -56,6 +56,8 @@ public class AuthController {
         }
     }
 
+
+
     @PostMapping("/logout")
     @Operation(summary = "사용자 로그아웃", description = "요청 Body 없이 요청<br>세션이 유효하면 세션 값 파기, 세션이 없거나 유효하지 않으면 401 응답")
     @ApiResponses({
