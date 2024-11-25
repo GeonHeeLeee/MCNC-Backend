@@ -84,6 +84,9 @@ public class AccountService {
         if (modifyDTO.getName() == null || modifyDTO.getName().isEmpty() || modifyDTO.getName().isBlank()) {
             modifyDTO.setName(user.getName());
         }
+        if (modifyDTO.getEmail() == null || modifyDTO.getEmail().isEmpty() || modifyDTO.getEmail().isBlank()) {
+            modifyDTO.setEmail(user.getEmail());
+        }
         if (modifyDTO.getGender() == null || modifyDTO.getGender().getValue().isEmpty()
                 || modifyDTO.getGender().getValue().isBlank()) {
             modifyDTO.setGender(user.getGender());
@@ -100,6 +103,15 @@ public class AccountService {
         userRepository.save(user);
     }
 
+    public ModifyDTO getProfile(String userId){
+        User user = userService.findByUserId(userId);
+        return ModifyDTO.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .birth(user.getBirth())
+                .gender(user.getGender())
+                .build();
+    }
 
     /**
      * 비밀번호 변경

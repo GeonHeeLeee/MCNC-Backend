@@ -13,10 +13,7 @@ import mcnc.survwey.domain.user.dto.ModifyDTO;
 import mcnc.survwey.domain.user.service.AccountService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -81,7 +78,7 @@ public class AccountController {
      */
     @PostMapping("/modify/profile")
     @Operation(summary = "프로필 수정", description = "name, birth, gender(M or F) (사용자 프로필 뭐 수정할지 말해주셈) <br>"
-            + "name, birth, gender에서 빈 값으로 들어오면 기존 사용자 정보 재사용")
+            + "name, email, birth, gender에서 빈 값으로 들어오면 기존 사용자 정보 재사용")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공")
     })
@@ -89,6 +86,24 @@ public class AccountController {
         String userId = SessionContext.getCurrentUser();
         accountService.modifyUser(modifyDTO, userId);
         return ResponseEntity.ok(userId);
+    }
+
+    /**
+     * 사용자 프로필 조회
+     * @return
+     */
+    @PostMapping("/modify/password")
+    @Operation(summary = "사용자 password 변경", description = "userID, password를 응답으로 보내주면됨")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+    })
+    @GetMapping("/profile")
+    public ResponseEntity<Object> profileDetails(){
+        String userId = SessionContext.getCurrentUser();
+        ModifyDTO modifyDTO = accountService.getProfile(userId);
+        return ResponseEntity.ok(modifyDTO);
     }
 
     /**
