@@ -20,6 +20,7 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 
 @Service
@@ -31,9 +32,12 @@ public class MailService {
     private final TemplateEngine templateEngine;
     private final UserService userService;
     private final SurveyService surveyService;
+    private final EncryptionUtil encryptionUtil;
 
     @Value("${MAIL_USER_NAME}")
     private String senderEmail;
+    @Value("${BASE_URL}")
+    private String baseUrl;
 
     /**
      * 설문 초대
@@ -76,6 +80,7 @@ public class MailService {
             ClassPathResource titleResource = new ClassPathResource("static/images/title.png");
             helper.addInline("titleImage", titleResource); // 이미지 ID 'titleImage'로 첨부
 
+            log.info("link = {}", link);
             mailSender.send(message);
 
         } catch (MailException | MessagingException e){
@@ -85,18 +90,13 @@ public class MailService {
         }
     }
 
-
-    //링크 암호화
-    public String linkEncryption (String link, Long surveyId) throws Exception{
-        String originUrl = link + "/" + surveyId;
-        //기존 url
-        String encryptedUrl = EncryptionUtil.encrypt(originUrl);
-
-        return "http://localhost:8080/redirect?token="+encryptedUrl;
+    public String encryptedLink(Long surveyId, String key) throws Exception {
+        String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString(), key);  // 암호화된 surveyId로 URL 구성
+        return baseUrl + encryptedSurveyId;
     }
 
-
-
-    
+    public String decryptedLink(String surveyId){
+        return baseUrl + surveyId;
+    }
     
 }
