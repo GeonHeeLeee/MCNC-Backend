@@ -2,7 +2,10 @@ package mcnc.survwey.domain.mail.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -26,7 +29,7 @@ public class EncryptionUtil {
             byte[] encrypted = cipher.doFinal(surveyId.getBytes()); // 데이터 암호화
             return Base64.getUrlEncoder().encodeToString(encrypted); // URL BASE64로 변환
         } catch (Exception e){
-            throw new IllegalStateException("암호화 중 오류 발생: " + e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 링크는 잘못된 링크입니다.", e);
         }
 
     }
@@ -49,7 +52,7 @@ public class EncryptionUtil {
 
             return result; // 복호화된 URL 반환
         }catch (Exception e){
-            throw new IllegalStateException("복호화 중 오류 발생: " + e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 링크는 잘못된 링크입니다.", e);
         }
 
     }

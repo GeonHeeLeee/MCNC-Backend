@@ -90,17 +90,17 @@ public class AccountController {
 
     /**
      * 사용자 프로필 조회
-     * 사용자 ID 세션ㄴ으로 가져온 후 조회
+     * 사용자 ID 세션으로 가져온 후 조회
      * @return
      */
     @GetMapping("/profile")
     @Operation(summary = "사용자 프로필 조회", description = "응답 필요 없음")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> profileDetails(){
+    public ResponseEntity<ModifyDTO> profileDetails(){
         String userId = SessionContext.getCurrentUser();
         ModifyDTO modifyDTO = accountService.getProfile(userId);
         return ResponseEntity.ok(modifyDTO);
@@ -118,7 +118,6 @@ public class AccountController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다.")
-
     })
     public ResponseEntity<Object> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
         accountService.changePassword(changePasswordDTO);
