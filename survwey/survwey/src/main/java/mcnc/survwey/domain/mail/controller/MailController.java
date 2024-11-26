@@ -58,12 +58,13 @@ public class MailController {
 
     /**
      * 링크 복호화 후 해당 설문으로 이동
+     *
      * @param token
      * @return
      * @throws IOException
      */
     @GetMapping("/{token}")
-    @Operation(summary = "해당 설문으로 이동", description = "@PathVariable 로 해당하는 토큰을 받음")
+    @Operation(summary = "해당 설문으로 이동", description = "@PathVariable 로 해당하는 토큰을 받음 <br> 세션이 없을 시 decryptedUrl 값을 응답")
     @ApiResponses({
             @ApiResponse(responseCode = "302", description = "해당 설문으로 이동"),
             @ApiResponse(responseCode = "400", description = """
@@ -74,11 +75,16 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<String> handleRedirect(@PathVariable String token) {
+    public ResponseEntity<Map<String, String>> handleRedirect(@PathVariable String token) {
+        String userId = SessionContext.getCurrentUser();
         String surveyId = encryptionUtil.decrypt(token);
         String decryptedUrl = mailService.decryptedLink(surveyId);
 
-        return ResponseEntity.status(HttpStatus.FOUND).header("Location", decryptedUrl).build();//302Found
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("decryptedUrl", decryptedUrl));
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).header("Location", decryptedUrl).build();//302Found}
+        }
     }
 
 }
