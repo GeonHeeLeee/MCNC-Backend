@@ -24,13 +24,16 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
+        //Preflight 요청은 허용
         if(request.getMethod().equals("OPTIONS")){
             return true;
         }
+        //세션이 유효하지 않으면 401 에러 응답
         if (session == null || session.getAttribute(LOGIN_USER) == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "세션이 유효하지 않습니다.");
             return false;
         }
+        //세션 컨텍스트에 저장
         String userId = (String) session.getAttribute(LOGIN_USER);
         SessionContext.setCurrentUser(userId);
         return true;

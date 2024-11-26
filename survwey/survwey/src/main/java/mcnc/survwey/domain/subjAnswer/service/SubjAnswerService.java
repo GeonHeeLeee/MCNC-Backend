@@ -18,6 +18,14 @@ public class SubjAnswerService {
 
     private final QuestionService questionService;
 
+    /**
+     * 주관식 응답 추가
+     * - 질문 타입이 주관식인 것들만 필터링
+     * - 객체 생성
+     * @param responseList
+     * @param respondedUser
+     * @return
+     */
     public List<SubjAnswer> createSubjectiveAnswers(List<ResponseDTO> responseList, User respondedUser) {
         return responseList.stream()
                 .filter(responseDTO -> responseDTO.getQuestionType() == QuestionType.SUBJECTIVE)

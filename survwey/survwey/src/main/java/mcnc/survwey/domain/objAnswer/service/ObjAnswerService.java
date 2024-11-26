@@ -19,6 +19,14 @@ public class ObjAnswerService {
     private final SelectionService selectionService;
 
 
+    /**
+     * 객관식 응답 추가
+     * - 질문 타입이 객관식인 것들만 필터링
+     * - 객체 생성
+     * @param responseList
+     * @param respondedUser
+     * @return
+     */
     public List<ObjAnswer> createObjectiveAnswers(List<ResponseDTO> responseList, User respondedUser) {
         return responseList.stream()
                 .filter(responseDTO -> responseDTO.getQuestionType() == QuestionType.OBJ_MULTI || responseDTO.getQuestionType() == QuestionType.OBJ_SINGLE)
