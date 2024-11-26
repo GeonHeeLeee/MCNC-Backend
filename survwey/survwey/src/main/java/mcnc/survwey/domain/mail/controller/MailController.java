@@ -61,7 +61,6 @@ public class MailController {
      *
      * @param token
      * @return
-     * @throws IOException
      */
     @GetMapping("/{token}")
     @Operation(summary = "해당 설문으로 이동", description = "@PathVariable 로 해당하는 토큰을 받음 <br> 세션이 없을 시 decryptedUrl 값을 응답")
