@@ -22,6 +22,7 @@ public class SurveyWithCountDTO extends SurveyDTO {
                 .createDate(((Timestamp) record[3]).toLocalDateTime())
                 .expireDate(((Timestamp) record[4]).toLocalDateTime())
                 .respondCount(((Number) record[5]).intValue())
+                .creatorId((String) record[6])
                 .build();
     }
 

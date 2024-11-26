@@ -16,7 +16,6 @@ import java.util.List;
 @SuperBuilder
 public class SurveyWithDetailDTO extends SurveyDTO {
 
-    private String creatorId;
     private List<QuestionDTO> questionList;
 
     public static SurveyWithDetailDTO of(Survey survey) {
