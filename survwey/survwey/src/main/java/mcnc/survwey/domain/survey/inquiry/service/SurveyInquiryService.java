@@ -2,14 +2,13 @@ package mcnc.survwey.domain.survey.inquiry.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.question.repository.QuestionRepository;
+import mcnc.survwey.domain.objAnswer.repository.ObjAnswerRepository;
+import mcnc.survwey.domain.subjAnswer.repository.SubjAnswerRepository;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
-import mcnc.survwey.domain.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +64,7 @@ public class SurveyInquiryService {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCase(userId, title, pageable);
     }
+
 
 
 }

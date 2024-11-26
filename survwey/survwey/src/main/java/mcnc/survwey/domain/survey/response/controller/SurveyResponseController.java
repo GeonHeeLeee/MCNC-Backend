@@ -7,13 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.response.dto.SurveyResultDTO;
+import mcnc.survwey.domain.survey.response.dto.SurveyReplyDTO;
 import mcnc.survwey.domain.survey.response.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.response.service.SurveyResponseService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -25,7 +24,7 @@ public class SurveyResponseController {
     private final SurveyResponseService surveyResponseService;
     /**
      * 응답 저장
-     * @param surveyResponseDTO
+     * @param surveyReplyDTO
      * @return
      */
     @PostMapping()
@@ -42,9 +41,9 @@ public class SurveyResponseController {
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> responseToSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
+    public ResponseEntity<Object> responseToSurvey(@RequestBody SurveyReplyDTO surveyReplyDTO) {
         String userId = SessionContext.getCurrentUser();
-        surveyResponseService.saveSurveyResponse(surveyResponseDTO, userId);
+        surveyResponseService.saveSurveyReply(surveyReplyDTO, userId);
         return ResponseEntity.ok(null);
     }
 
@@ -66,5 +65,12 @@ public class SurveyResponseController {
         return ResponseEntity.ok(surveyResponse);
     }
 
+
+    @GetMapping("/{surveyId}")
+    public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable Long surveyId) {
+        String userId = SessionContext.getCurrentUser();
+        SurveyResponseDTO userRespondedSurvey = surveyResponseService.getUserRespondedSurvey(surveyId, userId);
+        return ResponseEntity.ok(userRespondedSurvey);
+    }
 
 }
