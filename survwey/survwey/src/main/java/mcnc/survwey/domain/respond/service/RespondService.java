@@ -20,6 +20,6 @@ public class RespondService {
         }
     }
     public boolean hasUserRespondedToSurvey(Long surveyId, String userId) {
-        return respondRepository.existsBySurvey_SurveyIdAndUser_UserId(surveyId, userId));
+        return respondRepository.existsBySurvey_SurveyIdAndUser_UserId(surveyId, userId);
     }
 }
