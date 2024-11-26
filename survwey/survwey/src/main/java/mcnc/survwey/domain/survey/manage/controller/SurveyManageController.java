@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.manage.service.SurveyManageService;
 import mcnc.survwey.domain.survey.common.Survey;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 
 
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ import java.util.Collections;
 public class SurveyManageController {
 
     private final SurveyManageService surveyManageService;
+    private final RespondService respondService;
 
     /**
      * 설문 생성
@@ -56,6 +57,7 @@ public class SurveyManageController {
 
     /**
      * 설문 삭제
+     *
      * @param surveyId
      * @return
      */
@@ -64,20 +66,20 @@ public class SurveyManageController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 삭제 성공"),
             @ApiResponse(responseCode = "400", description = "해당 아이디의 사용자가 존재하지 않습니다."),
-            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음"),
+            @ApiResponse(responseCode = "403", description = "본인이 생성한 설문이 아닙니다.")
     })
     public ResponseEntity<Object> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
-        if (surveyManageService.deleteSurvey(surveyId)) {
-            return ResponseEntity.ok(null);
-        }
-        return ResponseEntity.badRequest().body(Collections.singletonMap("errorMessage", "해당 아이디의 설문이 존재하지 않습니다."));
+        String creatorId = SessionContext.getCurrentUser();
+        surveyManageService.deleteSurvey(creatorId, surveyId);
+        return ResponseEntity.ok(null);
     }
-
 
 
     /**
      * 사용자가 자신이 만든 설문을 수정을 위해 삭제 후 생성
      * -해당 설문에 응답한 사람이 1명이라도 존재하면 설문 수정 불가
+     *
      * @param surveyWithDetailDTO
      * @return
      */
@@ -86,23 +88,41 @@ public class SurveyManageController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 수정 성공"),
             @ApiResponse(responseCode = "400", description = """
-                잘못된 요청:
-                - 설문에 응답한 사람이 존재할 경우: 해당 설문에 답한 사용자가 이미 존재합니다.
-                - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
-                - 삭제할 설문을 찾았지만 아이디가 다를 때: 해당 아이디의 설문이 존재하지 않습니다.
-                """),
+                    잘못된 요청:
+                    - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
+                    - 삭제할 설문을 찾았지만 아이디가 다를 때: 해당 아이디의 설문이 존재하지 않습니다.
+                    """),
+            @ApiResponse(responseCode = "409", description = """
+                    잘못된 요청:
+                    - 설문에 응답한 사람이 존재할 경우: 해당 설문에 답한 사용자가 이미 존재합니다.
+                    """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-
-    public ResponseEntity<Object> surveyModify(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
+    public ResponseEntity<Object> modifySurvey(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         String userId = SessionContext.getCurrentUser();
 
-        SurveyWithDetailDTO updatedSurvey = surveyManageService.surveyModifyWithDetails(surveyWithDetailDTO, userId);
+        SurveyWithDetailDTO updatedSurvey = surveyManageService.modifySurvey(surveyWithDetailDTO, userId);
         return ResponseEntity.ok().body(updatedSurvey);
     }
 
     /**
+     * 설문 수정 가능한지 확인
+     * - 응답한 사람이 있는지 체크
+     */
+    @GetMapping("/modify/check/{surveyId}")
+    @Operation(summary = "설문 수정 가능한지 확인", description = "해당 설문에 응답한 사람이 있는지 확인(응답한 사람이 있으면 수정 불가)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "설문 수정 가능"),
+            @ApiResponse(responseCode = "409", description = "설문 수정 불가능(응답한 사람 존재)")
+    })
+    public ResponseEntity<Object> checkSurveyBeforeModify(@PathVariable Long surveyId) {
+        respondService.existsBySurveyId(surveyId);
+        return ResponseEntity.ok(null);
+    }
+
+    /**
      * 설문 강제 종료
+     *
      * @param surveyId
      * @return
      */
@@ -110,16 +130,19 @@ public class SurveyManageController {
     @Operation(summary = "설문 강제 종료", description = "해당 설문의 생성자가 강제 종료를 원할경우 만료일을 현재 시간으로 변경하여 강제 종료")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = """
-               - 설문 강제 종료 성공     
-               - 설문 강제 종료 취소"""),
+                    - 설문 강제 종료 성공     
+                    - 설문 강제 종료 취소"""),
             @ApiResponse(responseCode = "400", description = """
-                잘못된 요청:
-                - 본인이 생성한 설문이 아닌 경우: 본인이 만든 설문만 종료할 수 있습니다.
-                - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
-                """),
+                    잘못된 요청:
+                    - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
+                    """),
+            @ApiResponse(responseCode = "403", description = """
+                    잘못된 요청:
+                    - 본인이 생성한 설문이 아닌 경우: 본인이 생성한 설문이 아닙니다.
+                    """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> surveyExpiration(@PathVariable(value = "surveyId") Long surveyId) {
+    public ResponseEntity<Object> expireSurvey(@PathVariable(value = "surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         surveyManageService.enforceCloseSurvey(userId, surveyId);
         return ResponseEntity.ok().body(surveyId);

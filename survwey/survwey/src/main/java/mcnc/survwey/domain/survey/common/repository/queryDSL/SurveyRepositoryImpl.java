@@ -32,7 +32,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
         StringBuilder sql = new StringBuilder();
 
         sql.append("SELECT s.survey_id, s.title, s.description, s.create_date, s.expire_date, " +
-                        "COALESCE(r.respond_count, 0) AS respond_count ")
+                        "COALESCE(r.respond_count, 0) AS respond_count, s.user_id ")
                 .append("FROM survey s ")
                 .append("LEFT JOIN (SELECT survey_id, COUNT(*) AS respond_count " +
                         "   FROM respond " +
@@ -64,7 +64,8 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                         survey.title,
                         survey.description,
                         survey.createDate,
-                        survey.expireDate))
+                        survey.expireDate,
+                        survey.user.userId))
                 .from(survey)
                 .join(respond).on(respond.survey.eq(survey))
                 .where(respond.user.userId.eq(userId))

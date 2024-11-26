@@ -2,14 +2,11 @@ package mcnc.survwey.domain.survey.inquiry.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
-import mcnc.survwey.domain.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,20 +48,21 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<Survey> surveySearch(String title, int page, int size) {
+    public Page<Survey> searchSurveys(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 
-    public Page<Survey> respondedSurveySearch(String userId, String title, int page, int size) {
+    public Page<Survey> searchRespondedSurveys(String userId, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findSurveysUserHasRespondedTo(userId, title, pageable);
     }
 
-    public Page<Survey> createdSurveySearch(String userId, String title, int page, int size) {
+    public Page<Survey> searchUserCreatedSurvey(String userId, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCase(userId, title, pageable);
     }
+
 
 
 }

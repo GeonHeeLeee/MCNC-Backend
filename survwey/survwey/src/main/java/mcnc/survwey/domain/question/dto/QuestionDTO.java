@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import mcnc.survwey.domain.enums.QuestionType;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.selection.dto.SelectionDTO;
@@ -16,7 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class QuestionDTO {
 
     private long quesId;
