@@ -98,10 +98,10 @@ public class SurveyManageController {
                     """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> surveyModify(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
+    public ResponseEntity<Object> modifySurvey(@Valid @RequestBody SurveyWithDetailDTO surveyWithDetailDTO) {
         String userId = SessionContext.getCurrentUser();
 
-        SurveyWithDetailDTO updatedSurvey = surveyManageService.surveyModifyWithDetails(surveyWithDetailDTO, userId);
+        SurveyWithDetailDTO updatedSurvey = surveyManageService.modifySurvey(surveyWithDetailDTO, userId);
         return ResponseEntity.ok().body(updatedSurvey);
     }
 
@@ -142,7 +142,7 @@ public class SurveyManageController {
                     """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> surveyExpiration(@PathVariable(value = "surveyId") Long surveyId) {
+    public ResponseEntity<Object> expireSurvey(@PathVariable(value = "surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         surveyManageService.enforceCloseSurvey(userId, surveyId);
         return ResponseEntity.ok().body(surveyId);

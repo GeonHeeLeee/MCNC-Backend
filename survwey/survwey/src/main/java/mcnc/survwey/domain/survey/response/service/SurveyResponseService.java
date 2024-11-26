@@ -15,6 +15,7 @@ import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.respond.dto.ResponseDTO;
 import mcnc.survwey.domain.respond.repository.RespondRepository;
+import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.selection.dto.SelectionResultDTO;
 import mcnc.survwey.domain.subjAnswer.SubjAnswer;
 import mcnc.survwey.domain.subjAnswer.repository.SubjAnswerRepository;
@@ -46,6 +47,7 @@ public class SurveyResponseService {
 
     private final SurveyService surveyService;
     private final UserService userService;
+    private final RespondService respondService;
     private final RespondRepository respondRepository;
     private final ObjAnswerRepository objAnswerRepository;
     private final SubjAnswerRepository subjAnswerRepository;
@@ -86,7 +88,7 @@ public class SurveyResponseService {
 
     public SurveyResultDTO getSurveyResponsesResult(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.validateUserMadeSurvey(userId, survey);
 
         List<SurveyResultMapper> surveyResultMapperList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
                 .stream().map(SurveyResultMapper::new).toList();
@@ -129,8 +131,7 @@ public class SurveyResponseService {
                 }
                 break;
             default:
-                //TO-DO 예외처리 로직 작성
-                break;
+                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
         }
     }
 
@@ -144,6 +145,7 @@ public class SurveyResponseService {
 
 
     public SurveyResponseDTO getUserRespondedSurvey(Long surveyId, String userId) {
+        respondService.validateUserResponseToSurvey(surveyId, userId);
         SurveyResponseDTO surveyResponseDTO = Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
                 .map(SurveyResponseDTO::of)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
@@ -162,19 +164,25 @@ public class SurveyResponseService {
             return;
         }
         switch (question.getQuestionType()) {
-            case OBJ_MULTI -> {
-                objAnswerMap.get(question.getQuesId())
-                        .forEach(objAnswer -> {
-                            question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
-                            setEtcAnswerIfPresent(question, objAnswer);
-                        });
-            }
-            case OBJ_SINGLE -> {
+            case OBJ_MULTI:
+                objAnswerMap.get(question.getQuesId()).forEach(objAnswer -> {
+                    question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
+                    setEtcAnswerIfPresent(question, objAnswer);
+                });
+                break;
+
+            case OBJ_SINGLE:
                 ObjAnswer objAnswer = objAnswerMap.get(question.getQuesId()).get(0);
                 question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
                 setEtcAnswerIfPresent(question, objAnswer);
-            }
-            case SUBJECTIVE -> question.setSubjAnswer(subjAnswerMap.get(question.getQuesId()));
+                break;
+
+            case SUBJECTIVE:
+                question.setSubjAnswer(subjAnswerMap.get(question.getQuesId()));
+                break;
+
+            default:
+                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
         }
     }
 
@@ -185,10 +193,11 @@ public class SurveyResponseService {
     }
 
     private Map<Object, List<ObjAnswer>> getObjAnswerMap(Long surveyId, String userId) {
+        //QuesId를 키로 가지도록
         return objAnswerRepository.findUserRespondedAnswer(surveyId, userId)
                 .stream()
                 .collect(Collectors.groupingBy(
-                        answer -> answer.getSelection().getQuestion().getQuesId() // Key: quesId
+                        answer -> answer.getSelection().getQuestion().getQuesId()
                 ));
     }
 
@@ -197,8 +206,8 @@ public class SurveyResponseService {
         return subjAnswerRepository.findUserRespondedAnswer(surveyId, userId)
                 .stream()
                 .collect(Collectors.toMap(
-                        tuple -> tuple.get(subjAnswer.question.quesId), // Key: quesId
-                        tuple -> tuple.get(subjAnswer.response)         // Value: response
+                        tuple -> tuple.get(subjAnswer.question.quesId),
+                        tuple -> tuple.get(subjAnswer.response)
                 ));
     }
 

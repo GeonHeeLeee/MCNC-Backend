@@ -39,7 +39,7 @@ public class SurveyWithDetailDTO extends SurveyDTO {
                 .expireDate(this.getExpireDate())
                 .description(this.getDescription())
                 .user(creator)
-                .createDate(LocalDateTime.now())
+                .createDate(this.getCreateDate() == null ? LocalDateTime.now() : this.getCreateDate())
                 .build();
     }
 }

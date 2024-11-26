@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +36,10 @@ public class SurveyService {
         }
     }
 
-    public void verifyUserMadeSurvey(String userId, Survey survey) {
+    public void validateUserMadeSurvey(String userId, Survey survey) {
         if (!survey.getUser().getUserId().equals(userId)) {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.SURVEY_CREATOR_NOT_MATCH);
         }
     }
+
 }

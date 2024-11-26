@@ -49,7 +49,12 @@ public class SurveyManageService {
 
     public void deleteSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.validateUserMadeSurvey(userId, survey);
+        surveyRepository.delete(survey);
+    }
+
+    public void deleteSurvey(String userId, Survey survey) {
+        surveyService.validateUserMadeSurvey(userId, survey);
         surveyRepository.delete(survey);
     }
 
@@ -62,13 +67,14 @@ public class SurveyManageService {
      * @return
      */
     @Transactional
-    public SurveyWithDetailDTO surveyModifyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
-        respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
+    public SurveyWithDetailDTO modifySurvey(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
         //설문 응답자가 존재하면 error
-
-        log.info(surveyWithDetailDTO.toString());
+        respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
+        Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
         //삭제(존재하는지 확인 및 생성자 검증 후)
-        deleteSurvey(userId, surveyWithDetailDTO.getSurveyId());
+        deleteSurvey(userId, existingSurvey);
+        //생성일은 처음과 같이 고정(유효성 검사)
+        surveyWithDetailDTO.setCreateDate(existingSurvey.getCreateDate());
         //다시 저장
         Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
@@ -80,7 +86,7 @@ public class SurveyManageService {
     public void enforceCloseSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         //본인이 만든 설문인지 검증
-        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.validateUserMadeSurvey(userId, survey);
         survey.setExpireDate(LocalDateTime.now());
         //만료일 현재로 변경
         surveyRepository.save(survey);
