@@ -24,5 +24,4 @@ public interface SurveyRepository extends JpaRepository<Survey, Long>, SurveyRep
 
     Page<Survey> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
-
 }

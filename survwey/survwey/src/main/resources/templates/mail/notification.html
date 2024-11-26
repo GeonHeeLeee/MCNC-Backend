@@ -4,87 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        body {
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            width: 100%;
-            height: 100vh;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .root-container {
-            width: 100%;
-            max-width: 600px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo {
-            margin-top: 40px;
-        }
-
-        .title-logo {
-            margin-bottom: 12px;
-        }
-
-        .title {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .sub-title {
-            margin-bottom: 12px;
-        }
-
-        .user {
-            font-weight: bold;
-            color: #7796E8;
-        }
-
-        .join-btn {
-            width: 100px;
-            color: #fff;
-            height: 40px;
-            background-color: #7796E8;
-            border-radius: 12px;
-            border: none;
-        }
-
-        .footer {
-            font-size: 0.75rem;
-            margin: 28px 0 20px 0;
-        }
-    </style>
 </head>
-<body>
-<div class="root-container">
-    <div class="logo">
-        <!-- cid 방식으로 이미지 표시 -->
-        <img src="cid:logoImage" alt="logo" width="100px" height="100px" />
+<body style="background-color : #f9f9f9; padding : 12px 0;">
+<div style="width: 100%; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #dddddd; text-align: center; padding: 20px;  box-sizing : border-box;">
+    <div>
+        <img th:src="@{cid:logoImage}" alt="logo" style="width: 80px; height: 60px; margin: 40px auto 20px auto; display: block;" />
     </div>
-    <div class="title">
-        <img src="cid:titleImage" alt="title" class="title-logo" width="120px">
-        <div>안녕하세요, <span class="user" th:text="${inviterName}"></span>님이 초대했습니다.</div>
+    <div style="margin-bottom: 12px;">
+        <img th:src="@{cid:titleImage}" alt="title" style="width: 120px; height: 30px; margin: 0 auto 12px auto; display: block;">
+        <div style="font-size: 1rem; color: #333333; margin: 12px 0;">
+           안녕하세요. <span style="font-weight: bold; color: #7796E8;" th:text="${inviterName}"></span>님
+        </div>
     </div>
-    <div class="sub-title" th:text="${surveyTitle}">
+    <div style="font-size: 1rem; color: #555555; margin: 20px 0;" >
+        당신의 설문 <span th:text="${surveyTitle}">이 종료 되었습니다.</span>
     </div>
-    <div class="button-section">
-        <button class="join-btn" th:href="${surveyLink}">버튼이요</button>
-    </div>
-
-    <div class="footer" th:text="${expireDate}">
+    <div style="margin: 20px 0;">
+        <a th:href="${surveyLink}" style="display: inline-block; width: 120px; text-align: center; color: #ffffff; background-color: #7796E8; text-decoration: none; padding: 10px 0; border-radius: 12px; font-size: 0.9rem;">설문 결과 확인</a>
     </div>
 </div>
 </body>
