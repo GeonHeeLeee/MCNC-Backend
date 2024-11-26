@@ -19,9 +19,7 @@ public class RespondService {
             //응답한 사람이 존재하면 CONFLICT
         }
     }
-    public void validateUserResponseToSurvey(Long surveyId, String userId) {
-        if(!respondRepository.existsBySurvey_SurveyIdAndUser_UserId(surveyId, userId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_NOT_RESPOND_TO_SURVEY);
-        }
+    public boolean hasUserRespondedToSurvey(Long surveyId, String userId) {
+        return respondRepository.existsBySurvey_SurveyIdAndUser_UserId(surveyId, userId);
     }
 }

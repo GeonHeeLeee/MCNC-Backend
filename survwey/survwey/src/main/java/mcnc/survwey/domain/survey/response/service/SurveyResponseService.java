@@ -61,6 +61,10 @@ public class SurveyResponseService {
         User respondedUser = userService.findByUserId(userId);
         Survey respondedSurvey = surveyService.findBySurveyId(surveyReplyDTO.getSurveyId());
 
+        if (respondService.hasUserRespondedToSurvey(surveyReplyDTO.getSurveyId(), userId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_ALREADY_RESPOND_TO_SURVEY);
+        }
+
         validateQuestionInputForSurvey(surveyReplyDTO, respondedSurvey);
         surveyService.checkSurveyExpiration(respondedSurvey.getExpireDate());
 
@@ -145,7 +149,9 @@ public class SurveyResponseService {
 
 
     public SurveyResponseDTO getUserRespondedSurvey(Long surveyId, String userId) {
-        respondService.validateUserResponseToSurvey(surveyId, userId);
+        if (!respondService.hasUserRespondedToSurvey(surveyId, userId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_NOT_RESPOND_TO_SURVEY);
+        }
         SurveyResponseDTO surveyResponseDTO = Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
                 .map(SurveyResponseDTO::of)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
