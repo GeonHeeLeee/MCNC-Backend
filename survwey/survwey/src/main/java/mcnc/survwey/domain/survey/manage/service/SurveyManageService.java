@@ -35,24 +35,46 @@ public class SurveyManageService {
     private final SurveyRepository surveyRepository;
 
 
+    /**
+     * 설문 상세(설문, 질문, 보기) 저장
+     * - 설문, 질문, 보기 생성 후 저장
+     * @param surveyWithDetailDTO
+     * @param userId
+     * @return
+     */
     @Transactional
     public Survey saveSurveyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
         User creator = userService.findByUserId(userId);
+        //설문 생성 후 저장
         Survey createdSurvey = surveyService.buildAndSaveSurvey(surveyWithDetailDTO, creator);
         surveyWithDetailDTO.getQuestionList()
                 .forEach(questionDTO -> {
+                    //질문 생성 후 저장
                     Question createdQuestion = questionService.buildAndSaveQuestion(questionDTO, createdSurvey);
+                    //보기 생성 후 저장
                     selectionService.buildAndSaveSelection(createdQuestion, questionDTO.getSelectionList());
                 });
         return createdSurvey;
     }
 
+    /**
+     * 설문 삭제(오버로딩)
+     * - 요청자와 설문 생성자가 일치할시에만 삭제
+     * @param userId
+     * @param surveyId
+     */
     public void deleteSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);
         surveyRepository.delete(survey);
     }
 
+    /**
+     * 설문 삭제(오버로딩)
+     * - 요청자와 설문 생성자가 일치할시에만 삭제
+     * @param userId
+     * @param survey
+     */
     public void deleteSurvey(String userId, Survey survey) {
         surveyService.validateUserMadeSurvey(userId, survey);
         surveyRepository.delete(survey);
@@ -61,10 +83,14 @@ public class SurveyManageService {
 
     /**
      * 설문 수정
-     *
+     * - 설문의 생성일은 변경하지 않음
+     * - 기존 설문 삭제 후 새롭게 만들어 저장
      * @param surveyWithDetailDTO
      * @param userId
      * @return
+     * - 이미 응답한 사용자가 있는 경우 에러
+     * - 해당 아이디의 설문이 존재하지 않으면 에러
+     * - 수정자와 생성자가 일치하지 않으면 에러
      */
     @Transactional
     public SurveyWithDetailDTO modifySurvey(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {

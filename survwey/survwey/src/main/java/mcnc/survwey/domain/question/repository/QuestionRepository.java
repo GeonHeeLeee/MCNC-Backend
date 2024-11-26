@@ -13,15 +13,4 @@ import java.util.Map;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long>, QuestionRepositoryCustom {
-
-//    @Query(value = "SELECT q.ques_id, q.body AS question_body, q.type AS question_type, se.sequence, se.is_etc, " +
-//            "se.body AS selection_body, sa.response AS subjective_response, ob.etc_answer " +
-//            "FROM question q " +
-//            "LEFT JOIN selection se ON q.ques_id = se.ques_id " +
-//            "LEFT JOIN obj_answer ob ON se.ques_id = ob.ques_id AND se.sequence = ob.sequence AND ob.user_id = :userId" +
-//            "LEFT JOIN subj_answer sa ON q.ques_id = sa.ques_id AND sa.user_id = :userId " +
-//            "WHERE q.survey_id = :surveyId "+
-//            "ORDER BY q.ques_id, se.sequence", nativeQuery = true)
-//    List<Map<String, Object>> findQuestionsAndAnswersBySurveyIdAndUserId(@Param("surveyId") Long surveyId, @Param("userId") String userId);
-
 }
