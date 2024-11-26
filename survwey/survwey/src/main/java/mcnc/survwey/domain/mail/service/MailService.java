@@ -9,7 +9,6 @@ import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserService;
-import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
@@ -90,19 +89,19 @@ public class MailService {
         }
     }
 
-    public String encryptedLink(Long surveyId, String key) throws Exception {
+    public String encryptedLink(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
+        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
 
-        if (survey.getExpireDate().isBefore(LocalDateTime.now())
-                || survey.getExpireDate().isEqual(LocalDateTime.now())) {
-            throw new RuntimeException(String.valueOf(ErrorCode.EXPIRED_SURVEY));
-        }
-
-        String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString(), key);  // 암호화된 surveyId로 URL 구성
+        String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString());
         return baseUrl + encryptedSurveyId;
     }
 
     public String decryptedLink(String surveyId){
+        Survey survey = surveyService.findBySurveyId(Long.parseLong(surveyId));//설문이 존재하는지 확인
+        surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
+
         return baseUrl + surveyId;
     }
     
