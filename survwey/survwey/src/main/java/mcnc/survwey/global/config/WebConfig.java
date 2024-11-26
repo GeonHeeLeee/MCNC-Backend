@@ -11,6 +11,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
 
+    /**
+     * 세션 검사 인터셉터 등록
+     * - 전체 URL 검사하도록 지정
+     * - excludePathPatterns에 세션 검사 예외 URL 지정
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)

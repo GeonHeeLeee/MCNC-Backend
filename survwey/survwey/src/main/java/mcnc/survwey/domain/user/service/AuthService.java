@@ -25,6 +25,14 @@ public class AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 사용자 로그인
+     * - 로그인 성공 시 세션 발급
+     * @param loginDTO
+     * @param request
+     * - 해당 사용자가 존재하지 않으면 에러
+     * - 비밀번호가 일치하지 않으면 에러
+     */
     public void loginUser(LoginDTO loginDTO, HttpServletRequest request) {
         User foundUser = Optional.ofNullable(userService.findByUserId(loginDTO.getUserId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND_BY_ID));
@@ -35,6 +43,11 @@ public class AuthService {
         createUserSession(loginDTO, request);
     }
 
+    /**
+     * 세션 생성 메서드
+     * @param loginDTO
+     * @param request
+     */
     private void createUserSession(LoginDTO loginDTO, HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.setAttribute(LOGIN_USER, loginDTO.getUserId());
