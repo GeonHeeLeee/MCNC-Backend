@@ -22,6 +22,7 @@ public class SurveyDTO {
     private LocalDateTime createDate;
     @NotNull(message = "만료일 지정은 필수입니다.")
     private LocalDateTime expireDate;
+    private String creatorId;
 
     public static SurveyDTO of(Survey survey) {
         return SurveyDTO.builder()
@@ -30,6 +31,7 @@ public class SurveyDTO {
                 .description(survey.getDescription())
                 .createDate(survey.getCreateDate())
                 .expireDate(survey.getExpireDate())
+                .creatorId(survey.getUser().getUserId())
                 .build();
     }
 }

@@ -16,7 +16,6 @@ import java.util.List;
 @SuperBuilder
 public class SurveyWithDetailDTO extends SurveyDTO {
 
-    private String creatorId;
     private List<QuestionDTO> questionList;
 
     public static SurveyWithDetailDTO of(Survey survey) {
@@ -40,7 +39,7 @@ public class SurveyWithDetailDTO extends SurveyDTO {
                 .expireDate(this.getExpireDate())
                 .description(this.getDescription())
                 .user(creator)
-                .createDate(LocalDateTime.now())
+                .createDate(this.getCreateDate() == null ? LocalDateTime.now() : this.getCreateDate())
                 .build();
     }
 }

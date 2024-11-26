@@ -8,20 +8,24 @@ import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.objAnswer.repository.ObjAnswerRepository;
 import mcnc.survwey.domain.objAnswer.service.ObjAnswerService;
 import mcnc.survwey.domain.question.Question;
+import mcnc.survwey.domain.question.dto.QuestionResponseDTO;
 import mcnc.survwey.domain.question.dto.QuestionResultDTO;
 import mcnc.survwey.domain.question.dto.SurveyResultMapper;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.respond.dto.ResponseDTO;
 import mcnc.survwey.domain.respond.repository.RespondRepository;
+import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.selection.dto.SelectionResultDTO;
 import mcnc.survwey.domain.subjAnswer.SubjAnswer;
 import mcnc.survwey.domain.subjAnswer.repository.SubjAnswerRepository;
 import mcnc.survwey.domain.subjAnswer.service.SubjAnswerService;
 import mcnc.survwey.domain.survey.common.Survey;
+import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
 import mcnc.survwey.domain.survey.common.service.SurveyService;
-import mcnc.survwey.domain.survey.response.dto.SurveyResultDTO;
 import mcnc.survwey.domain.survey.response.dto.SurveyResponseDTO;
+import mcnc.survwey.domain.survey.response.dto.SurveyResultDTO;
+import mcnc.survwey.domain.survey.response.dto.SurveyReplyDTO;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.dto.AgeCountDTO;
 import mcnc.survwey.domain.user.dto.GenderCountDTO;
@@ -31,11 +35,10 @@ import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static mcnc.survwey.domain.subjAnswer.QSubjAnswer.subjAnswer;
 
 @Service
 @Slf4j
@@ -44,23 +47,24 @@ public class SurveyResponseService {
 
     private final SurveyService surveyService;
     private final UserService userService;
+    private final RespondService respondService;
     private final RespondRepository respondRepository;
     private final ObjAnswerRepository objAnswerRepository;
     private final SubjAnswerRepository subjAnswerRepository;
     private final QuestionRepository questionRepository;
     private final ObjAnswerService objAnswerService;
     private final SubjAnswerService subjAnswerService;
-
+    private final SurveyRepository surveyRepository;
 
     @Transactional
-    public void saveSurveyResponse(SurveyResponseDTO surveyResponseDTO, String userId) {
+    public void saveSurveyReply(SurveyReplyDTO surveyReplyDTO, String userId) {
         User respondedUser = userService.findByUserId(userId);
-        Survey respondedSurvey = surveyService.findBySurveyId(surveyResponseDTO.getSurveyId());
+        Survey respondedSurvey = surveyService.findBySurveyId(surveyReplyDTO.getSurveyId());
 
-        isQuestionInputMatchToSurvey(surveyResponseDTO, respondedSurvey);
+        validateQuestionInputForSurvey(surveyReplyDTO, respondedSurvey);
         surveyService.checkSurveyExpiration(respondedSurvey.getExpireDate());
 
-        List<ResponseDTO> responseList = surveyResponseDTO.getResponseList();
+        List<ResponseDTO> responseList = surveyReplyDTO.getResponseList();
         List<ObjAnswer> objAnswerList = objAnswerService.createObjectiveAnswers(responseList, respondedUser);
         List<SubjAnswer> subjAnswerList = subjAnswerService.createSubjectiveAnswers(responseList, respondedUser);
 
@@ -69,14 +73,14 @@ public class SurveyResponseService {
         objAnswerRepository.saveAll(objAnswerList);
     }
 
-    private void isQuestionInputMatchToSurvey(SurveyResponseDTO surveyResponseDTO, Survey respondedSurvey) {
+    private void validateQuestionInputForSurvey(SurveyReplyDTO surveyReplyDTO, Survey respondedSurvey) {
         Set<Long> inputQuestionSet = respondedSurvey.getQuestionList()
                 .stream().map(Question::getQuesId).collect(Collectors.toSet());
 
-        Set<Long> existingQuestionSet = surveyResponseDTO.getResponseList()
+        Set<Long> existingQuestionSet = surveyReplyDTO.getResponseList()
                 .stream().map(ResponseDTO::getQuesId).collect(Collectors.toSet());
 
-        if(!inputQuestionSet.equals(existingQuestionSet)) {
+        if (!inputQuestionSet.equals(existingQuestionSet)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.QUESTION_NOT_MATCH_TO_SURVEY);
         }
     }
@@ -84,13 +88,13 @@ public class SurveyResponseService {
 
     public SurveyResultDTO getSurveyResponsesResult(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.validateUserMadeSurvey(userId, survey);
 
         List<SurveyResultMapper> surveyResultMapperList = questionRepository.findQuestionsAndAnswersBySurveyId(surveyId)
                 .stream().map(SurveyResultMapper::new).toList();
 
         SurveyResultDTO surveyResultDTO = SurveyResultDTO.of(survey);
-        setAgeAndGenderCount(surveyId, surveyResultDTO);
+        addAgeAndGenderDistribution(surveyId, surveyResultDTO);
 
         Map<Long, QuestionResultDTO> questionMap = new LinkedHashMap<>();
 
@@ -127,17 +131,84 @@ public class SurveyResponseService {
                 }
                 break;
             default:
-                //TO-DO 예외처리 로직 작성
-                break;
+                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
         }
     }
 
-    private void setAgeAndGenderCount(Long surveyId, SurveyResultDTO surveyResultDTO) {
+    private void addAgeAndGenderDistribution(Long surveyId, SurveyResultDTO surveyResultDTO) {
         List<GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);
         List<AgeCountDTO> ageCountDTOList = userService.getAgeGroupCountBySurveyId(surveyId);
 
         surveyResultDTO.setAgeCountList(ageCountDTOList);
         surveyResultDTO.setGenderCountList(genderCountDTOList);
+    }
+
+
+    public SurveyResponseDTO getUserRespondedSurvey(Long surveyId, String userId) {
+        respondService.validateUserResponseToSurvey(surveyId, userId);
+        SurveyResponseDTO surveyResponseDTO = Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
+                .map(SurveyResponseDTO::of)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
+
+        Map<Object, List<ObjAnswer>> objAnswerMap = getObjAnswerMap(surveyId, userId);
+        Map<Long, String> subjAnswerMap = getSubjAnswerMap(surveyId, userId);
+
+        surveyResponseDTO.getQuestionList()
+                .forEach(question -> assignAnswersToQuestion(question, objAnswerMap, subjAnswerMap));
+
+        return surveyResponseDTO;
+    }
+
+    private void assignAnswersToQuestion(QuestionResponseDTO question, Map<Object, List<ObjAnswer>> objAnswerMap, Map<Long, String> subjAnswerMap) {
+        if (!objAnswerMap.containsKey(question.getQuesId()) && !subjAnswerMap.containsKey(question.getQuesId())) {
+            return;
+        }
+        switch (question.getQuestionType()) {
+            case OBJ_MULTI:
+                objAnswerMap.get(question.getQuesId()).forEach(objAnswer -> {
+                    question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
+                    setEtcAnswerIfPresent(question, objAnswer);
+                });
+                break;
+
+            case OBJ_SINGLE:
+                ObjAnswer objAnswer = objAnswerMap.get(question.getQuesId()).get(0);
+                question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
+                setEtcAnswerIfPresent(question, objAnswer);
+                break;
+
+            case SUBJECTIVE:
+                question.setSubjAnswer(subjAnswerMap.get(question.getQuesId()));
+                break;
+
+            default:
+                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
+        }
+    }
+
+    private void setEtcAnswerIfPresent(QuestionResponseDTO question, ObjAnswer objAnswer) {
+        if (objAnswer.getEtcAnswer() != null && !objAnswer.getEtcAnswer().isEmpty()) {
+            question.setEtcAnswer(objAnswer.getEtcAnswer());
+        }
+    }
+
+    private Map<Object, List<ObjAnswer>> getObjAnswerMap(Long surveyId, String userId) {
+        //QuesId를 키로 가지도록
+        return objAnswerRepository.findUserRespondedAnswer(surveyId, userId)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        answer -> answer.getSelection().getQuestion().getQuesId()
+                ));
+    }
+
+    private Map<Long, String> getSubjAnswerMap(Long surveyId, String userId) {
+        //QuesId를 키로 가지도록
+        return subjAnswerRepository.findUserRespondedAnswer(surveyId, userId)
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(subjAnswer.question.quesId),
+                        tuple -> tuple.get(subjAnswer.response)
+                ));
     }
 
 }

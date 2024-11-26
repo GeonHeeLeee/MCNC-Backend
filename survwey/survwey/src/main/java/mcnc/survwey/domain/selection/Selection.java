@@ -2,10 +2,7 @@ package mcnc.survwey.domain.selection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.question.Question;
@@ -17,7 +14,8 @@ import java.util.List;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @Slf4j
 @AllArgsConstructor
 @NoArgsConstructor

@@ -7,13 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.response.dto.SurveyResultDTO;
+import mcnc.survwey.domain.survey.response.dto.SurveyReplyDTO;
 import mcnc.survwey.domain.survey.response.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.response.service.SurveyResponseService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -25,7 +24,7 @@ public class SurveyResponseController {
     private final SurveyResponseService surveyResponseService;
     /**
      * 응답 저장
-     * @param surveyResponseDTO
+     * @param surveyReplyDTO
      * @return
      */
     @PostMapping()
@@ -42,9 +41,9 @@ public class SurveyResponseController {
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> responseToSurvey(@RequestBody SurveyResponseDTO surveyResponseDTO) {
+    public ResponseEntity<Object> responseToSurvey(@RequestBody SurveyReplyDTO surveyReplyDTO) {
         String userId = SessionContext.getCurrentUser();
-        surveyResponseService.saveSurveyResponse(surveyResponseDTO, userId);
+        surveyResponseService.saveSurveyReply(surveyReplyDTO, userId);
         return ResponseEntity.ok(null);
     }
 
@@ -58,13 +57,20 @@ public class SurveyResponseController {
     @Operation(summary = "본인이 생성한 설문 결과 조회", description = "PathVariable로 설문 아이디를 넣어 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "400", description = "errorMessage : 해당 아이디의 설문이 존재하지 않습니다."),
-            @ApiResponse(responseCode = "401", description = "errorMessage : 본인이 생성한 설문이 아닙니다.")
+            @ApiResponse(responseCode = "403", description = "errorMessage : 본인이 생성한 설문이 아닙니다.")
     })
-    public ResponseEntity<SurveyResultDTO> inquirySurveyResults(@PathVariable Long surveyId) {
+    public ResponseEntity<SurveyResultDTO> getSurveyResults(@PathVariable Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         SurveyResultDTO surveyResponse = surveyResponseService.getSurveyResponsesResult(surveyId, userId);
         return ResponseEntity.ok(surveyResponse);
     }
 
+
+    @GetMapping("/{surveyId}")
+    public ResponseEntity<Object> getUserSurveyResponse(@PathVariable Long surveyId) {
+        String userId = SessionContext.getCurrentUser();
+        SurveyResponseDTO userRespondedSurvey = surveyResponseService.getUserRespondedSurvey(surveyId, userId);
+        return ResponseEntity.ok(userRespondedSurvey);
+    }
 
 }

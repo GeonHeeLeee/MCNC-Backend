@@ -21,7 +21,6 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 
 @Service
@@ -51,7 +50,7 @@ public class MailService {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
 
-        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
 
         try{
