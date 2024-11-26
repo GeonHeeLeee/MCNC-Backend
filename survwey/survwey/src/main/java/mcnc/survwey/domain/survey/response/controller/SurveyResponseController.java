@@ -37,6 +37,7 @@ public class SurveyResponseController {
                 - 해당 아이디의 사용자가 존재하지 않습니다.
                 - 해당 아이디의 설문이 존재하지 않습니다.
                 - 해당 설문은 종료된 설문입니다.
+                - 이미 해당 설문에 응답하셨습니다.
                 - 해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다.(다른 설문의 QuesId를 요청하거나 설문의 모든 질문에 답하지 않았을때)
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
@@ -67,6 +68,11 @@ public class SurveyResponseController {
 
 
     @GetMapping("/{surveyId}")
+    @Operation(summary = "본인이 응답한 특정 설문 조회", description = "PathVariable로 설문 아이디를 넣어 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "400", description = "errorMessage : 해당 설문에 참여하지 않았습니다."),
+            @ApiResponse(responseCode = "400", description = "errorMessage : 해당 아이디의 설문이 존재하지 않습니다.")
+    })
     public ResponseEntity<Object> getUserSurveyResponse(@PathVariable Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         SurveyResponseDTO userRespondedSurvey = surveyResponseService.getUserRespondedSurvey(surveyId, userId);
