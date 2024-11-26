@@ -91,7 +91,7 @@ public class MailService {
 
     public String encryptedLink(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
-        surveyService.verifyUserMadeSurvey(userId, survey);
+        surveyService.validateUserMadeSurvey(userId, survey);
         surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
 
         String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString());
