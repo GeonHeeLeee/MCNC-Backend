@@ -88,7 +88,7 @@ public class MailService {
         context.setVariable("surveyTitle", survey.getTitle());
         context.setVariable("surveyLink", encryptedLink);
         context.setVariable("expireDate", getFormatedDate(survey.getExpireDate()));
-        sendMail(context, survey.getTitle(), user.getEmail(), "/mail/invitation");
+        sendMail(context, survey.getTitle(), user.getEmail(), "mail/invitation");
     }
 
     public String getFormatedDate(LocalDateTime dateTime) {
@@ -135,7 +135,7 @@ public class MailService {
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyLink", link);
 
-            sendMail(context, survey.getTitle(), user.getEmail(), "/mail/notification");
+            sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
         } catch (MailException | MessagingException e) {
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class MailService {
         context.setVariable("tempAuthCode", tempAuthCode);
         context.setVariable("expireDate", getFormatedDate(LocalDateTime.now().plusMinutes(10)));
         userRedisService.saveVerificationCode(user.getUserId(), tempAuthCode);
-        sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "/mail/authentication");
+        sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "mail/authentication");
     }
 
 }
