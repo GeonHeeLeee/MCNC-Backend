@@ -77,7 +77,7 @@ public class AccountService {
      * @param modifyDTO
      * @param userId
      */
-    public void modifyUser(ModifyDTO modifyDTO, String userId) {
+    public ModifyDTO modifyUserProfile(ModifyDTO modifyDTO, String userId) {
         User user = userService.findByUserId(userId);
 
         if (modifyDTO.getName() == null || modifyDTO.getName().isEmpty() || modifyDTO.getName().isBlank()) {
@@ -88,11 +88,19 @@ public class AccountService {
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
         //아이디, 성별, 생일은 변경하지 않음
-        
+
         user.setEmail(modifyDTO.getEmail());
         user.setName(modifyDTO.getName());
 
         userRepository.save(user);
+
+        return ModifyDTO.builder()
+                .userId(user.getUserId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .birth(user.getBirth())
+                .gender(user.getGender())
+                .build();
     }
 
     /**
