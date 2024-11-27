@@ -58,6 +58,11 @@ public class AccountController {
         return ResponseEntity.ok(authDTO.getUserId());
     }
 
+    /**
+     * ID, Email 중복 검사
+     * @param request
+     * @return
+     */
     @PostMapping("/join/check")
     @Operation(summary = "ID, Email 중복 검사", description = "userId, email Map 응답으로 주면 됨 (미응답 X)<br>  "
             + " userId (5~20 글자, 영문과 숫자 조합), email(유효한 이메일 주소 형식)")
@@ -77,10 +82,12 @@ public class AccountController {
      * @return
      */
     @PostMapping("/modify/profile")
-    @Operation(summary = "프로필 수정", description = "name, birth, gender(M or F) (사용자 프로필 뭐 수정할지 말해주셈) <br>"
-            + "name, email, birth, gender에서 빈 값으로 들어오면 기존 사용자 정보 재사용")
+    @Operation(summary = "프로필 수정", description = "userId, email, name, birth, gender(M or F)<br>"
+            + "name, email 빈 값으로 들어오면 기존 사용자 정보 재사용 <br>"
+            + "userId, birth, gender 변경사항 아님")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "프로필 수정 성공")
+            @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
+            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
     public ResponseEntity<Object> modify(@Valid @RequestBody ModifyDTO modifyDTO) {
         String userId = SessionContext.getCurrentUser();
@@ -98,7 +105,7 @@ public class AccountController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
-            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
     public ResponseEntity<ModifyDTO> profileDetails(){
         String userId = SessionContext.getCurrentUser();
@@ -114,7 +121,7 @@ public class AccountController {
      * @return
      */
     @PostMapping("/modify/password")
-    @Operation(summary = "사용자 password 변경", description = "userID, password를 응답으로 보내주면됨")
+    @Operation(summary = "사용자 password 변경", description = "userID, password 응답으로 보내주면됨")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다.")

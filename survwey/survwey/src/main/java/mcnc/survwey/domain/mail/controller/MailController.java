@@ -86,4 +86,18 @@ public class MailController {
         }
     }
 
+
+    /**
+     * 사용자 비밀번호 찾기
+     * 사용자가 비밀번호를 찾기를 위한 인증
+     * @param userId
+     * @return
+     */
+    @PostMapping("/password")
+    public ResponseEntity<String> modifyPasswordSendMail(@RequestBody String userId){
+        mailService.sendPasswordModifyLink(userId);
+
+        return ResponseEntity.ok("임시 번호 발송");
+    }
+
 }

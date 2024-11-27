@@ -81,22 +81,30 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
 
+    /**
+     * 설문 특정 키워드로 검색
+     * @param title
+     * @param page
+     * @param size
+     * @return
+     */
     @GetMapping("/search")
     @Operation(summary = "설문 전체 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "참여한 설문 검색 성공"),
+            @ApiResponse(responseCode = "200", description = "설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<Object> searchSurveys(@RequestParam String title,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {
         Page<Survey> surveys = surveyInquiryService.searchSurveys(title, page, size);
+        //전체 설문에서 검색
         Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
     }
 
     /**
-     * 사용자가 특정 키워드로 설문을 찾기 위해 설문 조회
+     * 사용자가 특정키워드로 본인이 생성한 설문 검색
      *
      * @param title
      * @param page
@@ -115,6 +123,7 @@ public class SurveyInquiryController {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.searchUserCreatedSurvey(userId, title, page, size);
+        //생성한 설문에서 검색
         Page<SurveyDTO> surveyDTOs = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyDTOs);
     }
@@ -139,6 +148,7 @@ public class SurveyInquiryController {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.searchRespondedSurveys(userId, title, page, size);
+        //참여한 설문에서 검색
         Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
     }
