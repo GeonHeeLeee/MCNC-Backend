@@ -91,7 +91,7 @@ public class AccountController {
     })
     public ResponseEntity<ProfileModifyDTO> modify(@RequestBody ProfileModifyDTO profileDTO) {
         String userId = SessionContext.getCurrentUser();
-        ProfileModifyDTO modifyProfile = accountService.modifyUserProfile(profileDTO, userId);
+        accountService.modifyUserProfile(profileDTO, userId);
         return ResponseEntity.ok(null);
     }
 

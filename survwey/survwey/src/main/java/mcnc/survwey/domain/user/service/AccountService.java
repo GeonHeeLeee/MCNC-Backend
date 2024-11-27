@@ -78,7 +78,8 @@ public class AccountService {
      * @param profileModifyDTO
      * @param userId
      */
-    public ProfileModifyDTO modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
+    @Transactional
+    public void modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
         User user = userService.findByUserId(userId);
 
         if (profileModifyDTO.getName() == null || profileModifyDTO.getName().isEmpty() || profileModifyDTO.getName().isBlank()) {
@@ -94,11 +95,6 @@ public class AccountService {
         user.setName(profileModifyDTO.getName());
 
         userRepository.save(user);
-
-        return ProfileModifyDTO.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
     }
 
     /**
