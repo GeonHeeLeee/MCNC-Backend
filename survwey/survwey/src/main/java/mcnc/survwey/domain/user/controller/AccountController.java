@@ -89,10 +89,10 @@ public class AccountController {
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<Object> modify(@Valid @RequestBody ModifyDTO modifyDTO) {
+    public ResponseEntity<ModifyDTO> modify(@Valid @RequestBody ModifyDTO modifyDTO) {
         String userId = SessionContext.getCurrentUser();
-        accountService.modifyUser(modifyDTO, userId);
-        return ResponseEntity.ok(userId);
+        ModifyDTO modifyProfile = accountService.modifyUserProfile(modifyDTO, userId);
+        return ResponseEntity.ok(modifyProfile);
     }
 
     /**

@@ -44,7 +44,7 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     //메일 보내는 메소드
-    public void mailSender(Context context, String title, String email, String link) throws MessagingException {
+    public void sendMail(Context context, String title, String email, String link) throws MessagingException {
         String htmlContent = templateEngine.process("mail/send", context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
         MimeMessageHelper helper = new MimeMessageHelper(message, true);// T: html 형식, F: 텍스트 형식
@@ -70,13 +70,10 @@ public class MailService {
      * @param link
      */
     public void sendLinkMessage(String userId, Long surveyId, String link){
-
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-
         surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
-
         try{
             LocalDateTime surveyExpireDay = survey.getExpireDate();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
@@ -88,7 +85,7 @@ public class MailService {
             context.setVariable("surveyLink", link);
             context.setVariable("expireDate", surveyExpireDay.format(formatter));
 
-            mailSender(context, survey.getTitle(), user.getEmail(), link);
+            sendMail(context, survey.getTitle(), user.getEmail(), link);
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -136,7 +133,7 @@ public class MailService {
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyLink", link);
-            mailSender(context, survey.getTitle(), user.getEmail(), link);
+            sendMail(context, survey.getTitle(), user.getEmail(), link);
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
