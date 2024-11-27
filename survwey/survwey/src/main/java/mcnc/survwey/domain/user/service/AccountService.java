@@ -4,7 +4,7 @@ package mcnc.survwey.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.user.dto.AuthDTO;
-import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
+
 import mcnc.survwey.domain.user.dto.ModifyDTO;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.repository.UserRepository;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -111,17 +112,16 @@ public class AccountService {
                 .build();
     }
 
-    /**
-     * 비밀번호 변경
-     *
-     * @param changePasswordDTO
-     */
-    public void changePassword(ChangePasswordDTO changePasswordDTO) {
-        User user = userService.findByUserId(changePasswordDTO.getUserId());
-        //사용자 Id 찾은 후
-        user.setPassword(passwordEncoder.encode(changePasswordDTO.getPassword()));
-        //사용자 password 재설정
-        userRepository.save(user);
+
+    public String getEmailByUserId(String userId) {
+        return Optional.of(userRepository.findEmailById(userId))
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_ID));
     }
 
+    @Transactional
+    public void modifyPassword(String userId, String password) {
+        User user = userService.findByUserId(userId);
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+    }
 }

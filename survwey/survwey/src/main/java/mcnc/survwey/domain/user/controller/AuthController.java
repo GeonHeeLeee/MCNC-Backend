@@ -9,10 +9,13 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.domain.user.dto.AuthCodeDTO;
 import mcnc.survwey.domain.user.dto.LoginDTO;
 import mcnc.survwey.domain.user.service.AccountService;
 import mcnc.survwey.domain.user.service.AuthService;
+import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.global.exception.custom.CustomException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +32,7 @@ public class AuthController {
 
 
     private final AuthService authService;
+    private final UserRedisService userRedisService;
 
     /**
      * 사용자 로그인
@@ -60,6 +64,7 @@ public class AuthController {
      * 사용자 로그아웃
      * - 요청 시 세션이 유효하면 200
      * - 세션이 유효하지 않으면 401
+     *
      * @param request
      * @return
      */
@@ -78,6 +83,7 @@ public class AuthController {
     /**
      * 프론트 세션 체크
      * - 세션이 유효하지 않을 시 로그인 화면으로 리다이렉션 용
+     *
      * @return
      */
     @GetMapping("/session")
@@ -91,7 +97,19 @@ public class AuthController {
     }
 
 
-    //비밀번호 변경 요청(이메일 전송 및 토큰 생성)
-
-    //클릭한 링크에 대해 토큰이 유효한지 검증하는 메서드
+    @PostMapping("/password/check")
+    @Operation(summary = "비밀번호 변경 인증번호 체크", description = "입력한 인증번호가 일치하는지 체크")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일치(유효)"),
+            @ApiResponse(responseCode = "403", description = "인증번호가 일치하지 않거나 유효하지 않음")
+    })
+    public ResponseEntity<Object> checkPasswordModifyCode(@Valid @RequestBody AuthCodeDTO authCodeDTO) {
+        String tempAuthCode = authCodeDTO.getTempAuthCode();
+        boolean isVerified = userRedisService.verifyCode(authCodeDTO.getUserId(), tempAuthCode);
+        if (isVerified) {
+            userRedisService.saveVerifiedStatus(authCodeDTO.getUserId());
+            return ResponseEntity.ok(null);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
 }

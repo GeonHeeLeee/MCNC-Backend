@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisService {
 
     private final StringRedisTemplate redisTemplate;
+    private static final long CODE_EXPIRATION_MINUTES = 10; // 유효시간 10분
 
     // TODO: 현재 에외 처리가 완벽하지 않은데 추후 예외처리 더 확실히 하기
 
@@ -57,5 +58,4 @@ public class RedisService {
     private String generateRedisKey(String creatorId, Long surveyId){
         return "survey:end:" + creatorId + "/" + surveyId;
     }
-
 }

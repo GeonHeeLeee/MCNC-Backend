@@ -8,19 +8,23 @@ import mcnc.survwey.domain.mail.utils.EncryptionUtil;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.user.User;
+import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
+import mcnc.survwey.global.redis.RedisService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -32,7 +36,7 @@ public class MailService {
     private final UserService userService;
     private final SurveyService surveyService;
     private final EncryptionUtil encryptionUtil;
-    private final ApplicationEventPublisher eventPublisher;
+    private final UserRedisService userRedisService;
 
     @Value("${MAIL_USER_NAME}")
     private String senderEmail;
@@ -44,7 +48,7 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     //메일 보내는 메소드
-    public void mailSender(Context context, String title, String email, String link) throws MessagingException {
+    public void mailSender(Context context, String title, String email) throws MessagingException {
         String htmlContent = templateEngine.process("mail/send", context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
         MimeMessageHelper helper = new MimeMessageHelper(message, true);// T: html 형식, F: 텍스트 형식
@@ -59,7 +63,6 @@ public class MailService {
         helper.addInline("logoImage", logoResource); // 이미지 ID 'logoImage'로 첨부
         ClassPathResource titleResource = new ClassPathResource(TITLE_IMAGE_PATH);
         helper.addInline("titleImage", titleResource); // 이미지 ID 'titleImage'로 첨부
-        log.info("link = {}", link); //테스트용
         mailSender.send(message);
     }
 
@@ -67,7 +70,6 @@ public class MailService {
      * 설문 초대
      * @param userId
      * @param surveyId
-     * @param link
      */
     public void sendLinkMessage(String userId, Long surveyId){
 
@@ -94,7 +96,7 @@ public class MailService {
             context.setVariable("expireDate", surveyExpireDay.format(formatter));
 
             log.info("surveyLink = {}", encryptedLink);//메일 전송 후 링크 클릭할 때 테스트 용 (지우지 마쎼용~)
-            mailSender(context, survey.getTitle(), user.getEmail(), encryptedLink);
+            mailSender(context, survey.getTitle(), user.getEmail());
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -140,7 +142,7 @@ public class MailService {
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyLink", link);
-            mailSender(context, survey.getTitle(), user.getEmail(), link);
+            mailSender(context, survey.getTitle(), user.getEmail());
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -148,25 +150,24 @@ public class MailService {
         }
     }
 
-//    /**
-//     * 비밀번호 찾기 인증 메일
-//     * @param userId
-//     */
-//    public void sendPasswordModifyLink(String userId){
-//        log.info("userId = {}", userId);
-//        User user = userService.findByUserId(userId);
-//        String password = createCode();
-//        try{
-//            Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-//            context.setVariable("inviterName", user.getName());
-//            context.setVariable("temporaryPassword", password);
-//
-//            mailSender(context, survey.getTitle(), user.getEmail(), link);
-//        } catch (MailException | MessagingException e){
-//            throw new RuntimeException("메일 발송 실패 ", e);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    /**
+     * 비밀번호 찾기 인증 메일
+     * @param userId
+     */
+    public void sendPasswordModifyAuthNumber(String userId){
+        User user = userService.findByUserId(userId);
+        String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
+        try{
+            Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
+            context.setVariable("inviterName", user.getName());
+            context.setVariable("tempAuthCode", tempAuthCode);
+            userRedisService.saveVerificationCode(userId, tempAuthCode);
+            mailSender(context, "비밀번호 변경 인증번호 발급", user.getEmail());
+        } catch (MailException | MessagingException e){
+            throw new RuntimeException("메일 발송 실패 ", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

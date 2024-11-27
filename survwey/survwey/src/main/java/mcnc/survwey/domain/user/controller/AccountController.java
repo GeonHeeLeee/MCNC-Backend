@@ -8,14 +8,19 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.user.dto.AuthDTO;
-import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
+
 import mcnc.survwey.domain.user.dto.ModifyDTO;
+import mcnc.survwey.domain.user.dto.PasswordModifyDTO;
 import mcnc.survwey.domain.user.service.AccountService;
+import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.global.config.SessionContext;
+import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,6 +30,7 @@ import java.util.Map;
 public class AccountController {
 
     private final AccountService accountService;
+    private final UserRedisService userRedisService;
 
     /**
      * 회원 가입 로직
@@ -60,6 +66,7 @@ public class AccountController {
 
     /**
      * ID, Email 중복 검사
+     *
      * @param request
      * @return
      */
@@ -98,6 +105,7 @@ public class AccountController {
     /**
      * 사용자 프로필 조회
      * 사용자 ID 세션으로 가져온 후 조회
+     *
      * @return
      */
     @GetMapping("/profile")
@@ -107,27 +115,44 @@ public class AccountController {
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<ModifyDTO> profileDetails(){
+    public ResponseEntity<ModifyDTO> profileDetails() {
         String userId = SessionContext.getCurrentUser();
         ModifyDTO modifyDTO = accountService.getProfile(userId);
         return ResponseEntity.ok(modifyDTO);
     }
 
+
     /**
-     * 사용자 비밀번호 변경 로직
-     * 해당 사용자의 ID를 조회 후 변경
+     * 사용자 비밀번호 변경을 위한 이메일 응답
+     * - 사용자의 이메일로 임시 인증번호 전송을 위한 프론트엔드에게 이메일 응답
      *
-     * @param changePasswordDTO
+     * @param userId
      * @return
      */
-    @PostMapping("/modify/password")
-    @Operation(summary = "사용자 password 변경", description = "userID, password 응답으로 보내주면됨")
+    @GetMapping("/modify/password/email/{userId}")
+    @Operation(summary = "사용자 비밀번호 변경을 위한 이메일 전송", description = "PathVariable로 요청")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다.")
+            @ApiResponse(responseCode = "200", description = "이메일 전송: email : abc@qwe.com "),
+            @ApiResponse(responseCode = "400", description = "해당 userId의 사용자 이메일이 없을때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다.")
     })
-    public ResponseEntity<Object> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
-        accountService.changePassword(changePasswordDTO);
+    public ResponseEntity<Object> getEmailToModifyPassword(@PathVariable String userId) {
+        String email = accountService.getEmailByUserId(userId);
+        return ResponseEntity.ok().body(Map.of("email", email));
+    }
+
+    @PostMapping("/modify/password")
+    @Operation(summary = "사용자 비밀번호 변경을 위한 이메일 전송", description = "PathVariable로 요청")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "이메일 전송: email : abc@qwe.com "),
+            @ApiResponse(responseCode = "400", description = "해당 userId의 사용자 이메일이 없을때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다.")
+    })
+    public ResponseEntity<Object> modifyPassword(@Valid @RequestBody PasswordModifyDTO passwordModifyDTO) {
+        String userId = passwordModifyDTO.getUserId();
+        if (!userRedisService.isVerified(userId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        accountService.modifyPassword(userId, passwordModifyDTO.getPassword());
+        userRedisService.deleteVerifiedStatus(userId);
         return ResponseEntity.ok(null);
     }
 }
