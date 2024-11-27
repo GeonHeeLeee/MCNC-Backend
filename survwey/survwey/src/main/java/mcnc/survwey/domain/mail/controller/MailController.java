@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,9 +49,7 @@ public class MailController {
     })
     public ResponseEntity<String> sendMail(@PathVariable Long surveyId) throws Exception{
          String userId = SessionContext.getCurrentUser();
-         String surveyLink = mailService.encryptedLink(surveyId, userId);//링크 암호화
-         log.info("surveyLink = {}", surveyLink);//메일 전송 후 링크 클릭할 때 테스트 용 (지우지 마쎼용~)
-         mailService.sendLinkMessage(userId, surveyId, surveyLink);
+         mailService.sendLinkMessage(userId, surveyId);
          return ResponseEntity.ok("메일 발송!");
     }
 
@@ -77,7 +74,7 @@ public class MailController {
     public ResponseEntity<Map<String, String>> handleRedirect(@PathVariable String token) {
         String userId = SessionContext.getCurrentUser();
         String surveyId = encryptionUtil.decrypt(token);
-        String decryptedUrl = mailService.decryptedLink(surveyId);
+        String decryptedUrl = mailService.decryptLink(surveyId);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("decryptedUrl", decryptedUrl));

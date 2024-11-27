@@ -69,11 +69,16 @@ public class MailService {
      * @param surveyId
      * @param link
      */
-    public void sendLinkMessage(String userId, Long surveyId, String link){
+    public void sendLinkMessage(String userId, Long surveyId){
 
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
 
+        //여기서 바로 호출하게 했음 Controller에서 호출하면 중복으로 Survey, User 등 조회하니까
+        String encryptedLink = encryptLink(survey.getSurveyId());
+
+        //유효성 검사
+        surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
         surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
 
@@ -85,10 +90,11 @@ public class MailService {
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyTitle", survey.getTitle());
-            context.setVariable("surveyLink", link);
+            context.setVariable("surveyLink", encryptedLink);
             context.setVariable("expireDate", surveyExpireDay.format(formatter));
 
-            mailSender(context, survey.getTitle(), user.getEmail(), link);
+            log.info("surveyLink = {}", encryptedLink);//메일 전송 후 링크 클릭할 때 테스트 용 (지우지 마쎼용~)
+            mailSender(context, survey.getTitle(), user.getEmail(), encryptedLink);
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -99,13 +105,10 @@ public class MailService {
     /**
      * URL 파라미터 암호화
      * @param surveyId
-     * @param userId
      * @return
      */
-    public String encryptedLink(Long surveyId, String userId) {
-        Survey survey = surveyService.findBySurveyId(surveyId);//설문 존재 하는지 확인
-        surveyService.validateUserMadeSurvey(userId, survey);//사용자 본인이 만들었는지 확인
-        surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
+    public String encryptLink(Long surveyId) {
+        //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
         String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString());
         return baseUrl + encryptedSurveyId;
     }
@@ -115,7 +118,7 @@ public class MailService {
      * @param surveyId
      * @return
      */
-    public String decryptedLink(String surveyId){
+    public String decryptLink(String surveyId){
         Survey survey = surveyService.findBySurveyId(Long.parseLong(surveyId));//설문이 존재하는지 확인
         surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
         return baseUrl + surveyId;
@@ -130,7 +133,8 @@ public class MailService {
     public void sendVerifySurveyLink(String userId, Long surveyId, String link){
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        surveyService.validateUserMadeSurvey(userId, survey);
+        //어차피 Key에 들어가는건 생성자 아이디라 검증 안해도 됨
+//        surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
         try{
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
