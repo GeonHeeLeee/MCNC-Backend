@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.response.dto.SurveyResultDTO;
@@ -42,7 +43,7 @@ public class SurveyResponseController {
                 """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> responseToSurvey(@RequestBody SurveyReplyDTO surveyReplyDTO) {
+    public ResponseEntity<Object> responseToSurvey(@Valid @RequestBody SurveyReplyDTO surveyReplyDTO) {
         String userId = SessionContext.getCurrentUser();
         surveyResponseService.saveSurveyReply(surveyReplyDTO, userId);
         return ResponseEntity.ok(null);

@@ -83,6 +83,7 @@ public class SurveyManageService {
     public void deleteSurvey(String userId, Survey survey) {
         surveyService.validateUserMadeSurvey(userId, survey);
         surveyRepository.delete(survey);
+        redisService.deleteSurveyFromRedis(survey.getSurveyId());
     }
 
 
@@ -102,9 +103,10 @@ public class SurveyManageService {
         //설문 응답자가 존재하면 error
         respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
         Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
+
         //삭제(존재하는지 확인 및 생성자 검증 후)
         deleteSurvey(userId, existingSurvey);
-        redisService.deleteSurveyFromRedis(existingSurvey.getSurveyId());
+
         //생성일은 처음과 같이 고정(유효성 검사)
         surveyWithDetailDTO.setCreateDate(existingSurvey.getCreateDate());
         //다시 저장
@@ -120,6 +122,7 @@ public class SurveyManageService {
         //본인이 만든 설문인지 검증
         surveyService.validateUserMadeSurvey(userId, survey);
         survey.setExpireDate(LocalDateTime.now());
+        redisService.expireImmediately(surveyId);
         //만료일 현재로 변경
         surveyRepository.save(survey);
     }

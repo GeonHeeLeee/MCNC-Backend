@@ -19,7 +19,8 @@ public enum ErrorCode {
     SURVEY_CREATOR_NOT_MATCH("본인이 생성한 설문이 아닙니다."),
     QUESTION_NOT_MATCH_TO_SURVEY("해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다."),
     HAS_NOT_RESPOND_TO_SURVEY("해당 설문에 참여하지 않았습니다."),
-    HAS_ALREADY_RESPOND_TO_SURVEY("해당 설문에 이미 응답하셨습니다.");
+    HAS_ALREADY_RESPOND_TO_SURVEY("해당 설문에 이미 응답하셨습니다."),
+    UNEXPECTED_REDIS_ERROR("Redis 에러가 발생했습니다.");
     private final String errorMessage;
 
     ErrorCode(String errorMessage) {
