@@ -49,7 +49,7 @@ public class SurveyManageService {
         //설문 생성 후 저장
         Survey createdSurvey = surveyService.buildAndSaveSurvey(surveyWithDetailDTO, creator);
         //Redis에 Key 저장
-        redisService.saveSurveyExpireTime(createdSurvey.getSurveyId(), createdSurvey.getExpireDate());
+        redisService.saveSurveyExpireTime(createdSurvey.getSurveyId(), creator.getUserId(), createdSurvey.getExpireDate());
         surveyWithDetailDTO.getQuestionList()
                 .forEach(questionDTO -> {
                     //질문 생성 후 저장
@@ -70,7 +70,7 @@ public class SurveyManageService {
     public void deleteSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);
-        redisService.deleteSurveyFromRedis(surveyId);
+        redisService.deleteSurveyFromRedis(userId, surveyId);
         surveyRepository.delete(survey);
     }
 
@@ -83,7 +83,7 @@ public class SurveyManageService {
     public void deleteSurvey(String userId, Survey survey) {
         surveyService.validateUserMadeSurvey(userId, survey);
         surveyRepository.delete(survey);
-        redisService.deleteSurveyFromRedis(survey.getSurveyId());
+        redisService.deleteSurveyFromRedis(userId, survey.getSurveyId());
     }
 
 
@@ -128,7 +128,7 @@ public class SurveyManageService {
         //본인이 만든 설문인지 검증
         surveyService.validateUserMadeSurvey(userId, survey);
         survey.setExpireDate(LocalDateTime.now());
-        redisService.expireImmediately(surveyId);
+        redisService.expireImmediately(userId, surveyId);
         //만료일 현재로 변경
         surveyRepository.save(survey);
     }
