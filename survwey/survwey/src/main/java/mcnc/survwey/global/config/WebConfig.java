@@ -15,12 +15,15 @@ public class WebConfig implements WebMvcConfigurer {
      * 세션 검사 인터셉터 등록
      * - 전체 URL 검사하도록 지정
      * - excludePathPatterns에 세션 검사 예외 URL 지정
+     *
      * @param registry
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/mail/password", "/mail/{token}", "/account/join/**", "/account/modify/password", "/auth/login", "/swagger-ui/**", "/v3/api-docs/**");
+                .excludePathPatterns("/auth/password/**", "/account/modify/password/**", "/mail/password",
+                        "/mail/{token}", "/account/join/**", "/account/modify/password", "/auth/login",
+                        "/swagger-ui/**", "/v3/api-docs/**");
     }
 }

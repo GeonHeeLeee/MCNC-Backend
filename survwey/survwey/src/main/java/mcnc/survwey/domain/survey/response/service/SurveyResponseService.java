@@ -58,13 +58,13 @@ public class SurveyResponseService {
 
     /**
      * 설문 응답 저장
+     *
      * @param surveyReplyDTO
-     * @param userId
-     * - 응답자가 DB에 저장되지 않은 경우 에러
-     * - 해당 설문 ID가 없는 경우 에러
-     * - 이미 설문에 응답했으면 에러
-     * - 요청 질문이 설문의 질문 아이디와 일치하지 않으면 에러
-     * - 이미 만료된 설문이면 에러
+     * @param userId         - 응답자가 DB에 저장되지 않은 경우 에러
+     *                       - 해당 설문 ID가 없는 경우 에러
+     *                       - 이미 설문에 응답했으면 에러
+     *                       - 요청 질문이 설문의 질문 아이디와 일치하지 않으면 에러
+     *                       - 이미 만료된 설문이면 에러
      */
     @Transactional
     public void saveSurveyReply(SurveyReplyDTO surveyReplyDTO, String userId) {
@@ -95,6 +95,7 @@ public class SurveyResponseService {
     /**
      * 요청 질문의 아이디가 설문 질문의 아이디와 일치하는지 확인
      * - 일치하지 않으면 에러 전송
+     *
      * @param surveyReplyDTO
      * @param respondedSurvey
      */
@@ -116,12 +117,12 @@ public class SurveyResponseService {
      * - 연령대 분포
      * - 성별 분포
      * - 객관식 분포
-     *      - 기타 응답(주관식) 포함
+     * - 기타 응답(주관식) 포함
      * - 주관식 응답 리스트
+     *
      * @param surveyId
      * @param userId
-     * @return
-     * - 해당 설문이 존재하지 않으면 에러
+     * @return - 해당 설문이 존재하지 않으면 에러
      * - 요청자의 아이디가 설문 생성자의 아이디와 일치하지 않으면 에러
      */
     public SurveyResultDTO getSurveyResponsesResult(Long surveyId, String userId) {
@@ -135,6 +136,11 @@ public class SurveyResponseService {
 
         //응답 객체 생성
         SurveyResultDTO surveyResultDTO = SurveyResultDTO.of(survey);
+
+        //전체 응답자 수 추가
+        long responseCount = respondRepository.countBySurvey_SurveyId(surveyId);
+        surveyResultDTO.setResponseCount(responseCount);
+
         //응답 객체에 나이, 성별 분포 추가
         addAgeAndGenderDistribution(surveyId, surveyResultDTO);
 
@@ -154,6 +160,7 @@ public class SurveyResponseService {
     /**
      * 질문 결과 DTO 초기화 후 Map 저장
      * - 설문 결과를 담기 위한 질문 결과 DTO 생성 후 Map에 저장
+     *
      * @param surveyResultMapper
      * @param questionMap
      * @param surveyResultDTO
@@ -171,12 +178,12 @@ public class SurveyResponseService {
     /**
      * 질문 타입에 따라 응답 결과 저장
      * - 다중, 단일 객관식은 동일한 로직으로 처리
-     *      - 해당 보기에 대한 기본 정보 및 응답 수 저장
-     *      - 기타 질문일 경우 기타 응답 저장
+     * - 해당 보기에 대한 기본 정보 및 응답 수 저장
+     * - 기타 질문일 경우 기타 응답 저장
      * - 주관식일 경우 주관식 응답 저장
+     *
      * @param surveyResultMapper
-     * @param question
-     * - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
+     * @param question           - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
      */
     private void addResponsesToQuestion(SurveyResultMapper surveyResultMapper, QuestionResultDTO question) {
         QuestionType questionType = surveyResultMapper.getQuestionType();
@@ -202,6 +209,7 @@ public class SurveyResponseService {
     /**
      * 나이, 성별 분포 추가
      * - DB 조회 후 응답 DTO에 성별, 나이 분포 추가
+     *
      * @param surveyId
      * @param surveyResultDTO
      */
@@ -217,10 +225,10 @@ public class SurveyResponseService {
     /**
      * 사용자가 응답한 설문 조회
      * - 설문 기본 정보 조회 후 객관식, 주관식 테이블 조회하여 추가
+     *
      * @param surveyId
      * @param userId
-     * @return
-     * - 해당 사용자가 응답하지 않은 설문이면 에러 전송
+     * @return - 해당 사용자가 응답하지 않은 설문이면 에러 전송
      * - 해당 아이디의 설문이 존재하지 않으면 에러 전송
      */
     public SurveyResponseDTO getUserRespondedSurvey(Long surveyId, String userId) {
@@ -248,14 +256,14 @@ public class SurveyResponseService {
     /**
      * 질문에 주관식, 객관식 응답 할당 메서드
      * - 다중 객관식일 경우 반복문을 돌면서 사용자가 선택한 보기(순서) 추가
-     *      - 기타 응답이 있을 경우 기타 응답 추가
+     * - 기타 응답이 있을 경우 기타 응답 추가
      * - 단일 객관식일 경우, 사용자가 선택한 보기(순서) 추가
-     *      - 기타 응답이 있을 경우 기타 응답 추가
+     * - 기타 응답이 있을 경우 기타 응답 추가
      * - 주관식일 경우 주관식 응답 추가
+     *
      * @param question
      * @param objAnswerMap
-     * @param subjAnswerMap
-     * - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
+     * @param subjAnswerMap - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
      */
     private void assignAnswersToQuestion(QuestionResponseDTO question, Map<Object, List<ObjAnswer>> objAnswerMap, Map<Long, String> subjAnswerMap) {
         if (!objAnswerMap.containsKey(question.getQuesId()) && !subjAnswerMap.containsKey(question.getQuesId())) {
@@ -286,6 +294,7 @@ public class SurveyResponseService {
 
     /**
      * 기타 응답이 존재할 시 추가하는 메서드
+     *
      * @param question
      * @param objAnswer
      */
@@ -298,6 +307,7 @@ public class SurveyResponseService {
     /**
      * 객관식 응답 조회 후 Map으로 반환
      * - 질문 아이디(QuesId)를 Key로, ObjAnswer 엔티티를 Value로 가지는 Map 반환
+     *
      * @param surveyId
      * @param userId
      * @return
@@ -314,6 +324,7 @@ public class SurveyResponseService {
     /**
      * 주관식 응답 조회 후 Map으로 반환
      * - 질문 아이디(QuesId)를 Key로, 객관식 응답을 Value로 가지는 Map 반환
+     *
      * @param surveyId
      * @param userId
      * @return

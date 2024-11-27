@@ -1,9 +1,8 @@
-package mcnc.survwey.global.redis;
+package mcnc.survwey.global.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.mail.service.MailService;
-import mcnc.survwey.global.config.SessionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,10 +33,11 @@ public class RedisConfig {
         container.addMessageListener((message, pattern) -> {
             String expiredKey = message.toString();
             if (expiredKey.startsWith("survey:end:")) {
-                Long surveyId = Long.parseLong(expiredKey.split(":")[2]);
-                //여기에 이메일 전송 로직
-                log.info("redis 이메일 전송: {}", surveyId);
-//                mailService.sendVerifySurveyLink(userId, surveyId, notificationUrl);
+                String key = expiredKey.split(":")[2];
+                String userId = key.split("/")[0];
+                Long surveyId = Long.parseLong(key.split("/")[1]);
+                //이메일 전송
+                mailService.sendVerifySurveyLink(userId, surveyId, notificationUrl);
             }
         }, new PatternTopic("__keyevent@*__:expired"));
 

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.domain.mail.service.MailService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.dto.LoginDTO;
 import mcnc.survwey.global.exception.custom.CustomException;
@@ -24,7 +25,7 @@ public class AuthService {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-
+    private final MailService mailService;
     /**
      * 사용자 로그인
      * - 로그인 성공 시 세션 발급
