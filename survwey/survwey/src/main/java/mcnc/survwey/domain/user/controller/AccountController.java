@@ -142,10 +142,10 @@ public class AccountController {
 
 
     @PostMapping("/modify/password")
-    @Operation(summary = "사용자 비밀번호 변경을 위한 이메일 전송", description = "PathVariable로 요청")
+    @Operation(summary = "사용자 비밀번호 변경", description = "해당 비밀번호로 변경")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "이메일 전송: email : abc@qwe.com"),
-            @ApiResponse(responseCode = "400", description = "해당 userId의 사용자 이메일이 없을때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다.")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "403", description = "인증되지 않거나 인증 유효 시간이 끝남")
     })
     public ResponseEntity<Object> modifyPassword(@Valid @RequestBody PasswordModifyDTO passwordModifyDTO) {
         String userId = passwordModifyDTO.getUserId();

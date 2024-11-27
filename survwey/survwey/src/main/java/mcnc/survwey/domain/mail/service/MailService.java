@@ -46,8 +46,8 @@ public class MailService {
 
     //메일 보내는 메소드
 
-    public void sendMail(Context context, String title, String email) throws MessagingException {
-        String htmlContent = templateEngine.process("mail/send", context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
+    public void sendMail(Context context, String title, String email, String htmlPath) throws MessagingException {
+        String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
         MimeMessageHelper helper = new MimeMessageHelper(message, true);// T: html 형식, F: 텍스트 형식
 
@@ -83,22 +83,24 @@ public class MailService {
         surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
         try {
-            LocalDateTime surveyExpireDay = survey.getExpireDate();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
-            //그거를 파라미터를 Map으로 받게 하면 되긴함 파라미터를 Map<String, Object> 이런식으로 받아서
             //임시 리팩토링 추후 생각
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyTitle", survey.getTitle());
             context.setVariable("surveyLink", encryptedLink);
-            context.setVariable("expireDate", surveyExpireDay.format(formatter));
+            context.setVariable("expireDate", getFormatedDate(survey.getExpireDate()));
 
-            sendMail(context, survey.getTitle(), user.getEmail());
+            sendMail(context, survey.getTitle(), user.getEmail(), "/mail/invitation");
         } catch (MailException | MessagingException e) {
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getFormatedDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
+        return dateTime.format(formatter);
     }
 
     /**
@@ -135,15 +137,12 @@ public class MailService {
     public void sendVerifySurveyLink(String userId, Long surveyId, String link) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        //어차피 Key에 들어가는건 생성자 아이디라 검증 안해도 됨
-//        surveyService.validateUserMadeSurvey(userId, survey);
-        //본인이 생성한 설문 확인
         try {
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyLink", link);
 
-            sendMail(context, survey.getTitle(), user.getEmail());
+            sendMail(context, survey.getTitle(), user.getEmail(), "/mail/notification");
         } catch (MailException | MessagingException e) {
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -156,20 +155,16 @@ public class MailService {
      *
      * @param userId
      */
-    public void sendPasswordModifyAuthNumber(String userId) {
+    public void sendPasswordModifyAuthNumber(String userId) throws Exception {
         User user = userService.findByUserId(userId);
         String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
-        try {
-            Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-            context.setVariable("inviterName", user.getName());
-            context.setVariable("tempAuthCode", tempAuthCode);
-            userRedisService.saveVerificationCode(userId, tempAuthCode);
-            sendMail(context, "비밀번호 변경 인증번호 발급", user.getEmail());
-        } catch (MailException | MessagingException e) {
-            throw new RuntimeException("메일 발송 실패 ", e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
+        context.setVariable("receiverName", user.getName());
+        context.setVariable("tempAuthCode", tempAuthCode);
+        context.setVariable("expireDate", getFormatedDate(LocalDateTime.now().plusMinutes(10)));
+        userRedisService.saveVerificationCode(userId, tempAuthCode);
+        sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "/mail/authentication");
     }
 
 }
