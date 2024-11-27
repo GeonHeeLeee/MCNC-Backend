@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -12,16 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.mail.service.MailService;
 import mcnc.survwey.domain.user.dto.AuthCodeDTO;
+import mcnc.survwey.domain.user.dto.EmailSendDTO;
 import mcnc.survwey.domain.user.dto.LoginDTO;
-import mcnc.survwey.domain.user.service.AccountService;
 import mcnc.survwey.domain.user.service.AuthService;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -100,15 +96,19 @@ public class AuthController {
     }
 
 
-    @GetMapping("/password/send/{userId}")
+    @PostMapping("/password/send")
     @Operation(summary = "비밀번호 변경 임시 인증번호 메일 전송", description = "해당 유저 아이디의 이메일로 전송")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "일치(유효)")
+            @ApiResponse(responseCode = "200", description = "일치(유효)"),
+            @ApiResponse(responseCode = "400", description = "errorMessage : 입력한 이메일이 일치하지 않습니다."),
+            @ApiResponse(responseCode = "500", description = "errorMessage : 메일 전송 실패")
     })
-    public ResponseEntity<Object> sendTempAuthCodeToModifyPassword(@PathVariable String userId) {
+    public ResponseEntity<Object> sendTempAuthCodeToModifyPassword(@RequestBody EmailSendDTO emailSendDTO) {
         try {
-            mailService.sendPasswordModifyAuthNumber(userId);
-            return ResponseEntity.ok(null);
+            if (authService.verifyAndSendEmail(emailSendDTO)) {
+                return ResponseEntity.ok(null);
+            }
+            return ResponseEntity.badRequest().body(Map.of("errorMessage", "입력한 이메일이 일치하지 않습니다."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
         }

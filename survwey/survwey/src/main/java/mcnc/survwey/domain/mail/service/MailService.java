@@ -147,15 +147,14 @@ public class MailService {
      * 비밀번호 찾기 인증 메일
      * @param userId
      */
-    public void sendPasswordModifyAuthNumber(String userId) throws Exception {
-        User user = userService.findByUserId(userId);
+    public void sendPasswordModifyAuthCode(User user) throws Exception {
         String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
 
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
         context.setVariable("receiverName", user.getName());
         context.setVariable("tempAuthCode", tempAuthCode);
         context.setVariable("expireDate", getFormatedDate(LocalDateTime.now().plusMinutes(10)));
-        userRedisService.saveVerificationCode(userId, tempAuthCode);
+        userRedisService.saveVerificationCode(user.getUserId(), tempAuthCode);
         sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "/mail/authentication");
     }
 
