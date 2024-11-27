@@ -1,5 +1,6 @@
 package mcnc.survwey.domain.survey.common.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -23,6 +24,11 @@ public class SurveyDTO {
     @NotNull(message = "만료일 지정은 필수입니다.")
     private LocalDateTime expireDate;
     private String creatorId;
+
+    @AssertTrue(message = "만료일은 현재 시각보다 이후여야 합니다.")
+    public boolean isExpireDateValid() {
+        return expireDate == null || expireDate.isAfter(LocalDateTime.now());
+    }
 
     public static SurveyDTO of(Survey survey) {
         return SurveyDTO.builder()
