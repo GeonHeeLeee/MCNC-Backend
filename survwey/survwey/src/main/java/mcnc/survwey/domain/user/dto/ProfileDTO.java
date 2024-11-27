@@ -1,6 +1,5 @@
 package mcnc.survwey.domain.user.dto;
 
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModifyDTO {
+public class ProfileDTO {
     private String userId;
 
     private String name;

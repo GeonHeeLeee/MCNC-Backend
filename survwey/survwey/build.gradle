@@ -33,7 +33,6 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' //swagger
 	implementation 'org.springframework.boot:spring-boot-starter-mail' // 이메일 전송
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'// 타임리프 -> 이메일 전송 시 꾸미기 전용
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'// redis
 	compileOnly 'org.projectlombok:lombok'
 	//queryDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'

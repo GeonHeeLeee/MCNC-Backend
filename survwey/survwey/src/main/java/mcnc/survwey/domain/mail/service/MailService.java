@@ -48,7 +48,11 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     //메일 보내는 메소드
+<<<<<<< HEAD
     public void mailSender(Context context, String title, String email) throws MessagingException {
+=======
+    public void sendMail(Context context, String title, String email, String link) throws MessagingException {
+>>>>>>> 4a5b99b60dd77e8408302a9c88355f0dfc789fec
         String htmlContent = templateEngine.process("mail/send", context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
         MimeMessageHelper helper = new MimeMessageHelper(message, true);// T: html 형식, F: 텍스트 형식
@@ -71,6 +75,7 @@ public class MailService {
      * @param userId
      * @param surveyId
      */
+<<<<<<< HEAD
     public void sendLinkMessage(String userId, Long surveyId){
 
         User user = userService.findByUserId(userId);
@@ -81,9 +86,13 @@ public class MailService {
 
         //유효성 검사
         surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
+=======
+    public void sendLinkMessage(String userId, Long surveyId, String link){
+        User user = userService.findByUserId(userId);
+        Survey survey = surveyService.findBySurveyId(surveyId);
+>>>>>>> 4a5b99b60dd77e8408302a9c88355f0dfc789fec
         surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
-
         try{
             LocalDateTime surveyExpireDay = survey.getExpireDate();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
@@ -95,8 +104,12 @@ public class MailService {
             context.setVariable("surveyLink", encryptedLink);
             context.setVariable("expireDate", surveyExpireDay.format(formatter));
 
+<<<<<<< HEAD
             log.info("surveyLink = {}", encryptedLink);//메일 전송 후 링크 클릭할 때 테스트 용 (지우지 마쎼용~)
             mailSender(context, survey.getTitle(), user.getEmail());
+=======
+            sendMail(context, survey.getTitle(), user.getEmail(), link);
+>>>>>>> 4a5b99b60dd77e8408302a9c88355f0dfc789fec
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
@@ -142,7 +155,11 @@ public class MailService {
             Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
             context.setVariable("inviterName", user.getName());
             context.setVariable("surveyLink", link);
+<<<<<<< HEAD
             mailSender(context, survey.getTitle(), user.getEmail());
+=======
+            sendMail(context, survey.getTitle(), user.getEmail(), link);
+>>>>>>> 4a5b99b60dd77e8408302a9c88355f0dfc789fec
         } catch (MailException | MessagingException e){
             throw new RuntimeException("메일 발송 실패 ", e);
         } catch (Exception e) {
