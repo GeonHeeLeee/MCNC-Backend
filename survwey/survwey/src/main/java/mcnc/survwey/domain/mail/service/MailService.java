@@ -61,6 +61,7 @@ public class MailService {
         helper.addInline("logoImage", logoResource); // 이미지 ID 'logoImage'로 첨부
         ClassPathResource titleResource = new ClassPathResource(TITLE_IMAGE_PATH);
         helper.addInline("titleImage", titleResource); // 이미지 ID 'titleImage'로 첨부
+
         mailSender.send(message);
     }
 
@@ -70,32 +71,24 @@ public class MailService {
      * @param userId
      * @param surveyId
      */
-    public void sendLinkMessage(String userId, Long surveyId) {
+    public void sendLinkMessage(String userId, Long surveyId) throws MessagingException {
 
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-
-        //여기서 바로 호출하게 했음 Controller에서 호출하면 중복으로 Survey, User 등 조회하니까
         String encryptedLink = encryptLink(survey.getSurveyId());
 
         //유효성 검사
         surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
         surveyService.validateUserMadeSurvey(userId, survey);
         //본인이 생성한 설문 확인
-        try {
-            //임시 리팩토링 추후 생각
-            Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-            context.setVariable("inviterName", user.getName());
-            context.setVariable("surveyTitle", survey.getTitle());
-            context.setVariable("surveyLink", encryptedLink);
-            context.setVariable("expireDate", getFormatedDate(survey.getExpireDate()));
 
-            sendMail(context, survey.getTitle(), user.getEmail(), "/mail/invitation");
-        } catch (MailException | MessagingException e) {
-            throw new RuntimeException("메일 발송 실패 ", e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        //임시 리팩토링 추후 생각
+        Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
+        context.setVariable("inviterName", user.getName());
+        context.setVariable("surveyTitle", survey.getTitle());
+        context.setVariable("surveyLink", encryptedLink);
+        context.setVariable("expireDate", getFormatedDate(survey.getExpireDate()));
+        sendMail(context, survey.getTitle(), user.getEmail(), "/mail/invitation");
     }
 
     public String getFormatedDate(LocalDateTime dateTime) {
@@ -152,7 +145,6 @@ public class MailService {
 
     /**
      * 비밀번호 찾기 인증 메일
-     *
      * @param userId
      */
     public void sendPasswordModifyAuthNumber(String userId) throws Exception {

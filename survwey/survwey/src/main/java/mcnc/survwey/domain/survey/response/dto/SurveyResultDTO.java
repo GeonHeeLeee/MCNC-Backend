@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SurveyResultDTO extends SurveyDTO {
     private String creatorId;
+    private long responseCount;
     List<GenderCountDTO> genderCountList;
     List<AgeCountDTO> ageCountList;
     List<QuestionResultDTO> questionList;

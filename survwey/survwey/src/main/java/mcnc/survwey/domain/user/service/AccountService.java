@@ -30,6 +30,7 @@ public class AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final UserRedisService userRedisService;
 
     /**
      * 회원가입 메소드
@@ -118,10 +119,17 @@ public class AccountService {
     }
 
 
+    /**
+     * 비밀번호 변경
+     * - 비밀번호 변경 후 Redis에 저장된 인증 성공 상태 삭제
+     * @param userId
+     * @param password
+     */
     @Transactional
     public void modifyPassword(String userId, String password) {
         User user = userService.findByUserId(userId);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
+        userRedisService.deleteVerifiedStatus(userId);
     }
 }

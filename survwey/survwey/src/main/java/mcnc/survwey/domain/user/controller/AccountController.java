@@ -153,7 +153,6 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         accountService.modifyPassword(userId, passwordModifyDTO.getPassword());
-        userRedisService.deleteVerifiedStatus(userId);
         return ResponseEntity.ok(null);
     }
 }

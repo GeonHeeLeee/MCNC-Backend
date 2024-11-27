@@ -30,6 +30,7 @@ public class MailController {
 
     /**
      * 설문 링크 암호화 후 이메일 전송
+     *
      * @param surveyId
      * @return
      * @throws Exception
@@ -47,10 +48,15 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<String> sendMail(@PathVariable Long surveyId) throws Exception{
-         String userId = SessionContext.getCurrentUser();
-         mailService.sendLinkMessage(userId, surveyId);
-         return ResponseEntity.ok("메일 발송!");
+    public ResponseEntity<Object> sendMail(@PathVariable Long surveyId) throws Exception{
+        try {
+            String userId = SessionContext.getCurrentUser();
+            mailService.sendLinkMessage(userId, surveyId);
+            return ResponseEntity.ok("메일 발송!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
+        }
+
     }
 
     /**
