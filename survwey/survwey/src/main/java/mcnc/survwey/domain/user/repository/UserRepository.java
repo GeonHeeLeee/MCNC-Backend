@@ -28,5 +28,4 @@ public interface UserRepository extends JpaRepository<User, String> {
             "WHERE r.survey.surveyId = :surveyId ")
     List<LocalDate> findBirthBySurveyId(Long surveyId);
 
-    String findEmailById(String userId);
 }

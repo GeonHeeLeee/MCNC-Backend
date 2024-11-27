@@ -16,7 +16,7 @@ public class UserRedisService {
     private static final long CODE_EXPIRATION_MINUTES = 10; // 인증번호 유효시간 (10분)
     private static final long VERIFIED_STATUS_EXPIRATION_MINUTES = 5; //인증 완료 유효시간(5분)
     private static final String VERIFICATION_KEY_PREFIX = "auth:code:";
-    private static final String VERIFIED_KEY_PREFIX = "auth:verified:"
+    private static final String VERIFIED_KEY_PREFIX = "auth:verified:";
 
     // 인증번호 저장
     public void saveVerificationCode(String userId, String code) {

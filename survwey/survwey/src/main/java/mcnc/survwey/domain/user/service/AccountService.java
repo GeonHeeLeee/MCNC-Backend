@@ -3,14 +3,9 @@ package mcnc.survwey.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.user.dto.AuthDTO;
-<<<<<<< HEAD
+import mcnc.survwey.domain.user.dto.RegisterDTO;
 
-import mcnc.survwey.domain.user.dto.ModifyDTO;
-=======
-import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
 import mcnc.survwey.domain.user.dto.ProfileDTO;
->>>>>>> 4a5b99b60dd77e8408302a9c88355f0dfc789fec
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.dto.ProfileModifyDTO;
 import mcnc.survwey.domain.user.repository.UserRepository;
@@ -38,26 +33,27 @@ public class AccountService {
 
     /**
      * 회원가입 메소드
-     * @param authDTO
+     *
+     * @param registerDTO
      */
-    public void registerUser(AuthDTO authDTO) {
-        if (userRepository.existsById(authDTO.getUserId())) {//해당 아이디 이미 존재
+    public void registerUser(RegisterDTO registerDTO) {
+        if (userRepository.existsById(registerDTO.getUserId())) {//해당 아이디 이미 존재
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_ID_ALREADY_EXISTS);
         }
 
-        if (userRepository.existsByEmail(authDTO.getEmail())) {//해당 이메일 존재
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {//해당 이메일 존재
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_EMAIL_ALREADY_EXISTS);
         }
 
         //ID, EMAIL 중복이 없을 경우 저장
         userRepository.save(User.builder()
-                .userId(authDTO.getUserId())
-                .email(authDTO.getEmail())
-                .password(passwordEncoder.encode(authDTO.getPassword()))
-                .name(authDTO.getName())
+                .userId(registerDTO.getUserId())
+                .email(registerDTO.getEmail())
+                .password(passwordEncoder.encode(registerDTO.getPassword()))
+                .name(registerDTO.getName())
                 .registerDate(LocalDateTime.now())
-                .birth(authDTO.getBirth())
-                .gender(authDTO.getGender())
+                .birth(registerDTO.getBirth())
+                .gender(registerDTO.getGender())
                 .build()
         );
     }
@@ -81,6 +77,7 @@ public class AccountService {
 
     /**
      * 프로필 수정
+     *
      * @param profileModifyDTO
      * @param userId
      */
@@ -105,10 +102,11 @@ public class AccountService {
 
     /**
      * 사용자 프로필 정보 조회
+     *
      * @param userId
      * @return
      */
-    public ProfileDTO getProfile(String userId){
+    public ProfileDTO getProfile(String userId) {
         User user = userService.findByUserId(userId);
         return ProfileDTO.builder()
                 .userId(user.getUserId())
@@ -119,11 +117,6 @@ public class AccountService {
                 .build();
     }
 
-
-    public String getEmailByUserId(String userId) {
-        return Optional.of(userRepository.findEmailById(userId))
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_ID));
-    }
 
     @Transactional
     public void modifyPassword(String userId, String password) {

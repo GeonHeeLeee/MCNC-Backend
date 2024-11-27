@@ -97,6 +97,7 @@ public class AuthController {
     }
 
 
+
     @PostMapping("/password/check")
     @Operation(summary = "비밀번호 변경 인증번호 체크", description = "입력한 인증번호가 일치하는지 체크")
     @ApiResponses({
