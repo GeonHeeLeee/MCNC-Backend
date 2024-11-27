@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.user.dto.AuthDTO;
 import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
-import mcnc.survwey.domain.user.dto.ModifyDTO;
+import mcnc.survwey.domain.user.dto.ProfileDTO;
+import mcnc.survwey.domain.user.dto.ProfileModifyDTO;
 import mcnc.survwey.domain.user.service.AccountService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.ResponseEntity;
@@ -78,21 +79,20 @@ public class AccountController {
      * 프로필 수정 로직
      * 사용자 이름, 생일, 성별 변경
      *
-     * @param modifyDTO
+     * @param profileDTO
      * @return
      */
     @PostMapping("/modify/profile")
-    @Operation(summary = "프로필 수정", description = "userId, email, name, birth, gender(M or F)<br>"
-            + "name, email 빈 값으로 들어오면 기존 사용자 정보 재사용 <br>"
-            + "userId, birth, gender 변경사항 아님")
+    @Operation(summary = "프로필 수정", description = "email, name<br>"
+            + "name, email 빈 값으로 들어오면 기존 사용자 정보 재사용")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<ModifyDTO> modify(@Valid @RequestBody ModifyDTO modifyDTO) {
+    public ResponseEntity<ProfileModifyDTO> modify(@RequestBody ProfileModifyDTO profileDTO) {
         String userId = SessionContext.getCurrentUser();
-        ModifyDTO modifyProfile = accountService.modifyUserProfile(modifyDTO, userId);
-        return ResponseEntity.ok(modifyProfile);
+        ProfileModifyDTO modifyProfile = accountService.modifyUserProfile(profileDTO, userId);
+        return ResponseEntity.ok(null);
     }
 
     /**
@@ -107,10 +107,10 @@ public class AccountController {
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<ModifyDTO> profileDetails(){
+    public ResponseEntity<ProfileDTO> profileDetails(){
         String userId = SessionContext.getCurrentUser();
-        ModifyDTO modifyDTO = accountService.getProfile(userId);
-        return ResponseEntity.ok(modifyDTO);
+        ProfileDTO profileDTO = accountService.getProfile(userId);
+        return ResponseEntity.ok(profileDTO);
     }
 
     /**

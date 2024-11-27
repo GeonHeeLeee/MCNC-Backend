@@ -5,8 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.user.dto.AuthDTO;
 import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
-import mcnc.survwey.domain.user.dto.ModifyDTO;
+import mcnc.survwey.domain.user.dto.ProfileDTO;
 import mcnc.survwey.domain.user.User;
+import mcnc.survwey.domain.user.dto.ProfileModifyDTO;
 import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
@@ -74,32 +75,29 @@ public class AccountService {
 
     /**
      * 프로필 수정
-     * @param modifyDTO
+     * @param profileModifyDTO
      * @param userId
      */
-    public ModifyDTO modifyUserProfile(ModifyDTO modifyDTO, String userId) {
+    public ProfileModifyDTO modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
         User user = userService.findByUserId(userId);
 
-        if (modifyDTO.getName() == null || modifyDTO.getName().isEmpty() || modifyDTO.getName().isBlank()) {
-            modifyDTO.setName(user.getName());
+        if (profileModifyDTO.getName() == null || profileModifyDTO.getName().isEmpty() || profileModifyDTO.getName().isBlank()) {
+            profileModifyDTO.setName(user.getName());
         }
-        if (modifyDTO.getEmail() == null || modifyDTO.getEmail().isEmpty() || modifyDTO.getEmail().isBlank()) {
-            modifyDTO.setEmail(user.getEmail());
+        if (profileModifyDTO.getEmail() == null || profileModifyDTO.getEmail().isEmpty() || profileModifyDTO.getEmail().isBlank()) {
+            profileModifyDTO.setEmail(user.getEmail());
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
         //아이디, 성별, 생일은 변경하지 않음
 
-        user.setEmail(modifyDTO.getEmail());
-        user.setName(modifyDTO.getName());
+        user.setEmail(profileModifyDTO.getEmail());
+        user.setName(profileModifyDTO.getName());
 
         userRepository.save(user);
 
-        return ModifyDTO.builder()
-                .userId(user.getUserId())
+        return ProfileModifyDTO.builder()
                 .name(user.getName())
                 .email(user.getEmail())
-                .birth(user.getBirth())
-                .gender(user.getGender())
                 .build();
     }
 
@@ -108,9 +106,9 @@ public class AccountService {
      * @param userId
      * @return
      */
-    public ModifyDTO getProfile(String userId){
+    public ProfileDTO getProfile(String userId){
         User user = userService.findByUserId(userId);
-        return ModifyDTO.builder()
+        return ProfileDTO.builder()
                 .userId(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
