@@ -108,6 +108,12 @@ public class SurveyManageService {
 
     }
 
+    /**
+     * 설문 강제 종료
+     * 만료일을 현재로 변경하여 설문 종료
+     * @param userId
+     * @param surveyId
+     */
     @Transactional
     public void enforceCloseSurvey(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);

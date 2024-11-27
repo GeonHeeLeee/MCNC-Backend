@@ -30,11 +30,9 @@ public class AccountService {
     private final UserService userService;
 
     /**
-     * 회원 가입 메서드
-     *
+     * 회원가입 메소드
      * @param authDTO
      */
-
     public void registerUser(AuthDTO authDTO) {
         if (userRepository.existsById(authDTO.getUserId())) {//해당 아이디 이미 존재
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_ID_ALREADY_EXISTS);
@@ -73,10 +71,11 @@ public class AccountService {
         return map;
     }
 
+
     /**
      * 프로필 수정
-     *
      * @param modifyDTO
+     * @param userId
      */
     public void modifyUser(ModifyDTO modifyDTO, String userId) {
         User user = userService.findByUserId(userId);
@@ -87,25 +86,24 @@ public class AccountService {
         if (modifyDTO.getEmail() == null || modifyDTO.getEmail().isEmpty() || modifyDTO.getEmail().isBlank()) {
             modifyDTO.setEmail(user.getEmail());
         }
-        if (modifyDTO.getGender() == null || modifyDTO.getGender().getValue().isEmpty()
-                || modifyDTO.getGender().getValue().isBlank()) {
-            modifyDTO.setGender(user.getGender());
-        }
-        if (modifyDTO.getBirth() == null) {
-            modifyDTO.setBirth(user.getBirth());
-        }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
-
+        //아이디, 성별, 생일은 변경하지 않음
+        
+        user.setEmail(modifyDTO.getEmail());
         user.setName(modifyDTO.getName());
-        user.setGender(modifyDTO.getGender());
-        user.setBirth(modifyDTO.getBirth());
 
         userRepository.save(user);
     }
 
+    /**
+     * 사용자 프로필 정보 조회
+     * @param userId
+     * @return
+     */
     public ModifyDTO getProfile(String userId){
         User user = userService.findByUserId(userId);
         return ModifyDTO.builder()
+                .userId(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .birth(user.getBirth())

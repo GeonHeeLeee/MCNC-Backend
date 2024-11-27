@@ -19,6 +19,12 @@ public class EncryptionUtil {
     @Value("${ENCRYPTION_SECRET_KEY}")
     private String secretKey;
 
+    /**
+     * AES/CBC 비밀키로 URL 파라미터 암호화
+     * 16바이트 키 값은 환경변수로 저장됨
+     * @param surveyId
+     * @return
+     */
     public String encrypt(String surveyId) {
         try{
             SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
@@ -34,6 +40,12 @@ public class EncryptionUtil {
 
     }
 
+    /**
+     * AES/CBC 방식으로 암호화된 URL 파라미터 복호화
+     * 환경변수에 저장된 키값으로 복호화
+     * @param encryptedUrl
+     * @return
+     */
     public String decrypt(String encryptedUrl) {
         try{
             // URL-safe Base64 문자열에서 `-`와 `_`를 각각 `+`와 `/`로 변환

@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ModifyDTO {
+    private String userId;
+
     private String name;
 
     private String email;
