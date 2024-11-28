@@ -1,4 +1,4 @@
-package mcnc.survwey.api.authentication.service;
+package mcnc.survwey.user.service;
 
 import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.user.dto.AgeCountDTO;

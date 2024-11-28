@@ -1,4 +1,4 @@
-package mcnc.survwey.api.authentication.service;
+package mcnc.survwey.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
