@@ -72,13 +72,11 @@ public class AccountService {
         return map;
     }
 
-
     /**
      * 프로필 수정
      * @param profileModifyDTO
      * @param userId
      */
-    @Transactional
     public void modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
         User user = userService.findByUserId(userId);
 
@@ -93,7 +91,7 @@ public class AccountService {
 
         user.setEmail(profileModifyDTO.getEmail());
         user.setName(profileModifyDTO.getName());
-
+        
         userRepository.save(user);
     }
 
