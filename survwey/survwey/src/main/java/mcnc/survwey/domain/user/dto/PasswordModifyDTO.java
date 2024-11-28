@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ChangePasswordDTO {
+public class PasswordModifyDTO {
 
     @NotBlank(message = "아이디는 필수입니다.")
     @Size(min = 5, max = 20, message = "사용자 아이디는 5글자 이상, 20글자 이하입니다.")
@@ -21,5 +21,4 @@ public class ChangePasswordDTO {
             message = "비밀번호는 최소 8자, 숫자, 특수문자 및 대소문자를 포함해야 합니다."
     )
     private String password;
-
 }

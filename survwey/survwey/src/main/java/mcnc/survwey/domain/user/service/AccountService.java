@@ -3,8 +3,8 @@ package mcnc.survwey.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.user.dto.AuthDTO;
-import mcnc.survwey.domain.user.dto.ChangePasswordDTO;
+import mcnc.survwey.domain.user.dto.RegisterDTO;
+
 import mcnc.survwey.domain.user.dto.ProfileDTO;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.dto.ProfileModifyDTO;
@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,29 +30,31 @@ public class AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final UserRedisService userRedisService;
 
     /**
      * 회원가입 메소드
-     * @param authDTO
+     *
+     * @param registerDTO
      */
-    public void registerUser(AuthDTO authDTO) {
-        if (userRepository.existsById(authDTO.getUserId())) {//해당 아이디 이미 존재
+    public void registerUser(RegisterDTO registerDTO) {
+        if (userRepository.existsById(registerDTO.getUserId())) {//해당 아이디 이미 존재
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_ID_ALREADY_EXISTS);
         }
 
-        if (userRepository.existsByEmail(authDTO.getEmail())) {//해당 이메일 존재
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {//해당 이메일 존재
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_EMAIL_ALREADY_EXISTS);
         }
 
         //ID, EMAIL 중복이 없을 경우 저장
         userRepository.save(User.builder()
-                .userId(authDTO.getUserId())
-                .email(authDTO.getEmail())
-                .password(passwordEncoder.encode(authDTO.getPassword()))
-                .name(authDTO.getName())
+                .userId(registerDTO.getUserId())
+                .email(registerDTO.getEmail())
+                .password(passwordEncoder.encode(registerDTO.getPassword()))
+                .name(registerDTO.getName())
                 .registerDate(LocalDateTime.now())
-                .birth(authDTO.getBirth())
-                .gender(authDTO.getGender())
+                .birth(registerDTO.getBirth())
+                .gender(registerDTO.getGender())
                 .build()
         );
     }
@@ -74,6 +77,7 @@ public class AccountService {
 
     /**
      * 프로필 수정
+     *
      * @param profileModifyDTO
      * @param userId
      */
@@ -97,10 +101,11 @@ public class AccountService {
 
     /**
      * 사용자 프로필 정보 조회
+     *
      * @param userId
      * @return
      */
-    public ProfileDTO getProfile(String userId){
+    public ProfileDTO getProfile(String userId) {
         User user = userService.findByUserId(userId);
         return ProfileDTO.builder()
                 .userId(user.getUserId())
@@ -111,17 +116,18 @@ public class AccountService {
                 .build();
     }
 
+
     /**
      * 비밀번호 변경
-     *
-     * @param changePasswordDTO
+     * - 비밀번호 변경 후 Redis에 저장된 인증 성공 상태 삭제
+     * @param userId
+     * @param password
      */
-    public void changePassword(ChangePasswordDTO changePasswordDTO) {
-        User user = userService.findByUserId(changePasswordDTO.getUserId());
-        //사용자 Id 찾은 후
-        user.setPassword(passwordEncoder.encode(changePasswordDTO.getPassword()));
-        //사용자 password 재설정
+    @Transactional
+    public void modifyPassword(String userId, String password) {
+        User user = userService.findByUserId(userId);
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
+        userRedisService.deleteVerifiedStatus(userId);
     }
-
 }

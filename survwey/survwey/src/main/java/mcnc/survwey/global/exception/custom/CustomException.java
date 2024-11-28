@@ -9,11 +9,13 @@ public class CustomException extends RuntimeException {
     private final ErrorCode errorCode; //커스텀 에러 코드
 
     public CustomException(HttpStatus httpStatus, ErrorCode errorCode) {
+        super(errorCode.getErrorMessage());
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
     }
 
     public CustomException(ErrorCode errorCode) {
+        super(errorCode.getErrorMessage());
         this.httpStatus = null;
         this.errorCode = errorCode;
     }

@@ -19,7 +19,8 @@ public class CustomExceptionInterceptor {
      */
     @ExceptionHandler(CustomException.class)
     public final ResponseEntity<ErrorDTO> handleCustomException(CustomException ex, HttpServletRequest request) {
-        log.error("CustomException. URL: {}, ErrorCode: {}, ErrorMessage : {}", request.getRequestURL(), ex.getErrorCode().getErrorMessage(), ex.getMessage());
+        log.error("CustomException occurred: [Status: {}, Code: {}, Message: {}]",
+                ex.getHttpStatus(), ex.getErrorCode(), ex.getMessage());
         return ErrorDTO.toResponseEntity(ex);
     }
 }

@@ -8,14 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.mail.service.MailService;
 import mcnc.survwey.domain.mail.utils.EncryptionUtil;
-import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -26,11 +22,10 @@ public class MailController {
 
     private final MailService mailService;
     private final EncryptionUtil encryptionUtil;
-    private final SurveyService surveyService;
-    private final Map<String, String> keyStorage = new HashMap<>();
 
     /**
      * 설문 링크 암호화 후 이메일 전송
+     *
      * @param surveyId
      * @return
      * @throws Exception
@@ -48,12 +43,15 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<String> sendMail(@PathVariable Long surveyId) throws Exception{
-         String userId = SessionContext.getCurrentUser();
-         String surveyLink = mailService.encryptedLink(surveyId, userId);//링크 암호화
-         log.info("surveyLink = {}", surveyLink);//메일 전송 후 링크 클릭할 때 테스트 용 (지우지 마쎼용~)
-         mailService.sendLinkMessage(userId, surveyId, surveyLink);
-         return ResponseEntity.ok("메일 발송!");
+    public ResponseEntity<Object> sendMail(@PathVariable Long surveyId) throws Exception{
+        try {
+            String userId = SessionContext.getCurrentUser();
+            mailService.sendLinkMessage(userId, surveyId);
+            return ResponseEntity.ok("메일 발송!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
+        }
+
     }
 
     /**
@@ -76,8 +74,8 @@ public class MailController {
     })
     public ResponseEntity<Map<String, String>> handleRedirect(@PathVariable String token) {
         String userId = SessionContext.getCurrentUser();
-        String surveyId = encryptionUtil.decrypt(token);
-        String decryptedUrl = mailService.decryptedLink(surveyId);
+        String decryptedSurveyId = encryptionUtil.decrypt(token);
+        String decryptedUrl = mailService.decryptLink(decryptedSurveyId);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("decryptedUrl", decryptedUrl));
@@ -85,18 +83,5 @@ public class MailController {
             return ResponseEntity.status(HttpStatus.FOUND).header("Location", decryptedUrl).build();//302Found}
         }
     }
-
-//    /**
-//     * 사용자 비밀번호 찾기
-//     * 사용자가 비밀번호를 찾기를 위한 인증
-//     * @param userId
-//     * @return
-//     */
-//    @PostMapping("/password")
-//    public ResponseEntity<String> modifyPasswordSendMail(@RequestBody String userId){
-//        mailService.sendPasswordModifyLink(userId);
-//
-//        return ResponseEntity.ok("임시 번호 발송");
-//    }
 
 }

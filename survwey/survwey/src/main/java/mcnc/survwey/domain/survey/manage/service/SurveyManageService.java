@@ -15,7 +15,7 @@ import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
-import mcnc.survwey.global.redis.RedisService;
+import mcnc.survwey.domain.survey.common.service.SurveyRedisService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class SurveyManageService {
     private final UserService userService;
     private final RespondService respondService;
     private final SurveyRepository surveyRepository;
-    private final RedisService redisService;
+    private final SurveyRedisService surveyRedisService;
 
     /**
      * 설문 상세(설문, 질문, 보기) 저장
@@ -49,7 +49,7 @@ public class SurveyManageService {
         //설문 생성 후 저장
         Survey createdSurvey = surveyService.buildAndSaveSurvey(surveyWithDetailDTO, creator);
         //Redis에 Key 저장
-        redisService.saveSurveyExpireTime(createdSurvey.getSurveyId(), createdSurvey.getExpireDate());
+        surveyRedisService.saveSurveyExpireTime(createdSurvey.getSurveyId(), creator.getUserId(), createdSurvey.getExpireDate());
         surveyWithDetailDTO.getQuestionList()
                 .forEach(questionDTO -> {
                     //질문 생성 후 저장
@@ -67,10 +67,10 @@ public class SurveyManageService {
      * @param surveyId
      */
     @Transactional
-    public void deleteSurvey(String userId, Long surveyId) {
+    public void deleteSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);
-        redisService.deleteSurveyFromRedis(surveyId);
+        surveyRedisService.deleteSurveyFromRedis(userId, surveyId);
         surveyRepository.delete(survey);
     }
 
@@ -80,10 +80,10 @@ public class SurveyManageService {
      * @param userId
      * @param survey
      */
-    public void deleteSurvey(String userId, Survey survey) {
+    public void deleteSurveyAfterValidation(String userId, Survey survey) {
         surveyService.validateUserMadeSurvey(userId, survey);
+        surveyRedisService.deleteSurveyFromRedis(userId, survey.getSurveyId());
         surveyRepository.delete(survey);
-        redisService.deleteSurveyFromRedis(survey.getSurveyId());
     }
 
 
@@ -105,9 +105,9 @@ public class SurveyManageService {
         Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
 
         //삭제(존재하는지 확인 및 생성자 검증 후)
-        deleteSurvey(userId, existingSurvey);
+        deleteSurveyAfterValidation(userId, existingSurvey);
 
-        //생성일은 처음과 같이 고정(유효성 검사)
+        //생성일은 처음과 같이 고정
         surveyWithDetailDTO.setCreateDate(existingSurvey.getCreateDate());
         //다시 저장
         Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))
@@ -128,7 +128,7 @@ public class SurveyManageService {
         //본인이 만든 설문인지 검증
         surveyService.validateUserMadeSurvey(userId, survey);
         survey.setExpireDate(LocalDateTime.now());
-        redisService.expireImmediately(surveyId);
+        surveyRedisService.expireImmediately(userId, surveyId);
         //만료일 현재로 변경
         surveyRepository.save(survey);
     }

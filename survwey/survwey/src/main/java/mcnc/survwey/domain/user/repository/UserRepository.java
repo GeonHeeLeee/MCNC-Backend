@@ -27,4 +27,5 @@ public interface UserRepository extends JpaRepository<User, String> {
             "JOIN Respond r ON u.userId = r.user.userId " +
             "WHERE r.survey.surveyId = :surveyId ")
     List<LocalDate> findBirthBySurveyId(Long surveyId);
+
 }
