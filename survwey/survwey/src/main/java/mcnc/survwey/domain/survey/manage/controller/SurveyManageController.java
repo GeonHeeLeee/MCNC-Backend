@@ -71,7 +71,7 @@ public class SurveyManageController {
     })
     public ResponseEntity<Object> deleteSurvey(@PathVariable("surveyId") Long surveyId) {
         String creatorId = SessionContext.getCurrentUser();
-        surveyManageService.deleteSurvey(creatorId, surveyId);
+        surveyManageService.deleteSurveyAfterValidation(creatorId, surveyId);
         return ResponseEntity.ok(null);
     }
 

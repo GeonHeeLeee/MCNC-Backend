@@ -21,23 +21,34 @@ public class SurveyRedisService {
 
     // TODO: 현재 에외 처리가 완벽하지 않은데 추후 예외처리 더 확실히 하기
 
+    /**
+     * 설문 Redis에서 삭제
+     * - 설문 조기 종료나 수정 등의 이유로 설문 삭제 시 실행
+     * - Redis에서 해당 키가 없어도 예외가 발생하지 않음
+     * @param creatorId
+     * @param surveyId
+     */
     public void deleteSurveyFromRedis(String creatorId, Long surveyId) {
         String key = generateRedisKey(creatorId, surveyId);
-        ;
-        Boolean wasDeleted = redisTemplate.delete(key);
-        if (Boolean.FALSE.equals(wasDeleted)) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNEXPECTED_REDIS_ERROR);
-        }
+        redisTemplate.delete(key);
     }
 
+    /**
+     * 설문 생성 시 만료 시간 설정
+     * - 만료일이 현재시간 이전인 경우 예외 발생
+     * - 그렇지 않을 경우 만료일과 현재 시간의 차이 동안 유효하도록 Redis에 저장
+     * @param surveyId
+     * @param creatorId
+     * @param endDateTime
+     */
     public void saveSurveyExpireTime(Long surveyId, String creatorId, LocalDateTime endDateTime) {
         // 현재 시간과 종료 시간의 차이를 구하기
         LocalDateTime currentTime = LocalDateTime.now();
         Duration duration = Duration.between(currentTime, endDateTime);
 
-        // 종료 시간이 이미 지난 경우
+        // 종료 시간이 이미 지난 경우 예외 발생
         if (duration.isNegative()) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNEXPECTED_REDIS_ERROR);
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRE_DATE_MUST_BE_AFTER_CURRENT_TIME);
         }
 
         // TTL을 초 단위로 변환
@@ -47,15 +58,25 @@ public class SurveyRedisService {
         redisTemplate.opsForValue().set(key, "active", ttlSeconds, TimeUnit.SECONDS);
     }
 
+
+    /**
+     * 설문 즉시 종료
+     * - Redis에서 해당 키가 없어도 예외가 발생하지 않음
+     * - 해당 키 만료하여 바로 이벤트 발생시킴
+     * @param userId
+     * @param surveyId
+     */
     public void expireImmediately(String userId, Long surveyId) {
         String key = generateRedisKey(userId, surveyId);
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.expire(key, 1, TimeUnit.SECONDS);
-        } else {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNEXPECTED_REDIS_ERROR);
-        }
+        redisTemplate.expire(key, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * Redis 저장할 키 생성
+     * @param creatorId
+     * @param surveyId
+     * @return
+     */
     private String generateRedisKey(String creatorId, Long surveyId) {
         return SURVEY_EXPIRATION_KEY_PREFIX + creatorId + "/" + surveyId;
     }
