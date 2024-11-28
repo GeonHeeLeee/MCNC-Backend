@@ -150,7 +150,7 @@ public class AccountController {
     public ResponseEntity<Object> modifyPassword(@Valid @RequestBody PasswordModifyDTO passwordModifyDTO) {
         String userId = passwordModifyDTO.getUserId();
         if (!userRedisService.isVerified(userId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("errorMessage", "인증되지 않았습니다."));
         }
         accountService.modifyPassword(userId, passwordModifyDTO.getPassword());
         return ResponseEntity.ok(null);
