@@ -14,6 +14,13 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 
+    /**
+     * @Valid를 이용한 유효성 검증 커스텀
+     * - key: errorMessage, value: DTO에서 지정한 메세지
+     * - 클라이언트에게 에러 응답
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
