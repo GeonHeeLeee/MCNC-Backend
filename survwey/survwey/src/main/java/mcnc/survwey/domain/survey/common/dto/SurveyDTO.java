@@ -27,7 +27,7 @@ public class SurveyDTO {
 
     @AssertTrue(message = "만료일은 현재 시각보다 이후여야 합니다.")
     public boolean isExpireDateValid() {
-        return expireDate == null || expireDate.isAfter(LocalDateTime.now());
+        return expireDate.isAfter(LocalDateTime.now());
     }
 
     public static SurveyDTO of(Survey survey) {

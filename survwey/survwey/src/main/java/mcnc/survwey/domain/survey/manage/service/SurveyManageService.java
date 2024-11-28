@@ -67,7 +67,7 @@ public class SurveyManageService {
      * @param surveyId
      */
     @Transactional
-    public void deleteSurvey(String userId, Long surveyId) {
+    public void deleteSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);
         surveyRedisService.deleteSurveyFromRedis(userId, surveyId);
@@ -80,10 +80,10 @@ public class SurveyManageService {
      * @param userId
      * @param survey
      */
-    public void deleteSurvey(String userId, Survey survey) {
+    public void deleteSurveyAfterValidation(String userId, Survey survey) {
         surveyService.validateUserMadeSurvey(userId, survey);
-        surveyRepository.delete(survey);
         surveyRedisService.deleteSurveyFromRedis(userId, survey.getSurveyId());
+        surveyRepository.delete(survey);
     }
 
 
@@ -105,9 +105,9 @@ public class SurveyManageService {
         Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
 
         //삭제(존재하는지 확인 및 생성자 검증 후)
-        deleteSurvey(userId, existingSurvey);
+        deleteSurveyAfterValidation(userId, existingSurvey);
 
-        //생성일은 처음과 같이 고정(유효성 검사)
+        //생성일은 처음과 같이 고정
         surveyWithDetailDTO.setCreateDate(existingSurvey.getCreateDate());
         //다시 저장
         Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))

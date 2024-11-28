@@ -127,6 +127,6 @@ public class AuthController {
             userRedisService.saveVerifiedStatus(authCodeDTO.getUserId());
             return ResponseEntity.ok(null);
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("errorMessage", "인증번호가 유효하지 않습니다."));
     }
 }
