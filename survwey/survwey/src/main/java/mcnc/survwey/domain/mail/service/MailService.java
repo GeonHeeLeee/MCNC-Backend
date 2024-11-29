@@ -22,6 +22,9 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -65,30 +68,36 @@ public class MailService {
         mailSender.send(message);
     }
 
+
     /**
      * 설문 초대
      *
-     * @param userId
+     * @param senderId
      * @param surveyId
      */
-    public void sendLinkMessage(String userId, Long surveyId) throws MessagingException {
-
-        User user = userService.findByUserId(userId);
-        Survey survey = surveyService.findBySurveyId(surveyId);
-        String encryptedLink = encryptLink(survey.getSurveyId());
+    public void sendLinkMessage(String senderId, Long surveyId, List<String> recipients) throws MessagingException {
+        User sender = userService.findByUserId(senderId);
+        Survey surveyToInvite = surveyService.findBySurveyId(surveyId);
+        String encryptedLink = encryptLink(surveyToInvite.getSurveyId());
 
         //유효성 검사
-        surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
-        surveyService.validateUserMadeSurvey(userId, survey);
-        //본인이 생성한 설문 확인
+        surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
+        surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
 
-        //임시 리팩토링 추후 생각
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-        context.setVariable("inviterName", user.getName());
-        context.setVariable("surveyTitle", survey.getTitle());
+        context.setVariable("inviterName", sender.getName());
+        context.setVariable("surveyTitle", surveyToInvite.getTitle());
         context.setVariable("surveyLink", encryptedLink);
-        context.setVariable("expireDate", getFormatedDate(survey.getExpireDate()));
-        sendMail(context, survey.getTitle(), user.getEmail(), "mail/invitation");
+        context.setVariable("expireDate", getFormatedDate(surveyToInvite.getExpireDate()));
+
+        recipients.parallelStream()
+                .forEach(recipientEmail -> {
+                    try {
+                        sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+                    } catch (MessagingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     public String getFormatedDate(LocalDateTime dateTime) {
@@ -145,7 +154,8 @@ public class MailService {
 
     /**
      * 비밀번호 찾기 인증 메일
-     * @param userId
+     * @param user
+     * @throws Exception
      */
     public void sendPasswordModifyAuthCode(User user) throws Exception {
         String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);

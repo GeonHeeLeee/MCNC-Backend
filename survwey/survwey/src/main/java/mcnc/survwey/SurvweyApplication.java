@@ -20,6 +20,7 @@ public class SurvweyApplication {
 		System.setProperty("ENCRYPTION_SECRET_KEY", dotenv.get("ENCRYPTION_SECRET_KEY"));
 		System.setProperty("SURVEY_VERIFY_URL", dotenv.get("SURVEY_VERIFY_URL"));
 		SpringApplication.run(SurvweyApplication.class, args);
+
 	}
 
 }
