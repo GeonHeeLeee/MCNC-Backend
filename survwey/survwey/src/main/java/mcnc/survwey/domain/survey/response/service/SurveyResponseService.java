@@ -234,13 +234,9 @@ public class SurveyResponseService {
      * @return - 해당 사용자가 응답하지 않은 설문이면 에러 전송
      * - 해당 아이디의 설문이 존재하지 않으면 에러 전송
      */
-    @Cacheable(value = "survey", key = "#respond")
+    @Cacheable(value = "survey")
     @Transactional(readOnly = true)
     public SurveyResponseDTO getUserRespondedSurvey(Long surveyId, String userId) {
-        //응답하지 않은 설문이면 에러 전송
-        if (!respondService.hasUserRespondedToSurvey(surveyId, userId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_NOT_RESPOND_TO_SURVEY);
-        }
         //요청 ID의 설문이 존재하지 않으면 에러 전송, 아닐 시 응답 DTO 객체 생성
         SurveyResponseDTO surveyResponseDTO = Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
                 .map(SurveyResponseDTO::of)

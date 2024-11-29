@@ -14,7 +14,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -29,6 +28,7 @@ public class Survey {
     @Column(nullable = false)
     private LocalDateTime createDate;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime expireDate;
 

@@ -7,11 +7,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.survey.response.dto.SurveyResultDTO;
 import mcnc.survwey.domain.survey.response.dto.SurveyReplyDTO;
 import mcnc.survwey.domain.survey.response.dto.SurveyResponseDTO;
 import mcnc.survwey.domain.survey.response.service.SurveyResponseService;
 import mcnc.survwey.global.config.SessionContext;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class SurveyResponseController {
 
     private final SurveyResponseService surveyResponseService;
+    private final RespondService respondService;
     /**
      * 응답 저장
      * @param surveyReplyDTO
@@ -74,8 +79,12 @@ public class SurveyResponseController {
             @ApiResponse(responseCode = "400", description = "errorMessage : 해당 설문에 참여하지 않았습니다."),
             @ApiResponse(responseCode = "400", description = "errorMessage : 해당 아이디의 설문이 존재하지 않습니다.")
     })
-    public ResponseEntity<Object> getUserSurveyResponse(@PathVariable Long surveyId) {
+    public ResponseEntity<Object> getUserSurveyResponse(@PathVariable("surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
+        //응답하지 않은 설문이면 에러 전송
+        if (!respondService.hasUserRespondedToSurvey(surveyId, userId)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_NOT_RESPOND_TO_SURVEY);
+        }
         SurveyResponseDTO userRespondedSurvey = surveyResponseService.getUserRespondedSurvey(surveyId, userId);
         return ResponseEntity.ok(userRespondedSurvey);
     }
