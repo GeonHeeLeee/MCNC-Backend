@@ -78,7 +78,7 @@ public class AccountController {
             @ApiResponse(responseCode = "200", description = "중복 검사 성공"),
     })
     public ResponseEntity<Map<String, Boolean>> checkIdAndEmail(@Valid @RequestBody Map<String, String> request) {
-        Map<String, Boolean> map = accountService.duplicatedUserNameAndEmail(request.get("userId"), request.get("email"));
+        Map<String, Boolean> map = accountService.validateDuplicatedUserIdAndEmail(request.get("userId"), request.get("email"));
         return ResponseEntity.ok(map);
     }
 

@@ -73,7 +73,7 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<Survey> searchSurveys(String title, int page, int size) {
+    public Page<Survey> searchEntireSurvey(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByTitleContainingIgnoreCase(title, pageable);
     }

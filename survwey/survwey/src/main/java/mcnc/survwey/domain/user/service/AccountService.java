@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -61,17 +60,14 @@ public class AccountService {
 
     /**
      * id, email 중복 검증
-     *
      * @param userId
      * @param email
      * @return
      */
-    public Map<String, Boolean> duplicatedUserNameAndEmail(String userId, String email) {
+    public Map<String, Boolean> validateDuplicatedUserIdAndEmail(String userId, String email) {
         Map<String, Boolean> map = new HashMap<>();
-
         map.put("id", userRepository.existsById(userId));
         map.put("email", userRepository.existsByEmail(email));
-
         return map;
     }
 
