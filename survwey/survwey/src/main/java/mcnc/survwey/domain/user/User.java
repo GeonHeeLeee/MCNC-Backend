@@ -2,10 +2,7 @@ package mcnc.survwey.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.enums.Gender;
 
@@ -15,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,9 +23,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userId;
 
+    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
@@ -42,6 +41,7 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime registerDate;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
