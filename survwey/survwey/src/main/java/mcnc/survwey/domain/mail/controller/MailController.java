@@ -12,6 +12,8 @@ import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -31,7 +33,7 @@ public class MailController {
      * @throws Exception
      */
     @PostMapping("/send/{surveyId}")
-    @Operation(summary = "이메일 전송", description = "요청 Body 없이 요청<br>@PathVariable 로 해당하는 SurveyId만 받음")
+    @Operation(summary = "이메일 전송", description = "요청 Body \"email\" : [\"test@test.com\", \"asd@asd.com\"] 초대할 사람 이메일 <br>@PathVariable 로 해당하는 SurveyId 받음")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "메일 발송 성공"),
             @ApiResponse(responseCode = "400", description = """
@@ -43,10 +45,13 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<Object> sendMail(@PathVariable Long surveyId) throws Exception{
+    public ResponseEntity<Object> sendInvitationMail(@PathVariable("surveyId") Long surveyId, @RequestBody Map<String, List<String>> requestBody) throws Exception {
         try {
+            if(!requestBody.containsKey("email")) {
+                return ResponseEntity.badRequest().body(null);
+            }
             String userId = SessionContext.getCurrentUser();
-            mailService.sendLinkMessage(userId, surveyId);
+            mailService.sendLinkMessage(userId, surveyId, requestBody.get("email"));
             return ResponseEntity.ok("메일 발송!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));

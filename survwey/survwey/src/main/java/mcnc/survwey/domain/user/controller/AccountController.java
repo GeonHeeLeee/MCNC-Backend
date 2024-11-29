@@ -96,7 +96,7 @@ public class AccountController {
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<ProfileModifyDTO> modify(@RequestBody ProfileModifyDTO profileDTO) {
+    public ResponseEntity<ProfileModifyDTO> modifyProfile(@RequestBody ProfileModifyDTO profileDTO) {
         String userId = SessionContext.getCurrentUser();
         accountService.modifyUserProfile(profileDTO, userId);
         return ResponseEntity.ok(null);
@@ -115,7 +115,7 @@ public class AccountController {
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<ProfileDTO> profileDetails() {
+    public ResponseEntity<ProfileDTO> getProfileDetails() {
         String userId = SessionContext.getCurrentUser();
         ProfileDTO profileDTO = accountService.getProfile(userId);
         return ResponseEntity.ok(profileDTO);

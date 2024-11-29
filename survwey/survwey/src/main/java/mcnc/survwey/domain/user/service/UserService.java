@@ -28,6 +28,11 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_ID));
     }
 
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_EMAIL));
+    }
+
     /**
      * 설문 아이디를 통한 성별 분포 조회
      * - 요청 설문 아이디의 DB 조회
