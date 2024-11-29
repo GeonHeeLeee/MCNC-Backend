@@ -1,17 +1,14 @@
 package mcnc.survwey.domain.subjAnswer;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.user.User;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

@@ -15,7 +15,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Slf4j
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,6 +33,7 @@ public class Selection implements Persistable<SelectionId> {
 
     private boolean isEtc;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ques_id", insertable = false, updatable = false)
     private Question question;

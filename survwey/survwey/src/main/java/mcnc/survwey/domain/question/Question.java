@@ -13,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -30,6 +29,7 @@ public class Question {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String body;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "surveyId", nullable = false)
     private Survey survey;
