@@ -1,6 +1,6 @@
 package mcnc.survwey.domain.survey.response.service;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.enums.QuestionType;
@@ -32,8 +32,10 @@ import mcnc.survwey.domain.user.dto.GenderCountDTO;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -125,6 +127,7 @@ public class SurveyResponseService {
      * @return - 해당 설문이 존재하지 않으면 에러
      * - 요청자의 아이디가 설문 생성자의 아이디와 일치하지 않으면 에러
      */
+    @Transactional(readOnly = true)
     public SurveyResultDTO getSurveyResponsesResult(Long surveyId, String userId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         //요청자 아이디와 설문 생성자 아이디 비교
@@ -225,12 +228,14 @@ public class SurveyResponseService {
     /**
      * 사용자가 응답한 설문 조회
      * - 설문 기본 정보 조회 후 객관식, 주관식 테이블 조회하여 추가
-     *
+     * - 캐싱 적용
      * @param surveyId
      * @param userId
      * @return - 해당 사용자가 응답하지 않은 설문이면 에러 전송
      * - 해당 아이디의 설문이 존재하지 않으면 에러 전송
      */
+    @Cacheable(value = "survey", key = "#respond")
+    @Transactional(readOnly = true)
     public SurveyResponseDTO getUserRespondedSurvey(Long surveyId, String userId) {
         //응답하지 않은 설문이면 에러 전송
         if (!respondService.hasUserRespondedToSurvey(surveyId, userId)) {

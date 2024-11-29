@@ -1,6 +1,6 @@
 package mcnc.survwey.domain.survey.manage.service;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.respond.service.RespondService;
@@ -16,8 +16,10 @@ import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
 import mcnc.survwey.domain.survey.common.service.SurveyRedisService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -63,10 +65,12 @@ public class SurveyManageService {
     /**
      * 설문 삭제(오버로딩)
      * - 요청자와 설문 생성자가 일치할시에만 삭제
+     * - 설문 삭제 시 설문 캐시도 삭제
      * @param userId
      * @param surveyId
      */
     @Transactional
+    @CacheEvict(value = "survey", key = "#respond")
     public void deleteSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);

@@ -3,59 +3,59 @@ package mcnc.survwey.user.service;
 import io.github.cdimascio.dotenv.Dotenv;
 import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.dto.AuthDTO;
 import mcnc.survwey.domain.user.dto.ProfileDTO;
 import mcnc.survwey.domain.user.dto.ProfileModifyDTO;
+import mcnc.survwey.domain.user.dto.RegisterDTO;
 import mcnc.survwey.domain.user.service.AccountService;
 import mcnc.survwey.domain.user.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ActiveProfiles;
+
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
-@Transactional
+@ActiveProfiles("test")
 class AccountServiceTest {
 
+    @Autowired
+    private Environment environment;
+
+    @Test
+    void checkActiveProfile() {
+        System.out.println("Active Profiles: " + Arrays.toString(environment.getActiveProfiles()));
+    }
     @Autowired
     private AccountService accountService;
 
     @Autowired
     private UserService userService;
 
-    @BeforeAll
-    static void setup() {
-        // .env 파일을 로드해서 환경 변수 설정
-        Dotenv dotenv = Dotenv.load();
-        System.setProperty("DB_URL", dotenv.get("DB_URL"));
-        System.setProperty("DB_USERNAME", dotenv.get("DB_USERNAME"));
-        System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
-        System.setProperty("MAIL_USER_NAME", dotenv.get("MAIL_USER_NAME"));
-        System.setProperty("MAIL_USER_PASSWORD", dotenv.get("MAIL_USER_PASSWORD"));
-    }
+
     @Test
     public void 회원가입(){
 
-        AuthDTO authDTO = new AuthDTO();
-        authDTO.setUserId("test123");
-        authDTO.setEmail("test@test.com");
-        authDTO.setPassword("qwer1234@@");
-        authDTO.setName("tester");
-        authDTO.setBirth(LocalDate.now());
-        authDTO.setGender(Gender.M);
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUserId("test123");
+        registerDTO.setEmail("test@test.com");
+        registerDTO.setPassword("qwer1234@@");
+        registerDTO.setName("tester");
+        registerDTO.setBirth(LocalDate.now());
+        registerDTO.setGender(Gender.M);
 
-        accountService.registerUser(authDTO);
-        User user = userService.findByUserId(authDTO.getUserId());
+        accountService.registerUser(registerDTO);
+        User user = userService.findByUserId(registerDTO.getUserId());
 
         System.out.println("user.getEmail() = " + user.getEmail());
 
-        assertThat(user.getUserId()).isEqualTo(authDTO.getUserId());
+        assertThat(user.getUserId()).isEqualTo(registerDTO.getUserId());
 
     }
 
