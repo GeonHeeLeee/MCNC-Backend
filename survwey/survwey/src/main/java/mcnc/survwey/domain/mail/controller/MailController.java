@@ -4,6 +4,8 @@ package mcnc.survwey.domain.mail.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +24,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/mail")
+@Tag(name = "이메일 전송", description = "이메일 초대 링크 발송")
 public class MailController {
 
     private final MailService mailService;
-    private final EncryptionUtil encryptionUtil;
 
     /**
      * 설문 링크 암호화 후 이메일 전송
@@ -47,7 +49,7 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<Object> sendInvitationMail(@PathVariable("surveyId") Long surveyId, @RequestBody Map<String, List<String>> requestBody) throws Exception {
+    public ResponseEntity<Object> sendInvitationMail(@PathVariable("surveyId") Long surveyId, @RequestBody Map<String, List<String>> requestBody) throws MessagingException {
         try {
             if(!requestBody.containsKey("email")) {
                 return ResponseEntity.badRequest().body(null);

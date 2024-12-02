@@ -122,13 +122,13 @@ public class SurveyInquiryTest {
     }
 
 
-    @Test
-    @DisplayName("응답한 설문 리스트 조회 성공 테스트")
-    public void testSuccessGetUserRespondSurveyList() {
-        //Given
-        testDataFactory.setUpSurveyInquiryData();
-        ObjAnswer objAnswer = ObjAnswer.create()
-    }
+//    @Test
+//    @DisplayName("응답한 설문 리스트 조회 성공 테스트")
+//    public void testSuccessGetUserRespondSurveyList() {
+//        //Given
+//        testDataFactory.setUpSurveyInquiryData();
+//        ObjAnswer objAnswer = ObjAnswer.create()
+//    }
 
 
     @Test
