@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @Slf4j
 @RestController
@@ -83,6 +85,7 @@ public class SurveyInquiryController {
 
     /**
      * 설문 특정 키워드로 검색
+     *
      * @param title
      * @param page
      * @param size
@@ -94,10 +97,11 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "200", description = "설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Page<SurveyDTO>> searchEntireSurveys(@RequestParam String title,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
-        Page<Survey> surveys = surveyInquiryService.searchSurveys(title, page, size);
+
+    public ResponseEntity<Page<SurveyDTO>> searchEntireSurvey(@RequestParam String title,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int size) {
+        Page<Survey> surveys = surveyInquiryService.searchEntireSurvey(title, page, size);
         //전체 설문에서 검색
         Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
@@ -118,8 +122,8 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<Page<SurveyDTO>> searchUserCreatedSurvey(@RequestParam String title,
-                                                          @RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size) {
+                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.searchUserCreatedSurvey(userId, title, page, size);
@@ -143,8 +147,8 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<Page<SurveyDTO>> searchRespondedSurveys(@RequestParam String title,
-                                                         @RequestParam(defaultValue = "0") int page,
-                                                         @RequestParam(defaultValue = "10") int size) {
+                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
 
         Page<Survey> surveys = surveyInquiryService.searchRespondedSurveys(userId, title, page, size);
@@ -153,5 +157,18 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyInfoDTOS);
     }
 
+    @GetMapping("/check/{surveyId}")
+    @Operation(summary = "본인이 만든 설문인지 확인", description = "설문 아이디와 세션의 아이디로 요청했을때 내가 만든 설문인지 아닌지 확인<br>" +
+            "result : true - 본인이 만든 설문임<br>" +
+            "result : false - 본인이 만든 설문이 아님")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = ""),
+            @ApiResponse(responseCode = "400", description = "해당 설문 아이디에 설문이 존재하지 않음")
+    })
+    public ResponseEntity<Map<String, Boolean>> checkSurveyAccess(@PathVariable Long surveyId) {
+        String userId = SessionContext.getCurrentUser();
+        Map<String, Boolean> response = surveyInquiryService.isSurveyUserMade(userId, surveyId);
+        return ResponseEntity.ok(response);
+    }
 
 }

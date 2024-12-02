@@ -2,6 +2,7 @@ package mcnc.survwey.domain.survey.common.repository.queryDSL;
 
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -11,6 +12,7 @@ import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     private final EntityManager entityManager;
 
     @Override
+    @SuppressWarnings("unchecked") //경고 없애기
     public Page<Object[]> findSurveyListWithRespondCountByUserId(String userId, Pageable pageable) {
         StringBuilder sql = new StringBuilder();
 
@@ -47,11 +50,19 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
 
         Query query = entityManager.createNativeQuery(sql.toString());
 
+        StringBuilder countSql = new StringBuilder();
+        countSql.append("SELECT COUNT(*) ")
+                .append("FROM survey s ")
+                .append("WHERE s.user_id = :userId");
+
+        Query countQuery = entityManager.createNativeQuery(countSql.toString());
+        countQuery.setParameter("userId", userId);
+
         query.setParameter("userId", userId);
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
 
-        return new PageImpl<Object[]>(query.getResultList(), pageable, 0);
+        return PageableExecutionUtils.getPage(query.getResultList(), pageable, () -> ((Number) countQuery.getSingleResult()).longValue());
     }
 
 
@@ -74,7 +85,13 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(surveyDTOList, pageable, 0);
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(survey.count())
+                .from(survey)
+                .join(respond).on(respond.survey.eq(survey))
+                .where(respond.user.userId.eq(userId));
+
+        return PageableExecutionUtils.getPage(surveyDTOList, pageable, countQuery::fetchOne);
     }
 
 

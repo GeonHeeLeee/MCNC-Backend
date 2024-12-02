@@ -79,7 +79,9 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<Map<String, String>> mailHandleRedirection(HttpServletRequest request, @PathVariable("token") String token) {
+
+    public ResponseEntity<Map<String, String>> handleMailRedirection(HttpServletRequest request, @PathVariable String token) {
+
         HttpSession session = request.getSession(false);
         String decryptedSurveyId = encryptionUtil.decrypt(token);
         String decryptedUrl = mailService.decryptLink(decryptedSurveyId);

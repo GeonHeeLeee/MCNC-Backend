@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
+import mcnc.survwey.domain.survey.common.service.SurveyService;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
@@ -24,10 +25,12 @@ import java.util.*;
 public class SurveyInquiryService {
 
     private final SurveyRepository surveyRepository;
+    private final SurveyService surveyService;
 
     /**
      * 사용자가 생성한 설문 리스트 조회
      * - 페이지네이션 적용
+     *
      * @param userId
      * @param page
      * @param size
@@ -43,6 +46,7 @@ public class SurveyInquiryService {
     /**
      * 사용자가 응답한 설문 리스트 조회
      * - 페이지네이션 적용
+     *
      * @param userId
      * @param page
      * @param size
@@ -55,9 +59,9 @@ public class SurveyInquiryService {
 
     /**
      * 특정 설문 조회
+     *
      * @param surveyId
-     * @return
-     * - 해당 Id의 설문이 없을 시, 오류 발생
+     * @return - 해당 Id의 설문이 없을 시, 오류 발생
      */
     public SurveyWithDetailDTO getSurveyWithDetail(Long surveyId) {
         return Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
@@ -73,7 +77,7 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<Survey> searchSurveys(String title, int page, int size) {
+    public Page<Survey> searchEntireSurvey(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
@@ -89,5 +93,23 @@ public class SurveyInquiryService {
     }
 
 
-
+    /**
+     * 본인이 만든 설문인지 확인
+     * - 본인이 만든 설문이면 result : true
+     * - 본인이 만든 설문이 아니면 result : false
+     * @param userId
+     * @param surveyId
+     * @return
+     * - 에러: 설문이 존재하지 않음
+     */
+    public Map<String, Boolean> isSurveyUserMade(String userId, Long surveyId) {
+        Survey survey = surveyService.findBySurveyId(surveyId);
+        Map<String, Boolean> response = new HashMap<>();
+        if (survey.getUser().getUserId().equals(userId)) {
+            response.put("result", true);
+        } else {
+            response.put("result", false);
+        }
+        return response;
+    }
 }

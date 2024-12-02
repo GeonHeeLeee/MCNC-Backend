@@ -29,7 +29,6 @@ import java.util.Map;
 @Tag(name = "사용자 인증 관련", description = "로그인/로그아웃 관련 API")
 public class AuthController {
 
-    private final MailService mailService;
     private final AuthService authService;
     private final UserRedisService userRedisService;
 
