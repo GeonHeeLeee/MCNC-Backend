@@ -53,7 +53,7 @@ public class MailController {
                 return ResponseEntity.badRequest().body(null);
             }
             String userId = SessionContext.getCurrentUser();
-            mailService.sendLinkMessage(userId, surveyId, requestBody.get("email"));
+            mailService.sendInvitationLink(userId, surveyId, requestBody.get("email"));
             return ResponseEntity.ok("메일 발송!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
@@ -79,7 +79,9 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
+
     public ResponseEntity<Map<String, String>> handleMailRedirection(HttpServletRequest request, @PathVariable String token) {
+
         HttpSession session = request.getSession(false);
         String decryptedSurveyId = encryptionUtil.decrypt(token);
         String decryptedUrl = mailService.decryptLink(decryptedSurveyId);

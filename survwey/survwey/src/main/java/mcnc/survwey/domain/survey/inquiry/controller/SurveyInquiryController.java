@@ -97,6 +97,7 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "200", description = "설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
+
     public ResponseEntity<Page<SurveyDTO>> searchEntireSurvey(@RequestParam String title,
                                                               @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int size) {
