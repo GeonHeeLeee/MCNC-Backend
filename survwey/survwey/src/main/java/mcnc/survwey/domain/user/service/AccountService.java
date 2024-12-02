@@ -66,7 +66,7 @@ public class AccountService {
      * @param email
      * @return
      */
-    public Map<String, Boolean> duplicatedUserNameAndEmail(String userId, String email) {
+    public Map<String, Boolean> validatedDuplicatedUserIdAndEmail(String userId, String email) {
         Map<String, Boolean> map = new HashMap<>();
 
         map.put("id", userRepository.existsById(userId));

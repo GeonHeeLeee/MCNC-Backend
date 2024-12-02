@@ -4,6 +4,8 @@ package mcnc.survwey.domain.mail.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.mail.service.MailService;
@@ -51,7 +53,7 @@ public class MailController {
                 return ResponseEntity.badRequest().body(null);
             }
             String userId = SessionContext.getCurrentUser();
-            mailService.sendLinkMessage(userId, surveyId, requestBody.get("email"));
+            mailService.sendInvitationLink(userId, surveyId, requestBody.get("email"));
             return ResponseEntity.ok("메일 발송!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
@@ -77,12 +79,12 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<Map<String, String>> handleRedirect(@PathVariable String token) {
-        String userId = SessionContext.getCurrentUser();
+    public ResponseEntity<Map<String, String>> mailHandleRedirection(HttpServletRequest request, @PathVariable("token") String token) {
+        HttpSession session = request.getSession(false);
         String decryptedSurveyId = encryptionUtil.decrypt(token);
         String decryptedUrl = mailService.decryptLink(decryptedSurveyId);
 
-        if (userId == null) {
+        if (session == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("decryptedUrl", decryptedUrl));
         } else {
             return ResponseEntity.status(HttpStatus.FOUND).header("Location", decryptedUrl).build();//302Found}
