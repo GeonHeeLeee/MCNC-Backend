@@ -2,6 +2,7 @@ package mcnc.survwey.survey;
 
 import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.enums.QuestionType;
+import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.survey.common.Survey;
@@ -47,7 +48,7 @@ public class SurveyInquiryTest {
     @DisplayName("사용자가 만든 설문 조회 성공 테스트")
     public void testSuccessfulGetUserCreatedSurveyList() {
         //given
-        testDataFactory.setupTestData();
+        testDataFactory.setUpSurveyInquiryData();
 
         // When
         Page<SurveyWithCountDTO> result = surveyInquiryService.getUserCreatedSurveyList("testUser1", PAGE_NUMBER, PAGE_SIZE);
@@ -62,7 +63,7 @@ public class SurveyInquiryTest {
     @DisplayName("사용자가 만든 설문 조회 실패 테스트 - 사용자가 만든 설문 없음")
     public void testFailedGetUserCreatedSurveyList() {
         //given
-        testDataFactory.setupTestData();
+        testDataFactory.setUpSurveyInquiryData();
 
         // When
         Page<SurveyWithCountDTO> result = surveyInquiryService.getUserCreatedSurveyList(
@@ -119,6 +120,16 @@ public class SurveyInquiryTest {
         // When-Then
         assertThrows(CustomException.class, () -> surveyInquiryService.getSurveyWithDetail(notExistingSurveyId));
     }
+
+
+    @Test
+    @DisplayName("응답한 설문 리스트 조회 성공 테스트")
+    public void testSuccessGetUserRespondSurveyList() {
+        //Given
+        testDataFactory.setUpSurveyInquiryData();
+        ObjAnswer objAnswer = ObjAnswer.create()
+    }
+
 
     @Test
     @DisplayName("본인이 만든 설문 조사 테스트 - 본인이 생성한 설문")

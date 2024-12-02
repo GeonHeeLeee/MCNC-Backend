@@ -90,7 +90,7 @@ public class TestDataFactory {
         return selectionRepository.save(selection);
     }
 
-    public void setupTestData() {
+    public void setUpSurveyInquiryData() {
         User testUser1 = createUser("testUser1", "testUser1@test.com", "test1", Gender.M);
         User testUser2 = createUser("testUser2", "testUser2@test.com", "test2", Gender.F);
         Survey survey1 = createSurvey("survey1", "survey1 description", testUser1);

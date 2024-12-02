@@ -40,10 +40,13 @@ public class MailService {
 
     @Value("${MAIL_USER_NAME}")
     private String senderEmail;
+
     @Value("${BASE_URL}")
     private String baseUrl;
+
     @Value("${SURVEY_VERIFY_URL}")
     private String notificationUrl;
+
     private static final String LOGO_IMAGE_PATH = "static/images/icon_logo.png";
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
@@ -115,18 +118,6 @@ public class MailService {
         //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
         String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString());
         return baseUrl + encryptedSurveyId;
-    }
-
-    /**
-     * URL 파라미터 복호화
-     *
-     * @param surveyId
-     * @return
-     */
-    public String decryptLink(String surveyId) {
-        Survey survey = surveyService.findBySurveyId(Long.parseLong(surveyId));//설문이 존재하는지 확인
-        surveyService.checkSurveyExpiration(survey.getExpireDate());//만료일 확인
-        return baseUrl + surveyId;
     }
 
     /**

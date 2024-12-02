@@ -61,21 +61,4 @@ public class EncryptionUtil {
         }
 
     }
-
-    /**
-     * AES/CBC 방식으로 암호화된 URL 파라미터 복호화
-     * 환경변수에 저장된 키값으로 복호화
-     * @param encryptedUrl
-     * @return
-     */
-    public String decrypt(String encryptedUrl) {
-        try{
-            // URL-safe Base64 문자열에서 `-`와 `_`를 각각 `+`와 `/`로 변환 -> URL 파라미터에 //로 나오는 경우 해결 (일반 Base64는  '-', '+' 처리)
-            String base64DecodedUrl = encryptedUrl.replace("-", "+").replace("_", "/");
-            return new String(determinedCipherMode(base64DecodedUrl, Cipher.DECRYPT_MODE));
-        }catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 링크는 잘못된 링크입니다.", e);
-        }
-
-    }
 }
