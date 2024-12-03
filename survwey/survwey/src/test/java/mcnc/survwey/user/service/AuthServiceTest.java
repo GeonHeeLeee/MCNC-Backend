@@ -2,13 +2,11 @@ package mcnc.survwey.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.dto.LoginDTO;
-import mcnc.survwey.domain.user.service.AuthService;
+import mcnc.survwey.api.auth.dto.LoginDTO;
+import mcnc.survwey.api.auth.service.AuthService;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
-import mcnc.survwey.global.exception.custom.ErrorCode;
 
 import static mcnc.survwey.global.config.AuthInterceptor.LOGIN_USER;
 import static org.mockito.Mockito.*;
@@ -20,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 

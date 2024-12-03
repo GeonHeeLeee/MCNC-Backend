@@ -2,10 +2,10 @@ package mcnc.survwey.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.enums.Gender;
+import mcnc.survwey.domain.user.enums.Gender;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.dto.AgeCountDTO;
-import mcnc.survwey.domain.user.dto.GenderCountDTO;
+import mcnc.survwey.api.survey.response.dto.result.AgeCountDTO;
+import mcnc.survwey.api.survey.response.dto.result.GenderCountDTO;
 import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;

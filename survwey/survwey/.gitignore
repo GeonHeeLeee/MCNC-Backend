@@ -43,3 +43,6 @@ out/
 .idea/
 ../../.idea
 src/test/resources/application-test.properties
+src/test/resources/data.sql
+src/test/resources/schema.sql
+src/main/generated
