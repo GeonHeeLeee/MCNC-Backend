@@ -1,8 +1,8 @@
 package mcnc.survwey.user.service;
 
-import mcnc.survwey.domain.enums.Gender;
-import mcnc.survwey.domain.user.dto.AgeCountDTO;
-import mcnc.survwey.domain.user.dto.GenderCountDTO;
+import mcnc.survwey.domain.user.enums.Gender;
+import mcnc.survwey.api.survey.response.dto.result.AgeCountDTO;
+import mcnc.survwey.api.survey.response.dto.result.GenderCountDTO;
 import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;

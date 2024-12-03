@@ -2,12 +2,12 @@ package mcnc.survwey.survey;
 
 
 
-import mcnc.survwey.domain.survey.common.Survey;
-import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
-import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
-import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
-import mcnc.survwey.domain.survey.inquiry.service.SurveyInquiryService;
+import mcnc.survwey.domain.survey.Survey;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
+import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
+import mcnc.survwey.domain.survey.repository.SurveyRepository;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
+import mcnc.survwey.api.survey.inquiry.service.SurveyInquiryService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.util.BaseIntegrationTest;
 import org.junit.jupiter.api.DisplayName;

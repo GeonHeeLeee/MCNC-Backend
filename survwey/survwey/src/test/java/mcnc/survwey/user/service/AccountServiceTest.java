@@ -1,14 +1,12 @@
 package mcnc.survwey.user.service;
 
-import io.github.cdimascio.dotenv.Dotenv;
-import mcnc.survwey.domain.enums.Gender;
+import mcnc.survwey.domain.user.enums.Gender;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.dto.ProfileDTO;
-import mcnc.survwey.domain.user.dto.ProfileModifyDTO;
-import mcnc.survwey.domain.user.dto.RegisterDTO;
-import mcnc.survwey.domain.user.service.AccountService;
+import mcnc.survwey.api.account.dto.ProfileDTO;
+import mcnc.survwey.api.account.dto.ProfileModifyDTO;
+import mcnc.survwey.api.account.dto.RegisterDTO;
+import mcnc.survwey.api.account.service.AccountService;
 import mcnc.survwey.domain.user.service.UserService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

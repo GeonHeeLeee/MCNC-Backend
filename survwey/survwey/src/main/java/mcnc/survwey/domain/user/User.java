@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import mcnc.survwey.domain.respond.Respond;
-import mcnc.survwey.domain.enums.Gender;
+import mcnc.survwey.domain.user.enums.Gender;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
