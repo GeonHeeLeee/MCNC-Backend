@@ -3,9 +3,9 @@ package mcnc.survwey.domain.question;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import mcnc.survwey.domain.enums.QuestionType;
+import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.domain.selection.Selection;
-import mcnc.survwey.domain.survey.common.Survey;
+import mcnc.survwey.domain.survey.Survey;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

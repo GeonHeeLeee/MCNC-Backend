@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
@@ -25,7 +26,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
         //Preflight 요청은 허용
-        if(request.getMethod().equals("OPTIONS")){
+        if(RequestMethod.OPTIONS.name().equals(request.getMethod())){
             return true;
         }
         //세션이 유효하지 않으면 401 에러 응답

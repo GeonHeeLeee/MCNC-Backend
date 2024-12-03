@@ -3,7 +3,7 @@ package mcnc.survwey.domain.respond;
 
 import jakarta.persistence.*;
 import lombok.*;
-import mcnc.survwey.domain.survey.common.Survey;
+import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.user.User;
 
 import java.time.LocalDateTime;
