@@ -3,6 +3,7 @@ package mcnc.survwey.survey;
 
 
 import mcnc.survwey.domain.survey.common.Survey;
+import mcnc.survwey.domain.survey.common.dto.SurveyDTO;
 import mcnc.survwey.domain.survey.common.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
 import mcnc.survwey.domain.survey.inquiry.dto.SurveyWithCountDTO;
@@ -30,7 +31,6 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
     private static final int PAGE_NUMBER = 0;
     private static final int PAGE_SIZE = 10;
 
-
     @Autowired
     private SurveyRepository surveyRepository;
 
@@ -41,10 +41,11 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
     @DisplayName("사용자가 만든 설문 조회 성공 테스트")
     public void testSuccessfulGetUserCreatedSurveyList() {
         //given
+        String userId = "testUser1";
 
         // When
         Page<SurveyWithCountDTO> result = surveyInquiryService.getUserCreatedSurveyList(
-                "testUser1", PAGE_NUMBER, PAGE_SIZE);
+                userId, PAGE_NUMBER, PAGE_SIZE);
 
         // Then
         assertNotNull(result);
@@ -55,10 +56,11 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
     @DisplayName("사용자가 만든 설문 조회 실패 테스트 - 사용자가 만든 설문 없음")
     public void testFailedGetUserCreatedSurveyList() {
         //given
+        String userId = "testUser2";
 
         // When
         Page<SurveyWithCountDTO> result = surveyInquiryService.getUserCreatedSurveyList(
-                "testUser2", PAGE_NUMBER, PAGE_SIZE);
+                userId, PAGE_NUMBER, PAGE_SIZE);
 
         // Then
         assertNotNull(result);
@@ -90,15 +92,18 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
     }
 
 
-//    @Test
-//    @DisplayName("응답한 설문 리스트 조회 성공 테스트")
-//    public void testSuccessGetUserRespondSurveyList() {
-//        //Given
-//
-//        //When
-//
-//
-//    }
+    @Test
+    @DisplayName("응답한 설문 리스트 조회 성공 테스트")
+    public void testSuccessGetUserRespondSurveyList() {
+        //Given
+        String userId = "testUser1";
+
+        //When
+        Page<SurveyDTO> result = surveyInquiryService.getUserRespondSurveyList(userId, PAGE_NUMBER, PAGE_SIZE);
+
+        //Then
+        assertEquals(result.getTotalElements(), 1);
+    }
 
 
     @Test
