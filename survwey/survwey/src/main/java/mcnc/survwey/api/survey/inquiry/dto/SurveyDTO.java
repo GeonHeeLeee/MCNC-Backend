@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyDTO {
-    private long surveyId;
+    private Long surveyId;
     @NotBlank(message = "설문 제목은 필수입니다.")
     private String title;
     private String description;

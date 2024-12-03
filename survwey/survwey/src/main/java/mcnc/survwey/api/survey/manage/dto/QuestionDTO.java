@@ -18,7 +18,7 @@ import java.util.List;
 @SuperBuilder
 public class QuestionDTO {
 
-    private long quesId;
+    private Long quesId;
     @NotBlank(message = "질문 내용은 필수입니다.")
     private String body;
 

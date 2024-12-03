@@ -2,6 +2,7 @@ package mcnc.survwey.api.survey.manage.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.user.User;
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 @SuperBuilder
 public class SurveyWithDetailDTO extends SurveyDTO {
 
@@ -33,8 +35,9 @@ public class SurveyWithDetailDTO extends SurveyDTO {
                 .build();
     }
 
-    public Survey toEntity(User creator) {
+    public Survey toEntity(Long surveyId, User creator) {
         return Survey.builder()
+                .surveyId(surveyId)
                 .title(this.getTitle())
                 .expireDate(this.getExpireDate())
                 .description(this.getDescription())
