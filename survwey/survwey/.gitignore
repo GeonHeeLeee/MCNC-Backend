@@ -43,3 +43,4 @@ out/
 .idea/
 ../../.idea
 src/test/resources/application-test.properties
+src/main/generated

@@ -2,11 +2,13 @@ package mcnc.survwey.util;
 
 import mcnc.survwey.domain.enums.Gender;
 import mcnc.survwey.domain.enums.QuestionType;
+import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.SelectionId;
 import mcnc.survwey.domain.selection.repository.SelectionRepository;
+import mcnc.survwey.domain.subjAnswer.SubjAnswer;
 import mcnc.survwey.domain.survey.common.Survey;
 import mcnc.survwey.domain.survey.common.repository.SurveyRepository;
 import mcnc.survwey.domain.user.User;
@@ -57,6 +59,7 @@ public class TestDataFactory {
                 .build();
     }
 
+
     public Question createQuestion(String body, QuestionType type, Survey survey) {
         return Question.builder()
                 .body(body)
@@ -90,7 +93,7 @@ public class TestDataFactory {
         return selectionRepository.save(selection);
     }
 
-    public void setUpSurveyInquiryData() {
+    public Survey setUpUserAndSurveyData() {
         User testUser1 = createUser("testUser1", "testUser1@test.com", "test1", Gender.M);
         User testUser2 = createUser("testUser2", "testUser2@test.com", "test2", Gender.F);
         Survey survey1 = createSurvey("survey1", "survey1 description", testUser1);
@@ -100,5 +103,65 @@ public class TestDataFactory {
         saveUser(testUser2);
         saveSurvey(survey1);
         saveSurvey(survey2);
+        return survey1;
     }
+
+    public Survey setUpSurveyWithDetailData() {
+        User user = createUser("testUser1", "testUser1@test.com", "test1", Gender.M);
+        saveUser(user);
+        Survey survey = createSurvey("survey1", "survey1 description", user);
+        saveSurvey(survey);
+
+        Question question1 = createQuestion("질문1", QuestionType.SUBJECTIVE, survey);
+        Question question2 = createQuestion("질문2", QuestionType.OBJ_SINGLE, survey);
+
+        survey.addQuestion(question1);
+        survey.addQuestion(question2);
+
+        saveQuestion(question1);
+        saveQuestion(question2);
+
+        Selection selection1 = createSelection("선택1", false, question2, 0);
+        Selection selection2 = createSelection("선택2", true, question2, 1);
+
+        question2.addSelection(selection1);
+        question2.addSelection(selection2);
+
+        saveSelection(selection1);
+        saveSelection(selection2);
+        return survey;
+    }
+
+//    public Survey setUpSurveyResponseData() {
+//        User user = createUser("testUser1", "testUser1@test.com", "test1", Gender.M);
+//        saveUser(user);
+//        Survey survey = createSurvey("survey1", "survey1 description", user);
+//        saveSurvey(survey);
+//
+//        Question question1 = createQuestion("질문1", QuestionType.SUBJECTIVE, survey);
+//        Question question2 = createQuestion("질문2", QuestionType.OBJ_SINGLE, survey);
+//
+//        survey.addQuestion(question1);
+//        survey.addQuestion(question2);
+//
+//        saveQuestion(question1);
+//        saveQuestion(question2);
+//
+//        Selection selection1 = createSelection("선택1", false, question2, 0);
+//        Selection selection2 = createSelection("선택2", true, question2, 1);
+//
+//        question2.addSelection(selection1);
+//        question2.addSelection(selection2);
+//
+//        saveSelection(selection1);
+//        saveSelection(selection2);
+//
+//        ObjAnswer objAnswer1 = ObjAnswer.create(user, null, selection1);
+//        ObjAnswer objAnswer2 = ObjAnswer.create(user, "기타", selection2);
+//        SubjAnswer subjAnswer = SubjAnswer.create(user, "주관식 응답", question1);
+//
+//        obj
+//        return survey;
+//    }
+
 }
