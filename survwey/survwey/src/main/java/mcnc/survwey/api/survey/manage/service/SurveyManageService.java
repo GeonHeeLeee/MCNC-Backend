@@ -78,15 +78,13 @@ public class SurveyManageService {
      * @param surveyId
      */
     @Transactional
-    @CacheEvict(value = "survey", key = "#respond")
+    @CacheEvict(value = "survey")
     public void deleteSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);
         surveyRedisService.deleteSurveyFromRedis(userId, surveyId);
         surveyRepository.delete(survey);
     }
-
-
 
 
     /**
