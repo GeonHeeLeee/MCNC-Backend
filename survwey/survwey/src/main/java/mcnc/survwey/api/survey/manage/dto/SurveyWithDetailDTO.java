@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Slf4j
 @SuperBuilder
 public class SurveyWithDetailDTO extends SurveyDTO {
 
