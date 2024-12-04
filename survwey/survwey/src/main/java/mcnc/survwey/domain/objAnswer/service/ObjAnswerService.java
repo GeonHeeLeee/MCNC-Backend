@@ -1,9 +1,9 @@
 package mcnc.survwey.domain.objAnswer.service;
 
 import lombok.RequiredArgsConstructor;
+import mcnc.survwey.api.survey.response.dto.reply.SurveyReplyDTO;
 import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.domain.objAnswer.ObjAnswer;
-import mcnc.survwey.api.survey.response.dto.reply.ReplyDTO;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.service.SelectionService;
 import mcnc.survwey.domain.user.User;
@@ -27,7 +27,7 @@ public class ObjAnswerService {
      * @param respondedUser
      * @return
      */
-    public List<ObjAnswer> createObjectiveAnswers(List<ReplyDTO> responseList, User respondedUser) {
+    public List<ObjAnswer> createObjectiveAnswers(List<SurveyReplyDTO.ReplyResponseDTO> responseList, User respondedUser) {
         return responseList.stream()
                 .filter(replyDTO -> replyDTO.getQuestionType() == QuestionType.OBJ_MULTI || replyDTO.getQuestionType() == QuestionType.OBJ_SINGLE)
                 .map(replyDTO -> {

@@ -20,9 +20,6 @@ public class AnsweredSurveyDTO extends SurveyDTO {
     private List<AnsweredQuestionDTO> questionList;
 
     public static AnsweredSurveyDTO of(Survey survey) {
-        List<AnsweredQuestionDTO> questionDTOList = survey.getQuestionList()
-                .stream().map(AnsweredQuestionDTO::of).toList();
-
         return AnsweredSurveyDTO.builder()
                 .creatorId(survey.getUser().getUserId())
                 .surveyId(survey.getSurveyId())
@@ -30,7 +27,7 @@ public class AnsweredSurveyDTO extends SurveyDTO {
                 .description(survey.getDescription())
                 .createDate(survey.getCreateDate())
                 .expireDate(survey.getExpireDate())
-                .questionList(questionDTOList)
+                .questionList(AnsweredQuestionDTO.ofList(survey.getQuestionList()))
                 .build();
     }
 }
