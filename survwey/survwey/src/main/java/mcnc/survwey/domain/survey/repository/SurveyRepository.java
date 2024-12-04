@@ -15,14 +15,15 @@ import java.util.List;
 public interface SurveyRepository extends JpaRepository<Survey, Long>, SurveyRepositoryCustom {
     List<Survey> findByUser_UserId(String userId);
 
-    Page<Survey> findByUser_UserIdAndTitleContainingIgnoreCase(String userId, String title, Pageable pageable);
+    Page<Survey> findByUser_UserIdAndTitleContainingIgnoreCaseOrderByCreateDateDesc(String userId, String title, Pageable pageable);
 
     @Query("SELECT s " +
             "FROM Survey s " +
             "JOIN s.respondList r " +
-            "WHERE r.user.userId = :userId AND s.title LIKE %:title%")
+            "WHERE r.user.userId = :userId AND s.title LIKE %:title% " +
+            "ORDER BY s.createDate DESC")
     Page<Survey> findSurveysUserHasRespondedTo(@Param("userId") String userId, @Param("title") String title, Pageable pageable);
 
-    Page<Survey> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    Page<Survey> findByTitleContainingIgnoreCaseOrderByCreateDateDesc(String title, Pageable pageable);
 
 }

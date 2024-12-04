@@ -34,4 +34,20 @@ public class SurveyResultDTO extends SurveyDTO {
                 .questionList(new ArrayList<>())
                 .build();
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GenderCountDTO {
+        private String gender;
+        private long count;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class AgeCountDTO {
+        private String age;
+        private long count;
+    }
 }

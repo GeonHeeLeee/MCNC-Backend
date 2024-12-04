@@ -16,6 +16,19 @@ import java.util.List;
 public class SurveyReplyDTO {
     @NotNull(message = "설문 아이디는 필수입니다.")
     private Long surveyId;
-    private List<ReplyDTO> responseList;
+    private List<ReplyResponseDTO> responseList;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ReplyResponseDTO {
+        @NotNull(message = "질문 아이디는 필수입니다.")
+        private Long quesId;
+        private QuestionType questionType;
+        @NotNull(message = "응답은 필수입니다.")
+        private String response;
+        private SelectionId selectionId;
+    }
 }
 

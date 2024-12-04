@@ -1,9 +1,6 @@
 package mcnc.survwey.api.survey.response.dto.result;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import mcnc.survwey.domain.question.enums.QuestionType;
 
@@ -30,4 +27,26 @@ public class QuestionResultDTO {
         this.selectionList = new ArrayList<>();
         this.subjAnswerList = new ArrayList<>();
     }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SelectionResultDTO {
+        private int sequence;
+        private String body;
+        private boolean isEtc;
+        private int responseCount;
+        private List<String> etcAnswer;
+
+        public SelectionResultDTO(SurveyResultQueryDTO surveyResultQueryDTO) {
+            this.sequence = surveyResultQueryDTO.getSequence();
+            this.body = surveyResultQueryDTO.getSelectionBody();
+            this.isEtc = surveyResultQueryDTO.getIsEtc();
+            this.responseCount = surveyResultQueryDTO.getResponseCount().intValue();
+            this.etcAnswer = new ArrayList<>();
+        }
+    }
+
 }

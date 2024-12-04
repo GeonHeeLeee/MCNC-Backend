@@ -1,7 +1,7 @@
 package mcnc.survwey.domain.selection.service;
 
 import lombok.RequiredArgsConstructor;
-import mcnc.survwey.api.survey.manage.dto.SelectionDTO;
+import mcnc.survwey.api.survey.manage.dto.QuestionDTO;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.SelectionId;
@@ -18,10 +18,10 @@ import java.util.List;
 public class SelectionService {
     private final SelectionRepository selectionRepository;
 
-    public void buildAndSaveSelection(Question createdQuestion, List<SelectionDTO> selectionDTOList) {
-        List<Selection> selectionList = selectionDTOList.stream()
+    public void buildAndSaveSelection(Question createdQuestion, List<QuestionDTO.SelectionDTO> selectionDTO1List) {
+        List<Selection> selectionList = selectionDTO1List.stream()
                 .map(selectionDTO -> {
-                    SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), selectionDTOList.indexOf(selectionDTO));
+                    SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), selectionDTO1List.indexOf(selectionDTO));
                     Selection selection = selectionDTO.toEntity(selectionId, createdQuestion);
                     createdQuestion.addSelection(selection);
                     return selection;

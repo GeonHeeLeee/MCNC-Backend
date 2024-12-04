@@ -2,7 +2,6 @@ package mcnc.survwey.survey;
 
 import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.api.survey.manage.dto.QuestionDTO;
-import mcnc.survwey.api.survey.manage.dto.SelectionDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.service.SurveyRedisService;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import static mcnc.survwey.domain.question.enums.QuestionType.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -69,10 +69,10 @@ public class SurveyManageTest extends BaseIntegrationTest {
         QuestionDTO question2 = buildQuestionDTO("질문 2", OBJ_MULTI);
         QuestionDTO question3 = buildQuestionDTO("질문 3", OBJ_SINGLE);
 
-        SelectionDTO selection1 = buildSelectionDTO("보기 1", false);
-        SelectionDTO selection2 = buildSelectionDTO("보기 2", false);
-        SelectionDTO selection3 = buildSelectionDTO("보기 3", false);
-        SelectionDTO selection4 = buildSelectionDTO("보기 4 - 기타", true);
+        QuestionDTO.SelectionDTO selection1 = buildSelectionDTO("보기 1", false);
+        QuestionDTO.SelectionDTO selection2 = buildSelectionDTO("보기 2", false);
+        QuestionDTO.SelectionDTO selection3 = buildSelectionDTO("보기 3", false);
+        QuestionDTO.SelectionDTO selection4 = buildSelectionDTO("보기 4 - 기타", true);
 
         surveyDTO.getQuestionList().add(question1);
         surveyDTO.getQuestionList().add(question2);
@@ -85,8 +85,8 @@ public class SurveyManageTest extends BaseIntegrationTest {
     }
 
 
-    private static SelectionDTO buildSelectionDTO(String body, boolean isEtc) {
-        return SelectionDTO.builder()
+    private static QuestionDTO.SelectionDTO buildSelectionDTO(String body, boolean isEtc) {
+        return QuestionDTO.SelectionDTO.builder()
                 .body(body)
                 .isEtc(isEtc)
                 .build();
