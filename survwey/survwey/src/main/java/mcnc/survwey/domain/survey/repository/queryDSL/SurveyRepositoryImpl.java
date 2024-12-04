@@ -42,6 +42,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                                 respond.respondId.count()))
                 .from(survey)
                 .leftJoin(respond).on(survey.eq(respond.survey))
+                .where(survey.user.userId.eq(userId))
                 .groupBy(survey.surveyId)
                 .orderBy(survey.createDate.desc())
                 .fetch();
