@@ -4,8 +4,11 @@ import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.api.survey.manage.dto.QuestionDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
+import mcnc.survwey.domain.survey.repository.SurveyRepository;
 import mcnc.survwey.domain.survey.service.SurveyRedisService;
 import mcnc.survwey.api.survey.manage.service.SurveyManageService;
+import mcnc.survwey.domain.user.User;
+import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.util.BaseIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static mcnc.survwey.domain.question.enums.QuestionType.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +33,9 @@ public class SurveyManageTest extends BaseIntegrationTest {
 
     @Autowired
     private SurveyManageService surveyManageService;
+
+    @Autowired
+    private SurveyRepository surveyRepository;
 
     @Autowired
     private SurveyRedisService surveyRedisService;
@@ -60,6 +68,68 @@ public class SurveyManageTest extends BaseIntegrationTest {
 
         //When-Then
         assertThrows(CustomException.class, () -> surveyManageService.saveSurveyWithDetails(surveyWithDetailDTO, userId));
+    }
+
+    @Test
+    @DisplayName("설문 삭제 성공 테스트")
+    public void testSuccessDeleteSurveyAfterValidation() {
+        //Given
+        String creatorId = "testUser1";
+        Survey existingSurvey = surveyRepository.findById(1L).get();
+
+        //When - Then
+        assertDoesNotThrow(() -> {
+            surveyManageService.deleteSurveyAfterValidation(creatorId, existingSurvey.getSurveyId());
+        });
+        assertFalse(surveyRedisService.isSurveyKeyExist(creatorId, existingSurvey.getSurveyId()));
+        assertTrue(surveyRepository.findById(existingSurvey.getSurveyId()).isEmpty());
+    }
+
+    @Test
+    @DisplayName("설문 삭제 실패 테스트 - 요청자가 만든 설문이 아님")
+    public void testFailedDeleteSurveyAfterValidation_NotRequesterMade() {
+        //Given
+        String userId = "testUser2";
+        Survey existingSurvey = surveyRepository.findById(1L).get();
+
+        //When - Then
+        assertThrows(CustomException.class, () -> surveyManageService.deleteSurveyAfterValidation(userId, existingSurvey.getSurveyId()));
+    }
+
+    @Test
+    @DisplayName("설문 수정 성공 테스트")
+    public void testSuccessModifySurvey() {
+        //Given
+        String userId = "testUser1";
+        Survey survey = surveyRepository.findById(2L).get();
+        SurveyWithDetailDTO surveyWithDetailDTO = SurveyWithDetailDTO.of(survey);
+
+//        QuestionDTO additionalQuestion = buildQuestionDTO("추가 질문 1", OBJ_SINGLE);
+//        QuestionDTO.SelectionDTO additionalSelection = buildSelectionDTO("추가 보기 1", false);
+//        additionalQuestion.getSelectionList().add(additionalSelection);
+//
+//        surveyWithDetailDTO.getQuestionList().add(additionalQuestion);
+
+        String modifiedTitle = "modified title";
+        String modifiedDescription = "modified description";
+        LocalDateTime modifiedExpireDate = LocalDateTime.of(2030,11,11,11,11);
+
+        surveyWithDetailDTO.setTitle(modifiedTitle);
+        surveyWithDetailDTO.setDescription(modifiedDescription);
+        surveyWithDetailDTO.setExpireDate(modifiedExpireDate);
+
+        //When
+        SurveyWithDetailDTO modifiedResult = surveyManageService.modifySurvey(surveyWithDetailDTO, userId);
+
+        //Then
+        assertEquals(modifiedResult.getSurveyId(), survey.getSurveyId());
+        assertEquals(modifiedResult.getTitle(), modifiedTitle);
+        assertEquals(modifiedResult.getDescription(), modifiedDescription);
+        assertEquals(modifiedResult.getExpireDate(), modifiedExpireDate);
+//        assertNotEquals(modifiedResult.getQuestionList().size(),
+//                survey.getQuestionList().size());
+//        assertNotEquals(modifiedResult.getQuestionList().get(3).getSelectionList().size(),
+//                survey.getQuestionList().get(3).getSelectionList().size());
     }
 
     private static SurveyWithDetailDTO setUpSaveSurveyWithDetailData(String userId) {

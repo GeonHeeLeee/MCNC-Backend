@@ -14,7 +14,10 @@ import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.domain.survey.service.SurveyRedisService;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,6 +108,8 @@ public class SurveyManageService {
         respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
         //요청자가 생성자가 아니면 에러
         surveyService.validateUserMadeSurvey(userId, existingSurvey);
+        //만료일 이후면 수정 불가
+        surveyService.checkSurveyExpiration(existingSurvey.getExpireDate());
 
         //Redis 만료 시간 재설정
         surveyRedisService.resetExpireTime(userId, existingSurvey.getSurveyId(), surveyWithDetailDTO.getExpireDate());
