@@ -78,14 +78,16 @@ public class AnsweredSurveyService {
         switch (question.getQuestionType()) {
             case OBJ_MULTI:
                 objAnswerMap.get(question.getQuesId()).forEach(objAnswer -> {
-                    question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
+                    Integer sequence = objAnswer.getSelection().getId().getSequence();
+                    question.getObjAnswerList().add(sequence);
                     setEtcAnswerIfPresent(question, objAnswer);
                 });
                 break;
 
             case OBJ_SINGLE:
                 ObjAnswer objAnswer = objAnswerMap.get(question.getQuesId()).get(0);
-                question.getObjAnswerList().add(objAnswer.getSelection().getId().getSequence());
+                Integer sequence = objAnswer.getSelection().getId().getSequence();
+                question.getObjAnswerList().add(sequence);
                 setEtcAnswerIfPresent(question, objAnswer);
                 break;
 
@@ -94,7 +96,7 @@ public class AnsweredSurveyService {
                 break;
 
             default:
-                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INVALID_QUESTION_TYPE);
         }
     }
 

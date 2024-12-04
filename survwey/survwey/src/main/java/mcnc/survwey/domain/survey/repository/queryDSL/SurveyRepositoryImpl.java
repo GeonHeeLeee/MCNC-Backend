@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import org.springframework.data.domain.Page;
@@ -26,43 +27,39 @@ import static mcnc.survwey.domain.survey.QSurvey.survey;
 public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final EntityManager entityManager;
 
     @Override
-    @SuppressWarnings("unchecked") //경고 없애기
-    public Page<Object[]> findSurveyListWithRespondCountByUserId(String userId, Pageable pageable) {
-        StringBuilder sql = new StringBuilder();
+    public Page<SurveyWithCountDTO> findSurveyListWithRespondCountByUserId(String userId, Pageable pageable) {
+        List<SurveyWithCountDTO> surveyWithCountDTOList = jpaQueryFactory
+                .select(
+                        Projections.constructor(SurveyWithCountDTO.class,
+                                survey.surveyId,
+                                survey.title,
+                                survey.description,
+                                survey.createDate,
+                                survey.expireDate,
+                                survey.user.userId,
+                                respond.respondId.count()))
+                .from(survey)
+                .leftJoin(respond).on(survey.eq(respond.survey))
+                .groupBy(survey.surveyId)
+                .orderBy(survey.createDate.desc())
+                .fetch();
 
-        sql.append("SELECT s.survey_id, s.title, s.description, s.create_date, s.expire_date, " +
-                        "COALESCE(r.respond_count, 0) AS respond_count, s.user_id ")
-                .append("FROM survey s ")
-                .append("LEFT JOIN (SELECT survey_id, COUNT(*) AS respond_count " +
-                        "   FROM respond " +
-                        "   GROUP BY survey_id) r ON s.survey_id = r.survey_id ")
-                .append("WHERE s.user_id = :userId ")
-                .append("ORDER BY " +
-                        "CASE " +
-                        "   WHEN s.expire_date > NOW() THEN 0 " +
-                        "   ELSE 1 " +
-                        "END, " +
-                        "ABS(TIMESTAMPDIFF(SECOND, NOW(), s.expire_date)) ASC");
+        JPAQuery<Long> totalQuery = jpaQueryFactory
+                .select(survey.count())
+                .from(survey)
+                .where(survey.user.userId.eq(userId));
 
-        Query query = entityManager.createNativeQuery(sql.toString());
-
-        StringBuilder countSql = new StringBuilder();
-        countSql.append("SELECT COUNT(*) ")
-                .append("FROM survey s ")
-                .append("WHERE s.user_id = :userId");
-
-        Query countQuery = entityManager.createNativeQuery(countSql.toString());
-        countQuery.setParameter("userId", userId);
-
-        query.setParameter("userId", userId);
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
-
-        return PageableExecutionUtils.getPage(query.getResultList(), pageable, () -> ((Number) countQuery.getSingleResult()).longValue());
+        return PageableExecutionUtils.getPage(surveyWithCountDTOList, pageable, totalQuery::fetchOne);
     }
+
+//            CASE
+//                WHEN s.expire_date > NOW() THEN 0
+//                ELSE 1
+//            END,
+//            ABS(TIMESTAMPDIFF(SECOND, NOW(), s.expire_date)) ASC
+//        """;
 
 
     @Override
