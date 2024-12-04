@@ -65,4 +65,15 @@ public class SurveyService {
         }
     }
 
+    /**
+     * 설문 값 업데이트
+     * @param survey
+     */
+    public void updateSurveyData(Survey survey, SurveyWithDetailDTO surveyWithDetailDTO) {
+        survey.setTitle(surveyWithDetailDTO.getTitle());
+        survey.setDescription(surveyWithDetailDTO.getDescription());
+        survey.setExpireDate(surveyWithDetailDTO.getExpireDate());
+        surveyRepository.save(survey);
+    }
+
 }

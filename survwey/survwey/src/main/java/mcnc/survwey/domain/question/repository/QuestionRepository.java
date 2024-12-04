@@ -13,4 +13,5 @@ import java.util.Map;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long>, QuestionRepositoryCustom {
+    void deleteBySurvey_SurveyId(Long surveyId);
 }
