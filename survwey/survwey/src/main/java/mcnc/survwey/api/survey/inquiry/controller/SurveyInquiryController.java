@@ -42,6 +42,7 @@ public class SurveyInquiryController {
     })
     public ResponseEntity<Page<SurveyWithCountDTO>> getUserCreatedSurveyList(@RequestParam(name = "page", defaultValue = "0") int page,
                                                                              @RequestParam(name = "size", defaultValue = "10") int size) {
+        log.info("Received page: {}, size: {}", page, size);
         String userId = SessionContext.getCurrentUser();
         Page<SurveyWithCountDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId, page, size);
         return ResponseEntity.ok(userCreatedSurveyList);
@@ -59,8 +60,8 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "200", description = "사용자가 응답한 설문 리스트 조회 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Page<SurveyDTO>> getUserRespondSurveyList(@RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<SurveyDTO>> getUserRespondSurveyList(@RequestParam(name = "page", defaultValue = "0") int page,
+                                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
         Page<SurveyDTO> userRespondSurveyList = surveyInquiryService.getUserRespondSurveyList(userId, page, size);
         return ResponseEntity.ok(userRespondSurveyList);
@@ -99,8 +100,8 @@ public class SurveyInquiryController {
     })
 
     public ResponseEntity<Page<SurveyDTO>> searchEntireSurvey(@RequestParam(name = "title") String title,
-                                                              @RequestParam(name = "page", defaultValue = "0") int page,
-                                                              @RequestParam(name = "size", defaultValue = "10") int size) {
+                                                              @RequestParam(name = "page") int page,
+                                                              @RequestParam(name = "size") int size) {
         Page<Survey> surveys = surveyInquiryService.searchEntireSurvey(title, page, size);
         //전체 설문에서 검색
         Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);

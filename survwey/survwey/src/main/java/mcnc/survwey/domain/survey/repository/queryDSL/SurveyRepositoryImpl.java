@@ -45,6 +45,8 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .where(survey.user.userId.eq(userId))
                 .groupBy(survey.surveyId)
                 .orderBy(survey.createDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         JPAQuery<Long> totalQuery = jpaQueryFactory
