@@ -42,7 +42,6 @@ public class SurveyInquiryController {
     })
     public ResponseEntity<Page<SurveyWithCountDTO>> getUserCreatedSurveyList(@RequestParam(name = "page", defaultValue = "0") int page,
                                                                              @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("Received page: {}, size: {}", page, size);
         String userId = SessionContext.getCurrentUser();
         Page<SurveyWithCountDTO> userCreatedSurveyList = surveyInquiryService.getUserCreatedSurveyList(userId, page, size);
         return ResponseEntity.ok(userCreatedSurveyList);

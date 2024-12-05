@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mcnc.survwey.global.utils.DecryptField;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,7 @@ public class PasswordModifyDTO {
     private String userId;
 
     @NotBlank(message = "비밀번호는 필수입니다.")
+    @DecryptField
     @Pattern(
             regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).{8,}$",
             message = "비밀번호는 최소 8자, 숫자, 특수문자 및 대소문자를 포함해야 합니다."

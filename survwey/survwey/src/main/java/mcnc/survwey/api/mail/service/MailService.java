@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.mail.utils.EncryptionUtil;
+import mcnc.survwey.global.utils.EncryptionUtil;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.domain.user.User;

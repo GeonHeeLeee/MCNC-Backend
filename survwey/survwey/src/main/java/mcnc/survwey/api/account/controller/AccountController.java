@@ -13,6 +13,7 @@ import mcnc.survwey.api.account.dto.PasswordModifyDTO;
 import mcnc.survwey.api.account.dto.ProfileDTO;
 import mcnc.survwey.api.account.dto.ProfileModifyDTO;
 import mcnc.survwey.api.account.service.AccountService;
+import mcnc.survwey.global.utils.EncryptionUtil;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.config.SessionContext;
@@ -32,6 +33,7 @@ public class AccountController {
     private final AccountService accountService;
     private final UserService userService;
     private final UserRedisService userRedisService;
+    private final EncryptionUtil encryptionUtil;
 
     /**
      * 회원 가입 로직
@@ -61,7 +63,6 @@ public class AccountController {
     })
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO) {
         accountService.registerUser(registerDTO);
-
         return ResponseEntity.ok(registerDTO.getUserId());
     }
 
@@ -137,7 +138,8 @@ public class AccountController {
     })
     public ResponseEntity<Object> getEmailToModifyPassword(@PathVariable String userId) {
         String email = userService.findByUserId(userId).getEmail();
-        return ResponseEntity.ok().body(Map.of("email", email));
+        String encryptedEmail = encryptionUtil.encrypt(email);
+        return ResponseEntity.ok().body(Map.of("email", encryptedEmail));
     }
 
 
