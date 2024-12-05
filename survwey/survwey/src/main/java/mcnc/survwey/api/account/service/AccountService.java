@@ -13,6 +13,7 @@ import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
+import mcnc.survwey.global.utils.EncryptionUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final UserRedisService userRedisService;
+    private final EncryptionUtil encryptionUtil;
 
     /**
      * 회원가입 메소드
@@ -108,7 +110,7 @@ public class AccountService {
         return ProfileDTO.builder()
                 .userId(user.getUserId())
                 .name(user.getName())
-                .email(user.getEmail())
+                .email(encryptionUtil.encrypt(user.getEmail()))
                 .birth(user.getBirth())
                 .gender(user.getGender())
                 .build();

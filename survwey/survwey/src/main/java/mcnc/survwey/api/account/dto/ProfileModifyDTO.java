@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import mcnc.survwey.global.utils.DecryptField;
 
 @Data
 @NoArgsConstructor
@@ -17,6 +18,7 @@ public class ProfileModifyDTO {
     @Pattern(regexp = "^[a-zA-Z가-힣 ]*$", message = "이름은 영어, 한글, 공백만 포함할 수 있습니다.")
     private String name;
 
+    @DecryptField
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "유효한 이메일 주소를 입력해주세요.")
     private String email;
