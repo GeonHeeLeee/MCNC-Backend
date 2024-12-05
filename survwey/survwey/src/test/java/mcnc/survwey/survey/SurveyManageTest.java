@@ -103,12 +103,7 @@ public class SurveyManageTest extends BaseIntegrationTest {
         String userId = "testUser1";
         Survey survey = surveyRepository.findById(2L).get();
         SurveyWithDetailDTO surveyWithDetailDTO = SurveyWithDetailDTO.of(survey);
-
-//        QuestionDTO additionalQuestion = buildQuestionDTO("추가 질문 1", OBJ_SINGLE);
-//        QuestionDTO.SelectionDTO additionalSelection = buildSelectionDTO("추가 보기 1", false);
-//        additionalQuestion.getSelectionList().add(additionalSelection);
-//
-//        surveyWithDetailDTO.getQuestionList().add(additionalQuestion);
+        Long existingQuesId = surveyWithDetailDTO.getQuestionList().get(0).getQuesId();
 
         String modifiedTitle = "modified title";
         String modifiedDescription = "modified description";
@@ -126,10 +121,8 @@ public class SurveyManageTest extends BaseIntegrationTest {
         assertEquals(modifiedResult.getTitle(), modifiedTitle);
         assertEquals(modifiedResult.getDescription(), modifiedDescription);
         assertEquals(modifiedResult.getExpireDate(), modifiedExpireDate);
-//        assertNotEquals(modifiedResult.getQuestionList().size(),
-//                survey.getQuestionList().size());
-//        assertNotEquals(modifiedResult.getQuestionList().get(3).getSelectionList().size(),
-//                survey.getQuestionList().get(3).getSelectionList().size());
+        assertNotEquals(modifiedResult.getQuestionList().get(0).getQuesId(),
+                existingQuesId);
     }
 
     private static SurveyWithDetailDTO setUpSaveSurveyWithDetailData(String userId) {
