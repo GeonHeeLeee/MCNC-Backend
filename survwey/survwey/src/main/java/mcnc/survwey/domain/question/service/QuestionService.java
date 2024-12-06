@@ -30,4 +30,8 @@ public class QuestionService {
         return questionRepository.findById(quesId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.QUESTION_NOT_FOUND_BY_ID));
     }
+
+    public void deleteBySurveyId(Long surveyId) {
+        questionRepository.deleteBySurvey_SurveyId(surveyId);
+    }
 }

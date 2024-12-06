@@ -1,7 +1,7 @@
 package mcnc.survwey.domain.selection.service;
 
 import lombok.RequiredArgsConstructor;
-import mcnc.survwey.api.survey.manage.dto.SelectionDTO;
+import mcnc.survwey.api.survey.manage.dto.QuestionDTO;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.selection.SelectionId;
@@ -12,21 +12,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class SelectionService {
     private final SelectionRepository selectionRepository;
 
-    public void buildAndSaveSelection(Question createdQuestion, List<SelectionDTO> selectionDTOList) {
-        List<Selection> selectionList = selectionDTOList.stream()
-                .map(selectionDTO -> {
-                    SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), selectionDTOList.indexOf(selectionDTO));
+    public void buildAndSaveSelection(Question createdQuestion, List<QuestionDTO.SelectionDTO> selectionDTOList) {
+        List<Selection> selectionList = IntStream.range(0, selectionDTOList.size())
+                .mapToObj(sequence -> {
+                    QuestionDTO.SelectionDTO selectionDTO = selectionDTOList.get(sequence);
+                    SelectionId selectionId = new SelectionId(createdQuestion.getQuesId(), sequence); // 인덱스 사용
                     Selection selection = selectionDTO.toEntity(selectionId, createdQuestion);
                     createdQuestion.addSelection(selection);
                     return selection;
-                })
-                .toList();
+                }).toList();
+
         selectionRepository.saveAll(selectionList);
     }
 

@@ -4,25 +4,17 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor
 public class SurveyWithCountDTO extends SurveyDTO {
     private long respondCount;
 
-    public static SurveyWithCountDTO of(Object[] record) {
-        return SurveyWithCountDTO.builder()
-                .surveyId((Long) record[0])
-                .title((String) record[1])
-                .description((String) record[2])
-                .createDate(((Timestamp) record[3]).toLocalDateTime())
-                .expireDate(((Timestamp) record[4]).toLocalDateTime())
-                .respondCount(((Number) record[5]).intValue())
-                .creatorId((String) record[6])
-                .build();
+    public SurveyWithCountDTO(Long surveyId, String title, String description, LocalDateTime createDate, LocalDateTime expireDate, String creatorId, long respondCount) {
+        super(surveyId, title, description, createDate, expireDate, creatorId);
+        this.respondCount = respondCount;
     }
-
 }

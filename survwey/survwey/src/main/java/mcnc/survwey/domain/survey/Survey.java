@@ -32,9 +32,11 @@ public class Survey {
     @Column(nullable = false)
     private LocalDateTime expireDate;
 
+    @Setter
     @Column(nullable = false)
     private String title;
 
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String description;
 

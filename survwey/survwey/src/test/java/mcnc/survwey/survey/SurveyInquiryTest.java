@@ -64,7 +64,7 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(0, result.getTotalElements());
+        assertEquals(0, result.getNumberOfElements());
     }
 
     @Test

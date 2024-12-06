@@ -20,7 +20,8 @@ public enum ErrorCode {
     HAS_ALREADY_RESPOND_TO_SURVEY("해당 설문에 이미 응답하셨습니다."),
     UNEXPECTED_REDIS_ERROR("Redis 에러가 발생했습니다."),
     EXPIRE_DATE_MUST_BE_AFTER_CURRENT_TIME("만료일은 현재 시간 이후여야 합니다."),
-    USER_NOT_FOUND_BY_EMAIL("해당 이메일의 사용자가 존재하지 않습니다.");
+    USER_NOT_FOUND_BY_EMAIL("해당 이메일의 사용자가 존재하지 않습니다."),
+    INVALID_ENCRYPTED_FIELD("잘못된 암호화 형식입니다.");
 
     private final String errorMessage;
 

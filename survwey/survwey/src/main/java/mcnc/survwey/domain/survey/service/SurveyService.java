@@ -24,7 +24,7 @@ public class SurveyService {
      * @return
      */
     public Survey buildAndSaveSurvey(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
-        Survey createdSurvey = surveyWithDetailDTO.toEntity(creator);
+        Survey createdSurvey = surveyWithDetailDTO.toEntity(surveyWithDetailDTO.getSurveyId(), creator);
         surveyRepository.save(createdSurvey);
         return createdSurvey;
     }
@@ -63,6 +63,17 @@ public class SurveyService {
         if (!survey.getUser().getUserId().equals(userId)) {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.SURVEY_CREATOR_NOT_MATCH);
         }
+    }
+
+    /**
+     * 설문 값 업데이트
+     * @param survey
+     */
+    public void updateSurveyData(Survey survey, SurveyWithDetailDTO surveyWithDetailDTO) {
+        survey.setTitle(surveyWithDetailDTO.getTitle());
+        survey.setDescription(surveyWithDetailDTO.getDescription());
+        survey.setExpireDate(surveyWithDetailDTO.getExpireDate());
+        surveyRepository.save(survey);
     }
 
 }

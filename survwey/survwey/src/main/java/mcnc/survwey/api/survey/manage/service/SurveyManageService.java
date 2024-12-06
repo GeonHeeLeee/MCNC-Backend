@@ -13,16 +13,15 @@ import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserService;
+import mcnc.survwey.domain.survey.service.SurveyRedisService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
-import mcnc.survwey.domain.survey.service.SurveyRedisService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
 @Service
@@ -41,6 +40,7 @@ public class SurveyManageService {
     /**
      * 설문 상세(설문, 질문, 보기) 저장
      * - 설문, 질문, 보기 생성 후 저장
+     *
      * @param surveyWithDetailDTO
      * @param userId
      * @return
@@ -52,25 +52,36 @@ public class SurveyManageService {
         Survey createdSurvey = surveyService.buildAndSaveSurvey(surveyWithDetailDTO, creator);
         //Redis에 Key 저장
         surveyRedisService.saveSurveyExpireTime(createdSurvey.getSurveyId(), creator.getUserId(), createdSurvey.getExpireDate());
+        //질문과 보기 저장
+        saveQuestionAndSelection(surveyWithDetailDTO, createdSurvey);
+        return createdSurvey;
+    }
+
+    /**
+     * 질문과 보기 저장 메서드
+     * @param surveyWithDetailDTO
+     * @param survey
+     */
+    public void saveQuestionAndSelection(SurveyWithDetailDTO surveyWithDetailDTO, Survey survey) {
         surveyWithDetailDTO.getQuestionList()
                 .forEach(questionDTO -> {
                     //질문 생성 후 저장
-                    Question createdQuestion = questionService.buildAndSaveQuestion(questionDTO, createdSurvey);
+                    Question createdQuestion = questionService.buildAndSaveQuestion(questionDTO, survey);
                     //보기 생성 후 저장
                     selectionService.buildAndSaveSelection(createdQuestion, questionDTO.getSelectionList());
                 });
-        return createdSurvey;
     }
 
     /**
      * 설문 삭제(오버로딩)
      * - 요청자와 설문 생성자가 일치할시에만 삭제
      * - 설문 삭제 시 설문 캐시도 삭제
+     *
      * @param userId
      * @param surveyId
      */
     @Transactional
-    @CacheEvict(value = "survey", key = "#respond")
+    @CacheEvict(value = "survey")
     public void deleteSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         surveyService.validateUserMadeSurvey(userId, survey);
@@ -78,51 +89,48 @@ public class SurveyManageService {
         surveyRepository.delete(survey);
     }
 
-    /**
-     * 설문 삭제(오버로딩)
-     * - 요청자와 설문 생성자가 일치할시에만 삭제
-     * @param userId
-     * @param survey
-     */
-    public void deleteSurveyAfterValidation(String userId, Survey survey) {
-        surveyService.validateUserMadeSurvey(userId, survey);
-        surveyRedisService.deleteSurveyFromRedis(userId, survey.getSurveyId());
-        surveyRepository.delete(survey);
-    }
-
 
     /**
      * 설문 수정
-     * - 설문의 생성일은 변경하지 않음
-     * - 기존 설문 삭제 후 새롭게 만들어 저장
+     * - 설문의 기존 값 업데이트
+     * - 기존 설문에 관련된 질문/보기 삭제 후 새롭게 만들어 저장
+     *
      * @param surveyWithDetailDTO
      * @param userId
-     * @return
-     * - 이미 응답한 사용자가 있는 경우 에러
+     * @return - 이미 응답한 사용자가 있는 경우 에러
      * - 해당 아이디의 설문이 존재하지 않으면 에러
      * - 수정자와 생성자가 일치하지 않으면 에러
      */
     @Transactional
     public SurveyWithDetailDTO modifySurvey(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
+        Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
         //설문 응답자가 존재하면 error
         respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
-        Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
+        //요청자가 생성자가 아니면 에러
+        surveyService.validateUserMadeSurvey(userId, existingSurvey);
+        //만료일 이후면 수정 불가
+        surveyService.checkSurveyExpiration(existingSurvey.getExpireDate());
 
-        //삭제(존재하는지 확인 및 생성자 검증 후)
-        deleteSurveyAfterValidation(userId, existingSurvey);
+        //Redis 만료 시간 재설정
+        surveyRedisService.resetExpireTime(userId, existingSurvey.getSurveyId(), surveyWithDetailDTO.getExpireDate());
 
-        //생성일은 처음과 같이 고정
-        surveyWithDetailDTO.setCreateDate(existingSurvey.getCreateDate());
-        //다시 저장
-        Survey survey = Optional.ofNullable(saveSurveyWithDetails(surveyWithDetailDTO, userId))
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
-        return SurveyWithDetailDTO.of(survey);
+        //설문 값 업데이트
+        surveyService.updateSurveyData(existingSurvey, surveyWithDetailDTO);
+
+        //질문과 보기 삭제(Cascade여서 질문 삭제 시 보기 자동 삭제)
+        questionService.deleteBySurveyId(existingSurvey.getSurveyId());
+
+        //질문과 보기 저장
+        saveQuestionAndSelection(surveyWithDetailDTO, existingSurvey);
+
+        return SurveyWithDetailDTO.of(existingSurvey);
 
     }
 
     /**
      * 설문 강제 종료
      * 만료일을 현재로 변경하여 설문 종료
+     *
      * @param userId
      * @param surveyId
      */

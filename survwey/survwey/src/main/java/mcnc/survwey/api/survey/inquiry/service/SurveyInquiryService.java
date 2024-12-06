@@ -38,8 +38,7 @@ public class SurveyInquiryService {
      */
     public Page<SurveyWithCountDTO> getUserCreatedSurveyList(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> surveyPageList = surveyRepository.findSurveyListWithRespondCountByUserId(userId, pageable);
-        return surveyPageList.map(SurveyWithCountDTO::of);
+        return surveyRepository.findSurveyListWithRespondCountByUserId(userId, pageable);
     }
 
 
@@ -79,7 +78,7 @@ public class SurveyInquiryService {
      */
     public Page<Survey> searchEntireSurvey(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findByTitleContainingIgnoreCase(title, pageable);
+        return surveyRepository.findByTitleContainingIgnoreCaseOrderByCreateDateDesc(title, pageable);
     }
 
     public Page<Survey> searchRespondedSurveys(String userId, String title, int page, int size) {
@@ -89,7 +88,7 @@ public class SurveyInquiryService {
 
     public Page<Survey> searchUserCreatedSurvey(String userId, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCase(userId, title, pageable);
+        return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCaseOrderByCreateDateDesc(userId, title, pageable);
     }
 
 
@@ -97,10 +96,10 @@ public class SurveyInquiryService {
      * 본인이 만든 설문인지 확인
      * - 본인이 만든 설문이면 result : true
      * - 본인이 만든 설문이 아니면 result : false
+     *
      * @param userId
      * @param surveyId
-     * @return
-     * - 에러: 설문이 존재하지 않음
+     * @return - 에러: 설문이 존재하지 않음
      */
     public Map<String, Boolean> isSurveyUserMade(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);

@@ -3,6 +3,7 @@ package mcnc.survwey.api.survey.response.service;
 
 import lombok.RequiredArgsConstructor;
 import mcnc.survwey.api.survey.response.dto.result.*;
+import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.respond.repository.RespondRepository;
@@ -109,7 +110,7 @@ public class SurveyResultService {
         switch (questionType) {
             case OBJ_MULTI:
             case OBJ_SINGLE:
-                SelectionResultDTO selection = new SelectionResultDTO(surveyResultQueryDTO);
+                QuestionResultDTO.SelectionResultDTO selection = new QuestionResultDTO.SelectionResultDTO(surveyResultQueryDTO);
                 if (surveyResultQueryDTO.getIsEtc() && surveyResultQueryDTO.getEtcAnswer() != null) {
                     selection.getEtcAnswer().add(surveyResultQueryDTO.getEtcAnswer());
                 }
@@ -133,8 +134,8 @@ public class SurveyResultService {
      * @param surveyResultDTO
      */
     private void addAgeAndGenderDistribution(Long surveyId, SurveyResultDTO surveyResultDTO) {
-        List<GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);
-        List<AgeCountDTO> ageCountDTOList = userService.getAgeGroupCountBySurveyId(surveyId);
+        List<SurveyResultDTO.GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);
+        List<SurveyResultDTO.AgeCountDTO> ageCountDTOList = userService.getAgeGroupCountBySurveyId(surveyId);
 
         surveyResultDTO.setAgeCountList(ageCountDTOList);
         surveyResultDTO.setGenderCountList(genderCountDTOList);

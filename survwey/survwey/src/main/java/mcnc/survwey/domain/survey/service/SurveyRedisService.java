@@ -39,12 +39,12 @@ public class SurveyRedisService {
      * - 그렇지 않을 경우 만료일과 현재 시간의 차이 동안 유효하도록 Redis에 저장
      * @param surveyId
      * @param creatorId
-     * @param endDateTime
+     * @param expireDateTime
      */
-    public void saveSurveyExpireTime(Long surveyId, String creatorId, LocalDateTime endDateTime) {
+    public void saveSurveyExpireTime(Long surveyId, String creatorId, LocalDateTime expireDateTime) {
         // 현재 시간과 종료 시간의 차이를 구하기
         LocalDateTime currentTime = LocalDateTime.now();
-        Duration duration = Duration.between(currentTime, endDateTime);
+        Duration duration = Duration.between(currentTime, expireDateTime);
 
         // 종료 시간이 이미 지난 경우 예외 발생
         if (duration.isNegative()) {
@@ -70,6 +70,23 @@ public class SurveyRedisService {
         String key = generateRedisKey(userId, surveyId);
         redisTemplate.expire(key, 1, TimeUnit.SECONDS);
     }
+
+
+    /**
+     * Redis 키의 만료 시간 재설정
+     * @param creatorId
+     * @param surveyId
+     * @param expireDateTime
+     * @return
+     */
+    public void resetExpireTime(String creatorId, Long surveyId, LocalDateTime expireDateTime) {
+        String key = generateRedisKey(creatorId, surveyId);
+        LocalDateTime currentTime = LocalDateTime.now();
+        Duration duration = Duration.between(currentTime, expireDateTime);
+        long ttlSeconds = duration.getSeconds();
+        redisTemplate.expire(key, ttlSeconds, TimeUnit.SECONDS);
+    }
+
 
     /**
      * Redis 저장할 키 생성
