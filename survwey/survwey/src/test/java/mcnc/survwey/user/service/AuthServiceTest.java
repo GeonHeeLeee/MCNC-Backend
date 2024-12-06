@@ -2,100 +2,157 @@ package mcnc.survwey.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import mcnc.survwey.api.account.dto.RegisterDTO;
+import mcnc.survwey.api.account.service.AccountService;
+import mcnc.survwey.api.auth.dto.AuthCodeDTO;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.api.auth.dto.LoginDTO;
 import mcnc.survwey.api.auth.service.AuthService;
+import mcnc.survwey.domain.user.enums.Gender;
+import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 
 import static mcnc.survwey.global.config.AuthInterceptor.LOGIN_USER;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 class AuthServiceTest {
 
-    @Mock
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
     private UserService userService;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
+    @Autowired
     private HttpServletRequest request;
 
-    @Mock
+    @Autowired
     private HttpSession session;
 
-    @InjectMocks
+    @Autowired
     private AuthService authService;
 
-    private LoginDTO validLoginDTO;
-    private User validUser;
+    @Autowired
+    private UserRedisService userRedisService;
+
+    private User userDTO;
 
     @BeforeEach
-    void setUp() {
-        // 테스트에 사용될 기본 데이터 설정
-        validLoginDTO = new LoginDTO("testUser", "correctPassword");
-        validUser = User.builder()
-                .userId("testUser")
-                .password(passwordEncoder.encode("correctPassword"))
+    public void saveUser(){
+        RegisterDTO registerDTO = RegisterDTO.builder()
+                .userId("asd123")
+                .email("asd@test.com")
+                .name("tester")
+                .password("qwer1234!@")
+                .birth(LocalDate.now())
+                .gender(Gender.F).build();
+
+        accountService.registerUser(registerDTO);
+
+        userDTO = userService.findByUserId("asd123");
+
+    }
+
+    @Test
+    void 로그인_성공_테스트() {
+        // given
+        LoginDTO loginDTO = LoginDTO.builder()
+                .userId("asd123")
+                .password("qwer1234!@")
                 .build();
+
+        // when & then
+        assertThatCode(() -> authService.loginUser(loginDTO, request))
+                .doesNotThrowAnyException();
     }
 
     @Test
-    @DisplayName("로그인 성공 테스트")
-    void loginUser_success() {
-        // Given
-        when(userService.findByUserId(validLoginDTO.getUserId())).thenReturn(validUser);
-        when(passwordEncoder.matches(validLoginDTO.getPassword(), validUser.getPassword())).thenReturn(true);
-        when(request.getSession()).thenReturn(session);
+    void 존재하지_않는_사용자_로그인_시도() {
+        // given
+        LoginDTO loginDTO = LoginDTO.builder()
+                .userId("asd1234")
+                .password("qwer1234!@")
+                .build();
 
-        // When
-        authService.loginUser(validLoginDTO, request);
+        // when & then
+        assertThatCode(() -> authService.loginUser(loginDTO, request))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining("해당 아이디의 사용자가 존재하지 않습니다.");
+    }
 
-        // Then
-        // verify() 메서드는 Mockito에서 특정 메서드가 예상된 방식으로 호출되었는지 검증하는 데 사용
-        /**
-         * verify(session): session 객체의 메서드 호출을 검증
-         * .setAttribute(): 특정 메서드(setAttribute)가 호출되었는지 확인
-         * eq(LOGIN_USER): 첫 번째 인자가 LOGIN_USER 상수와 정확히 일치하는지
-         * eq(validLoginDTO.getUserId()): 두 번째 인자가 로그인 DTO의 userId와 정확히 일치하는지
+    @Test
+    void 잘못된_비밀번호_로그인_시도() {
+        // given
+        LoginDTO loginDTO = LoginDTO.builder()
+                .userId("asd123")
+                .password("qwer1234!!!!!!!!!!")
+                .build();
+
+        // when & then
+        assertThatCode(() -> authService.loginUser(loginDTO, request))
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining("비밀번호가 일치하지 않습니다.");
+    }
+
+    @Test
+    void 비밀번호_변경_인증번호_체크(){
+        //given
+        AuthCodeDTO authCodeDTO = new AuthCodeDTO();
+        authCodeDTO.setUserId("asd123");
+        authCodeDTO.setTempAuthCode("123123123");
+
+        //when
+        userRedisService.saveVerificationCode(authCodeDTO.getUserId(), authCodeDTO.getTempAuthCode());
+        boolean isVerified = userRedisService.verifyCode(authCodeDTO.getUserId(), authCodeDTO.getTempAuthCode());
+
+        //then
+        assertThat(isVerified).isTrue();
+        assertThatCode(() -> userRedisService.saveVerifiedStatus(authCodeDTO.getUserId()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 비밀번호_변경_인증번호_체크_실패(){
+        //given
+        AuthCodeDTO authCodeDTO = new AuthCodeDTO();
+        authCodeDTO.setUserId("asd123");
+        authCodeDTO.setTempAuthCode("123123123");
+
+        //when
+        userRedisService.saveVerificationCode(authCodeDTO.getUserId(), "인증번호가 없거나 다를경우");
+        boolean isVerified = userRedisService.verifyCode(authCodeDTO.getUserId(), authCodeDTO.getTempAuthCode());
+
+        //then
+        assertThat(isVerified).isFalse();
+        /*
+        ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("errorMessage", "인증번호가 유효하지 않습니다."));
+        이거 Test Forbidden 이고 에러 메시지 맞는지 확인하는 테스트코드 짜는 중인디
+        잘 모르겠심
          */
-        verify(session).setAttribute(eq(LOGIN_USER), eq(validLoginDTO.getUserId()));
     }
 
-    @Test
-    @DisplayName("존재하지 않는 사용자 로그인 시도 테스트")
-    void loginUser_userNotFound() {
-        // Given
-        when(userService.findByUserId(validLoginDTO.getUserId())).thenThrow(CustomException.class);
-
-        // When & Then
-        assertThrows(CustomException.class, () -> {
-            authService.loginUser(validLoginDTO, request);
-        }, "사용자를 찾을 수 없을 때 CustomException이 발생해야 함");
-    }
-
-    @Test
-    @DisplayName("잘못된 비밀번호 로그인 시도 테스트")
-    void loginUser_invalidPassword() {
-        // Given
-        when(userService.findByUserId(validLoginDTO.getUserId())).thenReturn(validUser);
-        when(passwordEncoder.matches(validLoginDTO.getPassword(), validUser.getPassword())).thenReturn(false);
-
-        // When & Then
-        assertThrows(CustomException.class, () -> {
-            authService.loginUser(validLoginDTO, request);
-        }, "비밀번호가 일치하지 않을 때 CustomException이 발생해야 함");
-    }
 }
