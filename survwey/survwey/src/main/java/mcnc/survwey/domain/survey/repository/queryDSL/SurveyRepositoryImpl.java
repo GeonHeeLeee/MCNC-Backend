@@ -32,15 +32,13 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     @Override
     public Page<SurveyDTO> findSurveyThatCanParticipate(String title, String userId, Pageable pageable) {
         List<SurveyDTO> surveyDTOList = jpaQueryFactory
-                .select(
-                        Projections.constructor(SurveyDTO.class,
+                .select(Projections.constructor(SurveyDTO.class,
                                 survey.surveyId,
                                 survey.title,
                                 survey.description,
                                 survey.createDate,
                                 survey.expireDate,
-                                survey.user.userId
-                        ))
+                                survey.user.userId))
                 .from(survey)
                 .leftJoin(respond).on(survey.eq(respond.survey))
                 .where(respond.user.userId.ne(userId)

@@ -79,7 +79,7 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<SurveyWithDetailDTO> getSurveyWithDetail(@PathVariable("surveyId") Long surveyId) {
-        SurveyWithDetailDTO surveyWithDetailDTO = surveyInquiryService.getSurveyWithDetail(surveyId);
+        SurveyWithDetailDTO surveyWithDetailDTO = surveyInquiryService.findSurveyWithDetail(surveyId);
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
 
@@ -154,20 +154,6 @@ public class SurveyInquiryController {
         //참여한 설문에서 검색
         Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
-    }
-
-    @GetMapping("/check/{surveyId}")
-    @Operation(summary = "본인이 만든 설문인지 확인", description = "설문 아이디와 세션의 아이디로 요청했을때 내가 만든 설문인지 아닌지 확인<br>" +
-            "result : true - 본인이 만든 설문임<br>" +
-            "result : false - 본인이 만든 설문이 아님")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = ""),
-            @ApiResponse(responseCode = "400", description = "해당 설문 아이디에 설문이 존재하지 않음")
-    })
-    public ResponseEntity<Map<String, Boolean>> checkSurveyAccess(@PathVariable Long surveyId) {
-        String userId = SessionContext.getCurrentUser();
-        Map<String, Boolean> response = surveyInquiryService.isSurveyUserMade(userId, surveyId);
-        return ResponseEntity.ok(response);
     }
 
 }

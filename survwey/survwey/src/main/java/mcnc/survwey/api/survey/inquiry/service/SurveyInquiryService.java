@@ -62,53 +62,60 @@ public class SurveyInquiryService {
      * @param surveyId
      * @return - 해당 Id의 설문이 없을 시, 오류 발생
      */
-    public SurveyWithDetailDTO getSurveyWithDetail(Long surveyId) {
+    public SurveyWithDetailDTO findSurveyWithDetail(Long surveyId) {
         return Optional.ofNullable(surveyRepository.findSurveyWithDetail(surveyId))
                 .map(SurveyWithDetailDTO::of)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
     }
 
     /**
-     * 설문 검색
-     *
+     * 검색 시 제목의 공백 제거
+     * @param title
+     * @return
+     */
+    private String removeTitleSpaces(String title) {
+        return title.replaceAll("\\s", "");
+    }
+
+    /**
+     * 참여 가능한 설문 검색
      * @param title
      * @param page
      * @param size
      * @return
      */
     public Page<SurveyDTO> searchSurveyToParticipate(String title, String userId, int page, int size) {
+        title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findSurveyThatCanParticipate(title, userId, pageable);
     }
 
+    /**
+     * 사용자가 응답한 설문 검색
+     * @param userId
+     * @param title
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<Survey> searchRespondedSurveys(String userId, String title, int page, int size) {
+        title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findSurveysUserHasRespondedTo(userId, title, pageable);
     }
 
+    /**
+     * 사용자가 생성한 설문 검색
+     * @param userId
+     * @param title
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<Survey> searchUserCreatedSurvey(String userId, String title, int page, int size) {
+        title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCaseOrderByCreateDateDesc(userId, title, pageable);
     }
 
-
-    /**
-     * 본인이 만든 설문인지 확인
-     * - 본인이 만든 설문이면 result : true
-     * - 본인이 만든 설문이 아니면 result : false
-     *
-     * @param userId
-     * @param surveyId
-     * @return - 에러: 설문이 존재하지 않음
-     */
-    public Map<String, Boolean> isSurveyUserMade(String userId, Long surveyId) {
-        Survey survey = surveyService.findBySurveyId(surveyId);
-        Map<String, Boolean> response = new HashMap<>();
-        if (survey.getUser().getUserId().equals(userId)) {
-            response.put("result", true);
-        } else {
-            response.put("result", false);
-        }
-        return response;
-    }
 }

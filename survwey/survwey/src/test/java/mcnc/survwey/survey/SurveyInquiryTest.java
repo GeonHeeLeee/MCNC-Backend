@@ -18,9 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -74,7 +71,7 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
         Survey survey = surveyRepository.findById(1L).get();
 
         // When
-        SurveyWithDetailDTO surveyWithDetail = surveyInquiryService.getSurveyWithDetail(survey.getSurveyId());
+        SurveyWithDetailDTO surveyWithDetail = surveyInquiryService.findSurveyWithDetail(survey.getSurveyId());
 
         // Then
         assertEquals(surveyWithDetail.getSurveyId(), survey.getSurveyId());
@@ -88,7 +85,7 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
         // Given
         long notExistingSurveyId = Integer.MAX_VALUE;
         // When-Then
-        assertThrows(CustomException.class, () -> surveyInquiryService.getSurveyWithDetail(notExistingSurveyId));
+        assertThrows(CustomException.class, () -> surveyInquiryService.findSurveyWithDetail(notExistingSurveyId));
     }
 
 
@@ -103,37 +100,6 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
 
         //Then
         assertEquals(result.getTotalElements(), 1);
-    }
-
-
-    @Test
-    @DisplayName("본인이 만든 설문 조사 테스트 - 본인이 생성한 설문")
-    public void testIsSurveyUserMade_True() {
-        //Given
-        Long survey1Id = 1L;
-        String userId = "testUser1";
-
-        //When
-        Map<String, Boolean> result = surveyInquiryService.isSurveyUserMade(userId, survey1Id);
-
-        //Then
-        assertNotNull(result.get("result"));
-        assertEquals(result.get("result"), true);
-    }
-
-    @Test
-    @DisplayName("본인이 만든 설문 조사 테스트 - 본인이 생성하지 않은 설문")
-    public void testIsSurveyUserMade_False() {
-        //Given
-        Long survey1Id = 1L;
-        String userId = "testUser2";
-
-        //When
-        Map<String, Boolean> result = surveyInquiryService.isSurveyUserMade(userId, survey1Id);
-
-        //Then
-        assertNotNull(result.get("result"));
-        assertEquals(result.get("result"), false);
     }
 
 }
