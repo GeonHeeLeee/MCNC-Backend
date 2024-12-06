@@ -43,7 +43,7 @@ public class AnsweredSurveyService {
     @Transactional(readOnly = true)
     public AnsweredSurveyDTO getUserAnsweredSurvey(Long surveyId, String userId) {
         //요청 ID의 설문이 존재하지 않으면 에러 전송, 아닐 시 응답 DTO 객체 생성
-        AnsweredSurveyDTO answeredSurveyDTO = Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
+        AnsweredSurveyDTO answeredSurveyDTO = Optional.ofNullable(surveyRepository.findSurveyWithDetail(surveyId))
                 .map(AnsweredSurveyDTO::of)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
 
