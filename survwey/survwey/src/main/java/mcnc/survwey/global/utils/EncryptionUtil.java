@@ -3,7 +3,6 @@ package mcnc.survwey.global.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -42,6 +41,7 @@ public class EncryptionUtil {
             throw new RuntimeException("암호화 실패: " + e.getMessage());
         }
     }
+
 
     /**
      * AES/CBC 비밀키로 복호화

@@ -21,9 +21,6 @@ public interface SurveyRepository extends JpaRepository<Survey, Long>, SurveyRep
             "FROM Survey s " +
             "JOIN s.respondList r " +
             "WHERE r.user.userId = :userId AND s.title LIKE %:title% " +
-            "ORDER BY s.createDate DESC")
+            "ORDER BY r.respondDate DESC")
     Page<Survey> findSurveysUserHasRespondedTo(@Param("userId") String userId, @Param("title") String title, Pageable pageable);
-
-    Page<Survey> findByTitleContainingIgnoreCaseOrderByCreateDateDesc(String title, Pageable pageable);
-
 }
