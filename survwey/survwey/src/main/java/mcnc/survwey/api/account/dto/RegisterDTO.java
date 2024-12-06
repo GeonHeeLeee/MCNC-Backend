@@ -1,6 +1,7 @@
 package mcnc.survwey.api.account.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.user.enums.Gender;
@@ -9,7 +10,7 @@ import mcnc.survwey.global.utils.DecryptField;
 import java.time.LocalDate;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class RegisterDTO {
 
     @NotBlank(message = "아이디는 필수입니다.")
