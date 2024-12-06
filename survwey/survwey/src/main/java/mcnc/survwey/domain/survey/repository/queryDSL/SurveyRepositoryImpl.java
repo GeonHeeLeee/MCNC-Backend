@@ -2,6 +2,7 @@ package mcnc.survwey.domain.survey.repository.queryDSL;
 
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static mcnc.survwey.domain.question.QQuestion.*;
@@ -44,7 +46,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .leftJoin(respond).on(survey.eq(respond.survey))
                 .where(survey.user.userId.eq(userId))
                 .groupBy(survey.surveyId)
-                .orderBy(survey.createDate.desc())
+                .orderBy(respond.respondDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -57,12 +59,15 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
         return PageableExecutionUtils.getPage(surveyWithCountDTOList, pageable, totalQuery::fetchOne);
     }
 
-//            CASE
-//                WHEN s.expire_date > NOW() THEN 0
-//                ELSE 1
-//            END,
-//            ABS(TIMESTAMPDIFF(SECOND, NOW(), s.expire_date)) ASC
-//        """;
+    CASE
+    WHEN s.expire_date >
+
+    NOW() THEN 0
+    ELSE 1
+    END,
+
+    ABS(TIMESTAMPDIFF(SECOND, NOW(),s.expire_date))ASC
+        """;
 
 
     @Override

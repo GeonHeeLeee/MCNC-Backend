@@ -76,7 +76,7 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<Survey> searchEntireSurvey(String title, int page, int size) {
+    public Page<Survey> searchSurveyToParticipate(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findByTitleContainingIgnoreCaseOrderByCreateDateDesc(title, pageable);
     }

@@ -1,16 +1,13 @@
 package mcnc.survwey.global.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.global.exception.custom.CustomException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -46,6 +43,7 @@ public class EncryptionUtil {
             throw new RuntimeException("암호화 실패: " + e.getMessage());
         }
     }
+
 
     /**
      * AES/CBC 비밀키로 복호화

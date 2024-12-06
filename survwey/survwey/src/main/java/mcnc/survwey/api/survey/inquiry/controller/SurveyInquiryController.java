@@ -92,16 +92,16 @@ public class SurveyInquiryController {
      * @return
      */
     @GetMapping("/search")
-    @Operation(summary = "설문 전체 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
+    @Operation(summary = "내가 참여할 수 있는 설문 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
 
-    public ResponseEntity<Page<SurveyDTO>> searchEntireSurvey(@RequestParam(name = "title") String title,
-                                                              @RequestParam(name = "page") int page,
-                                                              @RequestParam(name = "size") int size) {
-        Page<Survey> surveys = surveyInquiryService.searchEntireSurvey(title, page, size);
+    public ResponseEntity<Page<SurveyDTO>> searchSurveyToParticipate(@RequestParam(name = "title") String title,
+                                                                     @RequestParam(name = "page") int page,
+                                                                     @RequestParam(name = "size") int size) {
+        Page<Survey> surveys = surveyInquiryService.searchSurveyToParticipate(title, page, size);
         //전체 설문에서 검색
         Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
         return ResponseEntity.ok(surveyInfoDTOS);
