@@ -8,10 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 public interface SurveyRepositoryCustom {
+    Page<SurveyDTO> findSurveyThatCanParticipate(String title, String userId, Pageable pageable);
+
     Page<SurveyWithCountDTO> findSurveyListWithRespondCountByUserId(@Param("userId") String userId, Pageable pageable);
 
     Page<SurveyDTO> findRespondedSurveyByUserId(@Param("userId") String userId, Pageable pageable);
 
-    Survey getSurveyWithDetail(@Param("surveyId") Long surveyId);
+    Survey findSurveyWithDetail(@Param("surveyId") Long surveyId);
 
 }

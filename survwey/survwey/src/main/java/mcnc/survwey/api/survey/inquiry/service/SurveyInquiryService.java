@@ -63,7 +63,7 @@ public class SurveyInquiryService {
      * @return - 해당 Id의 설문이 없을 시, 오류 발생
      */
     public SurveyWithDetailDTO getSurveyWithDetail(Long surveyId) {
-        return Optional.ofNullable(surveyRepository.getSurveyWithDetail(surveyId))
+        return Optional.ofNullable(surveyRepository.findSurveyWithDetail(surveyId))
                 .map(SurveyWithDetailDTO::of)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
     }
@@ -76,9 +76,9 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<Survey> searchSurveyToParticipate(String title, int page, int size) {
+    public Page<SurveyDTO> searchSurveyToParticipate(String title, String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findByTitleContainingIgnoreCaseOrderByCreateDateDesc(title, pageable);
+        return surveyRepository.findSurveyThatCanParticipate(title, userId, pageable);
     }
 
     public Page<Survey> searchRespondedSurveys(String userId, String title, int page, int size) {

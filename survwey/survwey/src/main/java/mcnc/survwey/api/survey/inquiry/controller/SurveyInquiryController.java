@@ -101,10 +101,9 @@ public class SurveyInquiryController {
     public ResponseEntity<Page<SurveyDTO>> searchSurveyToParticipate(@RequestParam(name = "title") String title,
                                                                      @RequestParam(name = "page") int page,
                                                                      @RequestParam(name = "size") int size) {
-        Page<Survey> surveys = surveyInquiryService.searchSurveyToParticipate(title, page, size);
-        //전체 설문에서 검색
-        Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
-        return ResponseEntity.ok(surveyInfoDTOS);
+        String userId = SessionContext.getCurrentUser();
+        Page<SurveyDTO> surveyDTOList = surveyInquiryService.searchSurveyToParticipate(title, userId, page, size);
+        return ResponseEntity.ok(surveyDTOList);
     }
 
     /**
