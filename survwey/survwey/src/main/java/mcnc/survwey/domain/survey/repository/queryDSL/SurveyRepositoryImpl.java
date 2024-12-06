@@ -77,7 +77,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .leftJoin(respond).on(survey.eq(respond.survey))
                 .where(survey.user.userId.eq(userId))
                 .groupBy(survey.surveyId)
-                .orderBy(respond.respondDate.desc())
+                .orderBy(survey.createDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
