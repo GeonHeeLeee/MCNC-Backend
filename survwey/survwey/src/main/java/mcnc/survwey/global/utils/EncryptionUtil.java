@@ -6,7 +6,11 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.*;
@@ -18,6 +22,7 @@ public class EncryptionUtil {
 
     @Value("${ENCRYPTION_SECRET_KEY}")
     private String secretKey;
+
 
     private Cipher initializeCipher(int mode) throws Exception {
         SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(UTF_8), "AES");//키 세팅 -> AES 기준으로 secretKey 부분에 들어오는 길이에 따라 암호화 방식 결정
@@ -57,5 +62,19 @@ public class EncryptionUtil {
         } catch (Exception e) {
             throw new RuntimeException("복호화 실패: " + e.getMessage());
         }
+    }
+
+    /**
+     * AES/CBC 비밀키로 리스트 복호화
+     * @param encryptedList
+     * @return
+     */
+    public List<String> decryptList(List<String> encryptedList) {
+        if (encryptedList == null) {
+            return Collections.emptyList();
+        }
+        return encryptedList.stream()
+                .map(this::decrypt)
+                .collect(Collectors.toList());
     }
 }
