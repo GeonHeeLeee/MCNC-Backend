@@ -148,11 +148,6 @@ class AuthServiceTest {
 
         //then
         assertThat(isVerified).isFalse();
-        /*
-        ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("errorMessage", "인증번호가 유효하지 않습니다."));
-        이거 Test Forbidden 이고 에러 메시지 맞는지 확인하는 테스트코드 짜는 중인디
-        잘 모르겠심
-         */
     }
 
 }
