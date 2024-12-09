@@ -46,18 +46,13 @@ public class MailController {
                     """),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<Object> sendInvitationMail(@PathVariable("surveyId") Long surveyId, @RequestBody Map<String, List<String>> requestBody) throws MessagingException {
-        try {
-            if(!requestBody.containsKey("email")) {
-                return ResponseEntity.badRequest().body(null);
-            }
-            String userId = SessionContext.getCurrentUser();
-            mailService.sendInvitationLink(userId, surveyId, requestBody.get("email"));
-            return ResponseEntity.ok("메일 발송!");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
+    public ResponseEntity<Object> sendInvitationMail(@PathVariable("surveyId") Long surveyId, @RequestBody List<String> encryptedEmailList) {
+        if (encryptedEmailList.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
         }
+        String userId = SessionContext.getCurrentUser();
+        mailService.sendInvitationLink(userId, surveyId, encryptedEmailList);
+        return ResponseEntity.ok("메일 발송!");
     }
 
 }
