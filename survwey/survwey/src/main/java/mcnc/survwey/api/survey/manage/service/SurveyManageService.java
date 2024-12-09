@@ -14,10 +14,7 @@ import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.domain.survey.service.SurveyRedisService;
-import mcnc.survwey.global.exception.custom.CustomException;
-import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +56,7 @@ public class SurveyManageService {
 
     /**
      * 질문과 보기 저장 메서드
+     *
      * @param surveyWithDetailDTO
      * @param survey
      */
@@ -104,12 +102,8 @@ public class SurveyManageService {
     @Transactional
     public SurveyWithDetailDTO modifySurvey(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
         Survey existingSurvey = surveyService.findBySurveyId(surveyWithDetailDTO.getSurveyId());
-        //설문 응답자가 존재하면 error
-        respondService.existsBySurveyId(surveyWithDetailDTO.getSurveyId());
-        //요청자가 생성자가 아니면 에러
-        surveyService.validateUserMadeSurvey(userId, existingSurvey);
-        //만료일 이후면 수정 불가
-        surveyService.checkSurveyExpiration(existingSurvey.getExpireDate());
+        //설문이 수정 가능한지 확인
+        checkSurveyModifiability(existingSurvey, userId);
 
         //Redis 만료 시간 재설정
         surveyRedisService.resetExpireTime(userId, existingSurvey.getSurveyId(), surveyWithDetailDTO.getExpireDate());
@@ -125,6 +119,24 @@ public class SurveyManageService {
 
         return SurveyWithDetailDTO.of(existingSurvey);
 
+    }
+
+    /**
+     * 설문이 수정 가능한지 확인
+     * - 응답을 했는지 확인
+     * - 요청자가 생성자가 아닌지
+     * - 만료일이 지나지 않았는지
+     * @param survey
+     * @param userId
+     * 하나라도 만족 못하면 메서드 자체에서 400 에러 응답
+     */
+    public void checkSurveyModifiability(Survey survey, String userId) {
+        //응답을 했는지 확인
+        respondService.existsBySurveyId(survey.getSurveyId());
+        //요청자가 생성자가 아니면 에러
+        surveyService.validateUserMadeSurvey(userId, survey);
+        //만료일 이후면 수정 불가
+        surveyService.checkSurveyExpiration(survey.getExpireDate());
     }
 
     /**

@@ -16,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 
 @Slf4j
 @RestController
@@ -102,7 +100,7 @@ public class SurveyInquiryController {
                                                                      @RequestParam(name = "page") int page,
                                                                      @RequestParam(name = "size") int size) {
         String userId = SessionContext.getCurrentUser();
-        Page<SurveyDTO> surveyDTOList = surveyInquiryService.searchSurveyToParticipate(title, userId, page, size);
+        Page<SurveyDTO> surveyDTOList = surveyInquiryService.searchAvailableSurvey(title, userId, page, size);
         return ResponseEntity.ok(surveyDTOList);
     }
 

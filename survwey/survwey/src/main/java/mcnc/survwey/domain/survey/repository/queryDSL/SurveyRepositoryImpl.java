@@ -30,7 +30,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<SurveyDTO> findSurveyThatCanParticipate(String title, String userId, Pageable pageable) {
+    public Page<SurveyDTO> findAvailableSurvey(String title, String userId, Pageable pageable) {
         List<SurveyDTO> surveyDTOList = jpaQueryFactory
                 .select(Projections.constructor(SurveyDTO.class,
                         survey.surveyId,
