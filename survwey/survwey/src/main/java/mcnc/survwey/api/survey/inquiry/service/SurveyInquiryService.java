@@ -84,10 +84,10 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<SurveyDTO> searchSurveyToParticipate(String title, String userId, int page, int size) {
+    public Page<SurveyDTO> searchAvailableSurvey(String title, String userId, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findSurveyThatCanParticipate(title, userId, pageable);
+        return surveyRepository.findAvailableSurvey(title, userId, pageable);
     }
 
     /**

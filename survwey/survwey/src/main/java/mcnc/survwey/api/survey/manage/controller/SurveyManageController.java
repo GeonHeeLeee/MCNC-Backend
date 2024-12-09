@@ -12,6 +12,7 @@ import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.api.survey.manage.service.SurveyManageService;
 import mcnc.survwey.domain.survey.Survey;
+import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ import java.util.Collections;
 public class SurveyManageController {
 
     private final SurveyManageService surveyManageService;
-    private final RespondService respondService;
+    private final SurveyService surveyService;
 
     /**
      * 설문 생성
@@ -110,13 +111,17 @@ public class SurveyManageController {
      * - 응답한 사람이 있는지 체크
      */
     @GetMapping("/modify/check/{surveyId}")
-    @Operation(summary = "설문 수정 가능한지 확인", description = "해당 설문에 응답한 사람이 있는지 확인(응답한 사람이 있으면 수정 불가)")
+    @Operation(summary = "설문 수정 가능한지 확인", description = "설문이 수정 가능한지 확인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 수정 가능"),
-            @ApiResponse(responseCode = "409", description = "설문 수정 불가능(응답한 사람 존재)")
+            @ApiResponse(responseCode = "409", description = "응답한 사용자가 존재하는 경우"),
+            @ApiResponse(responseCode = "400", description = "요청자가 생성자가 아닌 경우<br>" +
+                    "만료일이 지난 경우")
     })
-    public ResponseEntity<Object> checkSurveyBeforeModify(@PathVariable Long surveyId) {
-        respondService.existsBySurveyId(surveyId);
+    public ResponseEntity<Object> isSurveyModifiable(@PathVariable Long surveyId) {
+        String userId = SessionContext.getCurrentUser();
+        Survey survey = surveyService.findBySurveyId(surveyId);
+        surveyManageService.checkSurveyModifiability(survey, userId);
         return ResponseEntity.ok(null);
     }
 

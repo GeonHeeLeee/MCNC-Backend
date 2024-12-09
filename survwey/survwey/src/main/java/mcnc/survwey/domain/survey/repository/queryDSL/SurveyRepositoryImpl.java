@@ -30,18 +30,19 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<SurveyDTO> findSurveyThatCanParticipate(String title, String userId, Pageable pageable) {
+    public Page<SurveyDTO> findAvailableSurvey(String title, String userId, Pageable pageable) {
         List<SurveyDTO> surveyDTOList = jpaQueryFactory
                 .select(Projections.constructor(SurveyDTO.class,
-                                survey.surveyId,
-                                survey.title,
-                                survey.description,
-                                survey.createDate,
-                                survey.expireDate,
-                                survey.user.userId))
+                        survey.surveyId,
+                        survey.title,
+                        survey.description,
+                        survey.createDate,
+                        survey.expireDate,
+                        survey.user.userId))
                 .from(survey)
-                .leftJoin(respond).on(survey.eq(respond.survey))
-                .where(respond.user.userId.ne(userId)
+                .leftJoin(respond).on(survey.eq(respond.survey)
+                        .and(respond.user.userId.eq(userId)))
+                .where(respond.survey.isNull()
                         .and(survey.user.userId.ne(userId))
                         .and(survey.expireDate.after(LocalDateTime.now()))
                         .and(survey.title.containsIgnoreCase(title)))
@@ -53,10 +54,12 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
         JPAQuery<Long> totalQuery = jpaQueryFactory
                 .select(survey.count())
                 .from(survey)
-                .leftJoin(respond).on(respond.survey.eq(survey))
-                .where(respond.user.userId.ne(userId)
+                .leftJoin(respond).on(survey.eq(respond.survey)
+                        .and(respond.user.userId.eq(userId)))
+                .where(survey.expireDate.after(LocalDateTime.now())
+                        .and(survey.title.containsIgnoreCase(title))
                         .and(survey.user.userId.ne(userId))
-                        .and(survey.title.containsIgnoreCase(title)));
+                        .and(respond.survey.isNull()));
 
         return PageableExecutionUtils.getPage(surveyDTOList, pageable, totalQuery::fetchOne);
     }
