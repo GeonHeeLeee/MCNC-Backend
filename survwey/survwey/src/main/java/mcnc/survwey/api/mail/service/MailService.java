@@ -25,6 +25,8 @@ import org.thymeleaf.context.Context;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +56,13 @@ public class MailService {
     private static final String LOGO_IMAGE_PATH = "static/images/icon_logo.png";
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
+    private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
+
+    private ClassPathResource getImage(String imagePath) {
+        return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
+    }
+
+
     //메일 보내는 메소드
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
@@ -67,10 +76,9 @@ public class MailService {
             helper.setText(htmlContent, true);
 
             // 이미지 첨부 (첨부파일로 cid를 사용)
-            ClassPathResource logoResource = new ClassPathResource(LOGO_IMAGE_PATH);
-            helper.addInline("logoImage", logoResource); // 이미지 ID 'logoImage'로 첨부
-            ClassPathResource titleResource = new ClassPathResource(TITLE_IMAGE_PATH);
-            helper.addInline("titleImage", titleResource); // 이미지 ID 'titleImage'로 첨부
+            helper.addInline("logoImage", getImage(LOGO_IMAGE_PATH));
+            helper.addInline("titleImage", getImage(TITLE_IMAGE_PATH));
+
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, FAILED_TO_SEND_EMAIL);
