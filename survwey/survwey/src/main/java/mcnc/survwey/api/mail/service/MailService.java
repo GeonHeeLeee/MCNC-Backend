@@ -95,19 +95,20 @@ public class MailService {
         surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
         surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
 
-        Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-        context.setVariable("inviterName", sender.getName());
-        context.setVariable("surveyTitle", surveyToInvite.getTitle());
-        context.setVariable("surveyLink", encryptedLink);
-        context.setVariable("expireDate", getFormatedDate(surveyToInvite.getExpireDate()));
-
         //암호화 된 이메일 복호화
         List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
         //이메일 요청 정규식 검사
         validateEmailRequest(decryptedEmailList);
 
+        //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
+                    Context context = new Context(); //타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
+                    context.setVariable("inviterName", sender.getName());
+                    context.setVariable("surveyTitle", surveyToInvite.getTitle());
+                    context.setVariable("surveyLink", encryptedLink);
+                    context.setVariable("expireDate", getFormatedDate(surveyToInvite.getExpireDate()));
+
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
     }
@@ -119,7 +120,7 @@ public class MailService {
      * @param emailList
      */
     public void validateEmailRequest(List<String> emailList) {
-        String emailPattern = "^(?=.{1,255}$)[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        String emailPattern = "^(?=.{1,255}$)(?![_.-])[A-Za-z0-9._-]+(?<![_.-])@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(emailPattern);
         for (String email : emailList) {
             Matcher matcher = pattern.matcher(email);
