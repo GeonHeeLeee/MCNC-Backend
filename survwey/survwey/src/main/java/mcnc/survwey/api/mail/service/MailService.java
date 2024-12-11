@@ -1,5 +1,6 @@
 package mcnc.survwey.api.mail.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.utils.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static mcnc.survwey.global.exception.custom.ErrorCode.FAILED_TO_SEND_EMAIL;
 import static mcnc.survwey.global.exception.custom.ErrorCode.INVALID_EMAIL_FORMAT;
@@ -57,6 +60,12 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
+
+    @PostConstruct
+    public void init() {
+        imageCache.put("logoImage", new ClassPathResource(LOGO_IMAGE_PATH));
+        imageCache.put("titleImage", new ClassPathResource(TITLE_IMAGE_PATH));
+    }
 
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
@@ -107,13 +116,14 @@ public class MailService {
         List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
         //이메일 요청 정규식 검사
         validateEmailRequest(decryptedEmailList);
-
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
-                .forEach(recipientEmail -> {
+                .map(recipientEmail -> {
                     Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
-                });
+                    return null;
+                })
+                .collect(Collectors.toList());
     }
 
     /**
