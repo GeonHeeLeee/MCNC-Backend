@@ -63,8 +63,9 @@ public class MailService {
 
     @PostConstruct
     public void init() {
-        imageCache.put("logoImage", new ClassPathResource(LOGO_IMAGE_PATH));
-        imageCache.put("titleImage", new ClassPathResource(TITLE_IMAGE_PATH));
+        imageCache.put(LOGO_IMAGE_PATH, new ClassPathResource(LOGO_IMAGE_PATH));
+        imageCache.put(TITLE_IMAGE_PATH, new ClassPathResource(TITLE_IMAGE_PATH));
+        log.info("Successfully Initialize ImageCache");
     }
 
     private ClassPathResource getImage(String imagePath) {
