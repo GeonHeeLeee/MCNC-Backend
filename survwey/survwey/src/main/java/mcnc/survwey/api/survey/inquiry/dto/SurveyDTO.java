@@ -16,28 +16,30 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyDTO {
-    private Long surveyId;
+    protected Long surveyId;
     @NotBlank(message = "설문 제목은 필수입니다.")
-    private String title;
-    private String description;
-    private LocalDateTime createDate;
+    protected String title;
+    protected String description;
+    protected LocalDateTime createDate;
     @NotNull(message = "만료일 지정은 필수입니다.")
-    private LocalDateTime expireDate;
-    private String creatorId;
+    protected LocalDateTime expireDate;
+    protected String creatorId;
 
     @AssertTrue(message = "만료일은 현재 시각보다 이후여야 합니다.")
     public boolean isExpireDateValid() {
         return expireDate.isAfter(LocalDateTime.now());
     }
 
+    public SurveyDTO(Survey survey) {
+        this.surveyId = survey.getSurveyId();
+        this.title = survey.getTitle();
+        this.description = survey.getDescription();
+        this.createDate = survey.getCreateDate();
+        this.expireDate = survey.getExpireDate();
+        this.creatorId = survey.getUser().getUserId();
+    }
+
     public static SurveyDTO of(Survey survey) {
-        return SurveyDTO.builder()
-                .surveyId(survey.getSurveyId())
-                .title(survey.getTitle())
-                .description(survey.getDescription())
-                .createDate(survey.getCreateDate())
-                .expireDate(survey.getExpireDate())
-                .creatorId(survey.getUser().getUserId())
-                .build();
+        return new SurveyDTO(survey);
     }
 }

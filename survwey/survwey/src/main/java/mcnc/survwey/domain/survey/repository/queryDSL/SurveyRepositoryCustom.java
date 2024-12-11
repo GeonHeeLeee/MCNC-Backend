@@ -1,6 +1,7 @@
 package mcnc.survwey.domain.survey.repository.queryDSL;
 
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import org.springframework.data.domain.Page;
@@ -12,8 +13,11 @@ public interface SurveyRepositoryCustom {
 
     Page<SurveyWithCountDTO> findSurveyListWithRespondCountByUserId(@Param("userId") String userId, Pageable pageable);
 
-    Page<SurveyDTO> findRespondedSurveyByUserId(@Param("userId") String userId, Pageable pageable);
+    Page<SurveyWithDateDTO> findRespondedSurveyByUserId(@Param("userId") String userId, Pageable pageable);
 
     Survey findSurveyWithDetail(@Param("surveyId") Long surveyId);
 
+    Page<SurveyWithDateDTO> findRespondedSurveyByTitleAndUserId(String title, String userId, Pageable pageable);
+
+    Page<SurveyDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable);
 }

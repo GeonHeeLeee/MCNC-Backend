@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import org.springframework.data.domain.Page;
@@ -32,13 +33,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     @Override
     public Page<SurveyDTO> findAvailableSurvey(String title, String userId, Pageable pageable) {
         List<SurveyDTO> surveyDTOList = jpaQueryFactory
-                .select(Projections.constructor(SurveyDTO.class,
-                        survey.surveyId,
-                        survey.title,
-                        survey.description,
-                        survey.createDate,
-                        survey.expireDate,
-                        survey.user.userId))
+                .select(Projections.constructor(SurveyDTO.class, survey))
                 .from(survey)
                 .leftJoin(respond).on(survey.eq(respond.survey)
                         .and(respond.user.userId.eq(userId)))
@@ -67,15 +62,9 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     @Override
     public Page<SurveyWithCountDTO> findSurveyListWithRespondCountByUserId(String userId, Pageable pageable) {
         List<SurveyWithCountDTO> surveyWithCountDTOList = jpaQueryFactory
-                .select(
-                        Projections.constructor(SurveyWithCountDTO.class,
-                                survey.surveyId,
-                                survey.title,
-                                survey.description,
-                                survey.createDate,
-                                survey.expireDate,
-                                survey.user.userId,
-                                respond.respondId.count()))
+                .select(Projections.constructor(SurveyWithCountDTO.class,
+                        survey,
+                        respond.respondId.count()))
                 .from(survey)
                 .leftJoin(respond).on(survey.eq(respond.survey))
                 .where(survey.user.userId.eq(userId))
@@ -94,16 +83,11 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     }
 
     @Override
-    public Page<SurveyDTO> findRespondedSurveyByUserId(String userId, Pageable pageable) {
-        List<SurveyDTO> surveyDTOList = jpaQueryFactory
-                .select(Projections.constructor(
-                        SurveyDTO.class,
-                        survey.surveyId,
-                        survey.title,
-                        survey.description,
-                        survey.createDate,
-                        survey.expireDate,
-                        survey.user.userId))
+    public Page<SurveyWithDateDTO> findRespondedSurveyByUserId(String userId, Pageable pageable) {
+        List<SurveyWithDateDTO> surveyWithDateDTOList = jpaQueryFactory
+                .select(Projections.constructor(SurveyWithDateDTO.class,
+                        survey,
+                        respond.respondDate))
                 .from(survey)
                 .join(respond).on(respond.survey.eq(survey))
                 .where(respond.user.userId.eq(userId))
@@ -118,7 +102,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .join(respond).on(respond.survey.eq(survey))
                 .where(respond.user.userId.eq(userId));
 
-        return PageableExecutionUtils.getPage(surveyDTOList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(surveyWithDateDTOList, pageable, countQuery::fetchOne);
     }
 
 
@@ -132,6 +116,53 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .fetchJoin()
                 .where(survey.surveyId.eq(surveyId))
                 .fetchFirst();
+    }
+
+    @Override
+    public Page<SurveyWithDateDTO> findRespondedSurveyByTitleAndUserId(String title, String userId, Pageable pageable) {
+        List<SurveyWithDateDTO> surveyWithDateDTOList = jpaQueryFactory
+                .select(Projections.constructor(SurveyWithDateDTO.class,
+                        survey,
+                        respond.respondDate))
+                .from(survey)
+                .join(respond).on(respond.survey.eq(survey))
+                .where(respond.user.userId.eq(userId)
+                        .and(survey.title.containsIgnoreCase(title)))
+                .orderBy(respond.respondDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(survey.count())
+                .from(survey)
+                .join(respond).on(respond.survey.eq(survey))
+                .where(respond.user.userId.eq(userId)
+                        .and(survey.title.containsIgnoreCase(title)));
+
+        return PageableExecutionUtils.getPage(surveyWithDateDTOList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<SurveyDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable) {
+        List<SurveyDTO> surveyDTOList = jpaQueryFactory
+                .select(Projections.constructor(SurveyDTO.class,
+                        survey))
+                .from(survey)
+                .where(survey.user.userId.eq(userId)
+                        .and(survey.title.containsIgnoreCase(title)))
+                .orderBy(survey.createDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(survey.count())
+                .from(survey)
+                .where(survey.user.userId.eq(userId)
+                        .and(survey.title.containsIgnoreCase(title)));
+
+        return PageableExecutionUtils.getPage(surveyDTOList, pageable, countQuery::fetchOne);
     }
 
 }
