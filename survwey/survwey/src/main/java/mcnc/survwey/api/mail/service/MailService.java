@@ -4,17 +4,17 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.global.exception.custom.CustomException;
-import mcnc.survwey.global.utils.EncryptionUtil;
+import mcnc.survwey.api.mail.utils.ThymeleafUtil;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.utils.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.keygen.KeyGenerators;
@@ -22,15 +22,14 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static mcnc.survwey.global.exception.custom.ErrorCode.*;
+import static mcnc.survwey.global.exception.custom.ErrorCode.FAILED_TO_SEND_EMAIL;
+import static mcnc.survwey.global.exception.custom.ErrorCode.INVALID_EMAIL_FORMAT;
 
 @Service
 @Slf4j
@@ -43,6 +42,7 @@ public class MailService {
     private final SurveyService surveyService;
     private final EncryptionUtil encryptionUtil;
     private final UserRedisService userRedisService;
+    private final ThymeleafUtil thymeleafUtil;
 
     @Value("${MAIL_USER_NAME}")
     private String senderEmail;
@@ -60,16 +60,6 @@ public class MailService {
 
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
-    }
-
-    public Context initContext(String senderName, String title, String encryptedLink, LocalDateTime expireDate){
-        Context context = new Context();//타임리프 템플릿에 전달할 데이터를 저장하는 컨테이너
-        context.setVariable("inviterName", senderName);
-        context.setVariable("surveyTitle", title);
-        context.setVariable("surveyLink", encryptedLink);
-        context.setVariable("expireDate", getFormatedDate(expireDate));
-
-        return context;
     }
 
 
@@ -121,8 +111,8 @@ public class MailService {
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
-                    sendMail(initContext(sender.getName(), surveyToInvite.getTitle(), encryptedLink, surveyToInvite.getExpireDate())
-                            , surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
     }
 
@@ -141,17 +131,6 @@ public class MailService {
                 throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_EMAIL_FORMAT);
             }
         }
-    }
-
-    /**
-     * 날짜 형식에 맞게 변환
-     *
-     * @param dateTime
-     * @return
-     */
-    public String getFormatedDate(LocalDateTime dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
-        return dateTime.format(formatter);
     }
 
     /**
@@ -176,12 +155,8 @@ public class MailService {
     public void sendVerifySurveyLink(String userId, Long surveyId, String link) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-        context.setVariable("inviterName", user.getName());
-        context.setVariable("surveyLink", link);
-
+        Context context = thymeleafUtil.initNotificationContext(user, link);
         sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
-
     }
 
     /**
@@ -192,11 +167,7 @@ public class MailService {
      */
     public void sendPasswordModifyAuthCode(User user) throws Exception {
         String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
-
-        Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-        context.setVariable("receiverName", user.getName());
-        context.setVariable("tempAuthCode", tempAuthCode);
-        context.setVariable("expireDate", getFormatedDate(LocalDateTime.now().plusMinutes(10)));
+        Context context = thymeleafUtil.initAutheticationContext(user, tempAuthCode);
         userRedisService.saveVerificationCode(user.getUserId(), tempAuthCode);
         sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "mail/authentication");
     }
