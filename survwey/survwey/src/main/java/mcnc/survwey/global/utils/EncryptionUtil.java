@@ -24,6 +24,12 @@ public class EncryptionUtil {
     private String secretKey;
 
 
+    /**
+     * 암호화 모드 설정
+     * @param mode
+     * @return
+     * @throws Exception
+     */
     private Cipher initializeCipher(int mode) throws Exception {
         SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(UTF_8), "AES");//키 세팅 -> AES 기준으로 secretKey 부분에 들어오는 길이에 따라 암호화 방식 결정
         Cipher cipher = getInstance("AES/CBC/PKCS5Padding");//AES 알고리즘으로 CBC 모드, PKCS5Padding scheme 으로 초기화

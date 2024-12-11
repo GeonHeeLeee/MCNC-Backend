@@ -13,7 +13,6 @@ import static mcnc.survwey.domain.subjAnswer.QSubjAnswer.*;
 @Repository
 @RequiredArgsConstructor
 public class SubjAnswerRepositoryImpl implements SubjAnswerRepositoryCustom {
-
     private final JPAQueryFactory jpaQueryFactory;
 
     public List<Tuple> findUserRespondedAnswer(Long surveyId, String userId) {
