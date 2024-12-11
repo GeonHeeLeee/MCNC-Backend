@@ -62,6 +62,16 @@ public class MailService {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
     }
 
+    public Context initContext(String senderName, String title, String encryptedLink, LocalDateTime expireDate){
+        Context context = new Context();//타임리프 템플릿에 전달할 데이터를 저장하는 컨테이너
+        context.setVariable("inviterName", senderName);
+        context.setVariable("surveyTitle", title);
+        context.setVariable("surveyLink", encryptedLink);
+        context.setVariable("expireDate", getFormatedDate(expireDate));
+
+        return context;
+    }
+
 
     //메일 보내는 메소드
     public void sendMail(Context context, String title, String email, String htmlPath) {
@@ -111,13 +121,8 @@ public class MailService {
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
-                    Context context = new Context(); //타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
-                    context.setVariable("inviterName", sender.getName());
-                    context.setVariable("surveyTitle", surveyToInvite.getTitle());
-                    context.setVariable("surveyLink", encryptedLink);
-                    context.setVariable("expireDate", getFormatedDate(surveyToInvite.getExpireDate()));
-
-                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+                    sendMail(initContext(sender.getName(), surveyToInvite.getTitle(), encryptedLink, surveyToInvite.getExpireDate())
+                            , surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
     }
 
