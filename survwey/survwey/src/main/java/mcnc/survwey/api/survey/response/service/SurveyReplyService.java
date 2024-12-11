@@ -97,20 +97,4 @@ public class SurveyReplyService {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.QUESTION_NOT_MATCH_TO_SURVEY);
         }
     }
-
-
-    public boolean respondedSurvey(String userId, Long surveyId){
-        userService.findByUserId(userId);
-        surveyService.findBySurveyId(surveyId);
-
-        return respondService.hasUserRespondedToSurvey(surveyId, userId);
-    }
-
-    public boolean expiredSurvey(String userId, Long surveyId){
-        userService.findByUserId(userId);
-        Survey survey = surveyService.findBySurveyId(surveyId);
-
-        return (survey.getExpireDate().isBefore(LocalDateTime.now()));
-    }
-
 }

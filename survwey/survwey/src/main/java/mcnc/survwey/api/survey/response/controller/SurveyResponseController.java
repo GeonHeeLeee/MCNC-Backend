@@ -7,20 +7,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.api.survey.response.dto.answered.AnsweredSurveyDTO;
+import mcnc.survwey.api.survey.response.dto.reply.SurveyReplyDTO;
+import mcnc.survwey.api.survey.response.dto.result.SurveyResultDTO;
 import mcnc.survwey.api.survey.response.service.AnsweredSurveyService;
+import mcnc.survwey.api.survey.response.service.SurveyReplyService;
 import mcnc.survwey.api.survey.response.service.SurveyResultService;
 import mcnc.survwey.domain.respond.service.RespondService;
-import mcnc.survwey.api.survey.response.dto.result.SurveyResultDTO;
-import mcnc.survwey.api.survey.response.dto.reply.SurveyReplyDTO;
-import mcnc.survwey.api.survey.response.dto.answered.AnsweredSurveyDTO;
-import mcnc.survwey.api.survey.response.service.SurveyReplyService;
+import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.global.config.SessionContext;
 import mcnc.survwey.global.exception.custom.CustomException;
-import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 import static mcnc.survwey.global.exception.custom.ErrorCode.*;
 
@@ -112,16 +114,14 @@ public class SurveyResponseController {
     })
     public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId){
         String userId = SessionContext.getCurrentUser();
-        boolean isRespondedSurvey = surveyReplyService.respondedSurvey(userId, surveyId);
-        boolean isExpiredSurvey = surveyReplyService.expiredSurvey(userId, surveyId);
+        Survey survey = surveyService.findBySurveyId(surveyId);
 
-        if(isRespondedSurvey){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(HAS_ALREADY_RESPOND_TO_SURVEY.getErrorMessage());
+        if(respondService.hasUserRespondedToSurvey(surveyId, userId)){
+            throw new CustomException(HttpStatus.CONFLICT, HAS_ALREADY_RESPOND_TO_SURVEY);
         }
-        else if(isExpiredSurvey){
-            return ResponseEntity.status(HttpStatus.GONE).body(EXPIRED_SURVEY.getErrorMessage());
-        }
-        else{
+        if (survey.getExpireDate().isBefore(LocalDateTime.now())) {
+            throw new CustomException(HttpStatus.GONE, EXPIRED_SURVEY);
+        } else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }
     }
