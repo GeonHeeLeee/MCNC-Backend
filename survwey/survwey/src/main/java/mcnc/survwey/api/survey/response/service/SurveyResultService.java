@@ -2,9 +2,8 @@ package mcnc.survwey.api.survey.response.service;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.response.dto.result.*;
-import mcnc.survwey.domain.question.Question;
-import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.domain.question.repository.QuestionRepository;
 import mcnc.survwey.domain.respond.repository.RespondRepository;
 import mcnc.survwey.domain.survey.Survey;
@@ -16,12 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class SurveyResultService {
 
     private final UserService userService;
@@ -62,67 +63,104 @@ public class SurveyResultService {
         //응답 객체에 나이, 성별 분포 추가
         addAgeAndGenderDistribution(surveyId, surveyResultDTO);
 
-        //질문 DB 쿼리 조회 결과를 질문 Map에 매핑(쿼리는 JOIN, GROUP BY 사용으로 한 질문 아이디에 대해 여러 행들이 값을 가질 수 있음)
-        Map<Long, QuestionResultDTO> questionResultMap = new LinkedHashMap<>();
+        //설문에 질문, 보기, 응답 추가
+        processQuestionResults(surveyResultQueryDTOList, surveyResultDTO);
 
-        //한 행에 대해(DB 쿼리 결과)
-        for (SurveyResultQueryDTO surveyResultQueryDTO : surveyResultQueryDTOList) {
-            //질문 결과 DTO 초기화(질문 기본 정보 담기)
-            initializeQuestionResultMap(surveyResultQueryDTO, questionResultMap, surveyResultDTO);
-            //해당 질문에 응답 추가
-            addResponsesToQuestion(surveyResultQueryDTO, questionResultMap.get(surveyResultQueryDTO.getQuesId()));
-        }
         return surveyResultDTO;
     }
 
 
-
     /**
-     * 질문 결과 DTO 초기화 후 Map 저장
-     * - 설문 결과를 담기 위한 질문 결과 DTO 생성 후 Map에 저장
+     * 쿼리 결과에 따른 질문 처리 메서드
+     * - 쿼리 결과에 중복된 질문들이 있으므로, 유일한 질문 초기화
+     * - 초기화 된 질문에 답변 추가
      *
-     * @param surveyResultQueryDTO
-     * @param questionMap
+     * @param surveyResultQueryDTOList
      * @param surveyResultDTO
      */
-    private void initializeQuestionResultMap(SurveyResultQueryDTO surveyResultQueryDTO, Map<Long, QuestionResultDTO> questionMap, SurveyResultDTO surveyResultDTO) {
-        Long quesId = surveyResultQueryDTO.getQuesId();
-        if (!questionMap.containsKey(quesId)) {
-            //결과를 담기 위한 QuestionResultDTO 생성 후 초기화
-            QuestionResultDTO questionResult = new QuestionResultDTO(surveyResultQueryDTO);
-            questionMap.put(quesId, questionResult);
-            surveyResultDTO.getQuestionList().add(questionResult);
+    private void processQuestionResults(List<SurveyResultQueryDTO> surveyResultQueryDTOList,
+                                        SurveyResultDTO surveyResultDTO) {
+        //중복되지 않은 QuestionResultDTO를 위한 Map(Key: quesId, Value: QuestionResultDTO)
+        Map<Long, QuestionResultDTO> questionResultMap = new HashMap<>();
+
+        //각각 쿼리 결과 행에 대해 처리
+        for (SurveyResultQueryDTO queryDTO : surveyResultQueryDTOList) {
+            Long quesId = queryDTO.getQuesId();
+
+            //QuestionResultDTO 초기화: 없으면 computeIfAbsent로 저장 후 반환하고 있으면 가져오기
+            QuestionResultDTO questionResult = questionResultMap.computeIfAbsent(quesId, k -> {
+                QuestionResultDTO questionResultDTO = new QuestionResultDTO(queryDTO);
+                surveyResultDTO.getQuestionList().add(questionResultDTO);
+                return questionResultDTO;
+            });
+
+            //질문 타입에 따라 응답 처리
+            addResponsesByQuestionType(queryDTO, questionResult);
+        }
+    }
+
+
+    /**
+     * 질문 타입에 따른 응답 처리 메서드
+     *
+     * @param queryDTO
+     * @param questionResult
+     */
+    private void addResponsesByQuestionType(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
+        switch (queryDTO.getQuestionType()) {
+            //객관식은 다중, 단일 동일 처리
+            case OBJ_MULTI:
+            case OBJ_SINGLE:
+                addObjectiveResponse(queryDTO, questionResult);
+                break;
+            //주관식 처리
+            case SUBJECTIVE:
+                addSubjectiveResponse(queryDTO, questionResult);
+                break;
+            default:
+                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
         }
     }
 
     /**
-     * 질문 타입에 따라 응답 결과 저장
-     * - 다중, 단일 객관식은 동일한 로직으로 처리
-     * - 해당 보기에 대한 기본 정보 및 응답 수 저장
-     * - 기타 질문일 경우 기타 응답 저장
-     * - 주관식일 경우 주관식 응답 저장
+     * 객관식 응답 추가 메서드
+     * - 각 질문에 맞는 객관식 응답 추가
      *
-     * @param surveyResultQueryDTO
-     * @param question           - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
+     * @param queryDTO
+     * @param questionResult
      */
-    private void addResponsesToQuestion(SurveyResultQueryDTO surveyResultQueryDTO, QuestionResultDTO question) {
-        QuestionType questionType = surveyResultQueryDTO.getQuestionType();
-        switch (questionType) {
-            case OBJ_MULTI:
-            case OBJ_SINGLE:
-                QuestionResultDTO.SelectionResultDTO selection = new QuestionResultDTO.SelectionResultDTO(surveyResultQueryDTO);
-                if (surveyResultQueryDTO.getIsEtc() && surveyResultQueryDTO.getEtcAnswer() != null) {
-                    selection.getEtcAnswer().add(surveyResultQueryDTO.getEtcAnswer());
-                }
-                question.getSelectionList().add(selection);
-                break;
-            case SUBJECTIVE:
-                if (surveyResultQueryDTO.getSubjectiveResponse() != null) {
-                    question.getSubjAnswerList().add(surveyResultQueryDTO.getSubjectiveResponse());
-                }
-                break;
-            default:
-                throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUESTION_TYPE);
+    private void addObjectiveResponse(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
+        QuestionResultDTO.SelectionResultDTO existingSelection =
+                questionResult.getSelectionList().stream()
+                        //순서(sequence)가 일치하는 보기 가져오기
+                        .filter(selection -> selection.getSequence() == queryDTO.getSequence())
+                        .findFirst()
+                        //해당하는 값이 없을 시 만들고 저장 후 가져오기
+                        .orElseGet(() -> {
+                            QuestionResultDTO.SelectionResultDTO selectionResultDTO =
+                                    new QuestionResultDTO.SelectionResultDTO(queryDTO);
+                            questionResult.getSelectionList().add(selectionResultDTO);
+                            return selectionResultDTO;
+                        });
+
+        // 응답한 사람 수 업데이트
+        existingSelection.setResponseCount((int) (existingSelection.getResponseCount() + queryDTO.getResponseCount()));
+
+        //기타 응답이 있을 경우 업데이트
+        if (queryDTO.getIsEtc() && queryDTO.getEtcAnswer() != null) {
+            existingSelection.getEtcAnswer().add(queryDTO.getEtcAnswer());
+        }
+    }
+
+    /**
+     * 주관식 응답 추가 메서드
+     *
+     * @param queryDTO
+     * @param questionResultDTO
+     */
+    private void addSubjectiveResponse(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResultDTO) {
+        if (queryDTO.getSubjectiveResponse() != null) {
+            questionResultDTO.getSubjAnswerList().add(queryDTO.getSubjectiveResponse());
         }
     }
 

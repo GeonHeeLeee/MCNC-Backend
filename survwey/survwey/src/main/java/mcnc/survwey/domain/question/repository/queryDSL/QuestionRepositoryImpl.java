@@ -39,4 +39,5 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 .orderBy(question.quesId.asc(), selection.id.sequence.asc())
                 .fetch();
     }
+
 }

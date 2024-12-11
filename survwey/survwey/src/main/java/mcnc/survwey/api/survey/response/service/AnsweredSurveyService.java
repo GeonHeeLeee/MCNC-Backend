@@ -78,7 +78,7 @@ public class AnsweredSurveyService {
         switch (question.getQuestionType()) {
             case OBJ_MULTI:
                 objAnswerMap.get(question.getQuesId()).forEach(objAnswer -> {
-                    Integer sequence = objAnswer.getSelection().getId().getSequence();
+                    int sequence = objAnswer.getSelection().getId().getSequence();
                     question.getObjAnswerList().add(sequence);
                     setEtcAnswerIfPresent(question, objAnswer);
                 });
@@ -86,7 +86,7 @@ public class AnsweredSurveyService {
 
             case OBJ_SINGLE:
                 ObjAnswer objAnswer = objAnswerMap.get(question.getQuesId()).get(0);
-                Integer sequence = objAnswer.getSelection().getId().getSequence();
+                int sequence = objAnswer.getSelection().getId().getSequence();
                 question.getObjAnswerList().add(sequence);
                 setEtcAnswerIfPresent(question, objAnswer);
                 break;
