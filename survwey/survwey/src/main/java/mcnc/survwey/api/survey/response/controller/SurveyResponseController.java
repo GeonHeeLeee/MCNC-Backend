@@ -93,4 +93,28 @@ public class SurveyResponseController {
         return ResponseEntity.ok(userRespondedSurvey);
     }
 
+    @GetMapping("/verify/{surveyId}")
+    @Operation(summary = "해당 설문에 본인이 응답 했는지 확인", description = "PathVariable로 surveyId 받아서 확인")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "응답하지 않은 설문"),
+            @ApiResponse(responseCode = "400", description = """
+                잘못된 요청:
+                - 해당 아이디의 사용자가 존재하지 않습니다.
+                - 해당 아이디의 설문이 존재하지 않습니다.
+                - 해당 설문은 종료된 설문입니다.
+                """
+            ),
+            @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다.")
+    })
+    public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId){
+        String userId = SessionContext.getCurrentUser();
+        boolean isRespondedSurvey = surveyReplyService.respondedSurvey(userId, surveyId);
+
+        if(isRespondedSurvey){
+            throw new CustomException(HttpStatus.CONFLICT, ErrorCode.HAS_ALREADY_RESPOND_TO_SURVEY);
+        }else{
+            return ResponseEntity.ok("참여하지 않은 설문입니다.");
+        }
+    }
+
 }

@@ -97,5 +97,12 @@ public class SurveyReplyService {
         }
     }
 
+    @Transactional
+    public boolean respondedSurvey(String userId, Long surveyId){
+        userService.findByUserId(userId);
+        Survey survey = surveyService.findBySurveyId(surveyId);
+
+        return respondService.hasUserRespondedToSurvey(surveyId, userId);
+    }
 
 }
