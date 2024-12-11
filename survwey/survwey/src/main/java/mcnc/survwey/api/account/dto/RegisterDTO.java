@@ -26,22 +26,23 @@ public class RegisterDTO {
     @DecryptField
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).{8,}$",
-            message = "비밀번호는 최소 8자, 숫자, 특수문자 및 대소문자를 포함해야 합니다."
+            regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).{8,100}$",
+            message = "비밀번호는 최소 8자, 최대 100자, 숫자, 특수문자 및 대소문자를 포함해야 합니다."
     )
     private String password;
 
     @NotNull(message = "생년월일은 필수입니다.")
-//    @Pattern(
-//            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
-//            message = "생년월일은 yyyy-MM-dd 형식이어야 합니다.")front랑 맞추자
+    @Pattern(
+            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+            message = "올바르지 않은 생년월일 형식입니다."
+    )
     private LocalDate birth;
 
     @NotNull(message = "성별은 필수입니다.")
-//    @Pattern(
-//            regexp = "^[MF]$\n",
-//            message = "성별은 M, F만 포함해야 합니다."
-//    )
+    @Pattern(
+            regexp = "^[MF]$",
+            message = "올바르지 않은 성별입니다."
+    )
     private Gender gender;
 
     @NotBlank(message = "이름은 필수입니다.")

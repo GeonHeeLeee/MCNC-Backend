@@ -44,7 +44,7 @@ public class QuestionResultDTO {
             this.sequence = surveyResultQueryDTO.getSequence();
             this.body = surveyResultQueryDTO.getSelectionBody();
             this.isEtc = surveyResultQueryDTO.getIsEtc();
-            this.responseCount = surveyResultQueryDTO.getResponseCount().intValue();
+            this.responseCount = 0;
             this.etcAnswer = new ArrayList<>();
         }
     }
