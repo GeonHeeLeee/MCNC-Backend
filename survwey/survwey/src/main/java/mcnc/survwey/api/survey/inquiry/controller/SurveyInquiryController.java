@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
@@ -57,10 +58,10 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "200", description = "사용자가 응답한 설문 리스트 조회 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Page<SurveyDTO>> getUserRespondSurveyList(@RequestParam(name = "page", defaultValue = "0") int page,
-                                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
+    public ResponseEntity<Page<SurveyWithDateDTO>> getUserRespondSurveyList(@RequestParam(name = "page", defaultValue = "0") int page,
+                                                                            @RequestParam(name = "size", defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
-        Page<SurveyDTO> userRespondSurveyList = surveyInquiryService.getUserRespondSurveyList(userId, page, size);
+        Page<SurveyWithDateDTO> userRespondSurveyList = surveyInquiryService.getUserRespondSurveyList(userId, page, size);
         return ResponseEntity.ok(userRespondSurveyList);
     }
 
@@ -122,11 +123,8 @@ public class SurveyInquiryController {
                                                                    @RequestParam(name = "page", defaultValue = "0") int page,
                                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
-
-        Page<Survey> surveys = surveyInquiryService.searchUserCreatedSurvey(userId, title, page, size);
-        //생성한 설문에서 검색
-        Page<SurveyDTO> surveyDTOs = surveys.map(SurveyDTO::of);
-        return ResponseEntity.ok(surveyDTOs);
+        Page<SurveyDTO> surveyDTOList = surveyInquiryService.searchUserCreatedSurvey(userId, title, page, size);
+        return ResponseEntity.ok(surveyDTOList);
     }
 
     /**
@@ -143,15 +141,12 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "200", description = "참여한 설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Page<SurveyDTO>> searchRespondedSurveys(@RequestParam(name = "title") String title,
-                                                                  @RequestParam(name = "page", defaultValue = "0") int page,
-                                                                  @RequestParam(name = "size", defaultValue = "10") int size) {
+    public ResponseEntity<Page<SurveyWithDateDTO>> searchRespondedSurveys(@RequestParam(name = "title") String title,
+                                                                          @RequestParam(name = "page", defaultValue = "0") int page,
+                                                                          @RequestParam(name = "size", defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
-
-        Page<Survey> surveys = surveyInquiryService.searchRespondedSurveys(userId, title, page, size);
-        //참여한 설문에서 검색
-        Page<SurveyDTO> surveyInfoDTOS = surveys.map(SurveyDTO::of);
-        return ResponseEntity.ok(surveyInfoDTOS);
+        Page<SurveyWithDateDTO> surveyWithDateDTOPage = surveyInquiryService.searchRespondedSurveys(userId, title, page, size);
+        return ResponseEntity.ok(surveyWithDateDTOPage);
     }
 
 }

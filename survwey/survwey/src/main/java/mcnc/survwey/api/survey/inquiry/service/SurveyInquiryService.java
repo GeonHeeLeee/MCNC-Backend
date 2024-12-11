@@ -2,6 +2,7 @@ package mcnc.survwey.api.survey.inquiry.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
@@ -51,7 +52,7 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<SurveyDTO> getUserRespondSurveyList(String userId, int page, int size) {
+    public Page<SurveyWithDateDTO> getUserRespondSurveyList(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findRespondedSurveyByUserId(userId, pageable);
     }
@@ -70,6 +71,7 @@ public class SurveyInquiryService {
 
     /**
      * 검색 시 제목의 공백 제거
+     *
      * @param title
      * @return
      */
@@ -79,6 +81,7 @@ public class SurveyInquiryService {
 
     /**
      * 참여 가능한 설문 검색
+     *
      * @param title
      * @param page
      * @param size
@@ -92,30 +95,32 @@ public class SurveyInquiryService {
 
     /**
      * 사용자가 응답한 설문 검색
+     *
      * @param userId
      * @param title
      * @param page
      * @param size
      * @return
      */
-    public Page<Survey> searchRespondedSurveys(String userId, String title, int page, int size) {
+    public Page<SurveyWithDateDTO> searchRespondedSurveys(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findSurveysUserHasRespondedTo(userId, title, pageable);
+        return surveyRepository.findRespondedSurveyByTitleAndUserId(title, userId, pageable);
     }
 
     /**
      * 사용자가 생성한 설문 검색
+     *
      * @param userId
      * @param title
      * @param page
      * @param size
      * @return
      */
-    public Page<Survey> searchUserCreatedSurvey(String userId, String title, int page, int size) {
+    public Page<SurveyDTO> searchUserCreatedSurvey(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findByUser_UserIdAndTitleContainingIgnoreCaseOrderByCreateDateDesc(userId, title, pageable);
+        return surveyRepository.findUserCreatedSurveyByTitleAndUserId(title, userId, pageable);
     }
 
 }
