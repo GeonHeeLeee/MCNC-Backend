@@ -24,7 +24,6 @@ public enum ErrorCode {
     INVALID_ENCRYPTED_FIELD("잘못된 암호화 형식입니다."),
     INVALID_EMAIL_FORMAT("잘못된 이메일 형식입니다."),
     FAILED_TO_SEND_EMAIL("메일 전송 실패");
-
     private final String errorMessage;
 
     ErrorCode(String errorMessage) {
