@@ -14,12 +14,15 @@ import mcnc.survwey.api.survey.response.dto.result.SurveyResultDTO;
 import mcnc.survwey.api.survey.response.dto.reply.SurveyReplyDTO;
 import mcnc.survwey.api.survey.response.dto.answered.AnsweredSurveyDTO;
 import mcnc.survwey.api.survey.response.service.SurveyReplyService;
+import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.global.config.SessionContext;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static mcnc.survwey.global.exception.custom.ErrorCode.*;
 
 @Slf4j
 @RestController
@@ -32,6 +35,8 @@ public class SurveyResponseController {
     private final SurveyResultService surveyResultService;
     private final AnsweredSurveyService answeredSurveyService;
     private final RespondService respondService;
+    private final SurveyService surveyService;
+
     /**
      * 응답 저장
      * @param surveyReplyDTO
@@ -57,7 +62,6 @@ public class SurveyResponseController {
         surveyReplyService.saveSurveyReply(surveyReplyDTO, userId);
         return ResponseEntity.ok(null);
     }
-
 
     /**
      * 설문 결과(통계) 조회
@@ -87,7 +91,7 @@ public class SurveyResponseController {
         String userId = SessionContext.getCurrentUser();
         //응답하지 않은 설문이면 에러 전송
         if (!respondService.hasUserRespondedToSurvey(surveyId, userId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_NOT_RESPOND_TO_SURVEY);
+            throw new CustomException(HttpStatus.BAD_REQUEST, HAS_NOT_RESPOND_TO_SURVEY);
         }
         AnsweredSurveyDTO userRespondedSurvey = answeredSurveyService.getUserAnsweredSurvey(surveyId, userId);
         return ResponseEntity.ok(userRespondedSurvey);
@@ -101,18 +105,23 @@ public class SurveyResponseController {
                 잘못된 요청:
                 - 해당 아이디의 사용자가 존재하지 않습니다.
                 - 해당 아이디의 설문이 존재하지 않습니다.
-                - 해당 설문은 종료된 설문입니다.
                 """
             ),
-            @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다.")
+            @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다."),
+            @ApiResponse(responseCode = "410", description = "해당 설문은 종료된 설문입니다.")
     })
     public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId){
         String userId = SessionContext.getCurrentUser();
         boolean isRespondedSurvey = surveyReplyService.respondedSurvey(userId, surveyId);
+        boolean isExpiredSurvey = surveyReplyService.expiredSurvey(userId, surveyId);
 
         if(isRespondedSurvey){
-            throw new CustomException(HttpStatus.CONFLICT, ErrorCode.HAS_ALREADY_RESPOND_TO_SURVEY);
-        }else{
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HAS_ALREADY_RESPOND_TO_SURVEY.getErrorMessage());
+        }
+        else if(isExpiredSurvey){
+            return ResponseEntity.status(HttpStatus.GONE).body(EXPIRED_SURVEY.getErrorMessage());
+        }
+        else{
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }
     }

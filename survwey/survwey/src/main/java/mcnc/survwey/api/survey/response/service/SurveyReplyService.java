@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,12 +98,19 @@ public class SurveyReplyService {
         }
     }
 
-    @Transactional
+
     public boolean respondedSurvey(String userId, Long surveyId){
+        userService.findByUserId(userId);
+        surveyService.findBySurveyId(surveyId);
+
+        return respondService.hasUserRespondedToSurvey(surveyId, userId);
+    }
+
+    public boolean expiredSurvey(String userId, Long surveyId){
         userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
 
-        return respondService.hasUserRespondedToSurvey(surveyId, userId);
+        return (survey.getExpireDate().isBefore(LocalDateTime.now()));
     }
 
 }
