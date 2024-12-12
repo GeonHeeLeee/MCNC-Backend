@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mcnc.survwey.domain.user.enums.Gender;
 import mcnc.survwey.global.utils.DecryptField;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -32,17 +33,11 @@ public class RegisterDTO {
     private String password;
 
     @NotNull(message = "생년월일은 필수입니다.")
-    @Pattern(
-            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
-            message = "올바르지 않은 생년월일 형식입니다."
-    )
+    @DateTimeFormat(pattern = "yyyy-MM-dd") // 날짜 형식 지정
+    @Past(message = "생년월일은 과거 날짜여야 합니다.") // 과거 날짜만 허용
     private LocalDate birth;
 
     @NotNull(message = "성별은 필수입니다.")
-    @Pattern(
-            regexp = "^[MF]$",
-            message = "올바르지 않은 성별입니다."
-    )
     private Gender gender;
 
     @NotBlank(message = "이름은 필수입니다.")
