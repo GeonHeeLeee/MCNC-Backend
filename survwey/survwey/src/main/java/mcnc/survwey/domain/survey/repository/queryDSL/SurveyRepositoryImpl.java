@@ -150,9 +150,10 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                         survey,
                         respond.respondId.count()))
                 .from(survey)
-                .join(respond).on(respond.survey.eq(survey))
+                .leftJoin(respond).on(respond.survey.eq(survey))
                 .where(survey.user.userId.eq(userId)
                         .and(survey.title.containsIgnoreCase(title)))
+                .groupBy(survey.surveyId)
                 .orderBy(survey.createDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
