@@ -84,10 +84,10 @@ public class AccountService {
      */
     public void modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
         User user = userService.findByUserId(userId);
-        if (StringUtils.hasText(profileModifyDTO.getName())) {
+        if (!StringUtils.hasText(profileModifyDTO.getName())) {
             profileModifyDTO.setName(user.getName());
         }
-        if (StringUtils.hasText(profileModifyDTO.getEmail())) {
+        if (!StringUtils.hasText(profileModifyDTO.getEmail())) {
             profileModifyDTO.setEmail(user.getEmail());
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
