@@ -19,6 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -61,23 +62,23 @@ public class MailService {
 
     private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
 
+
     @PostConstruct
     public void init() {
-        imageCache.put("logoImage", new ClassPathResource(LOGO_IMAGE_PATH));
-        imageCache.put("titleImage", new ClassPathResource(TITLE_IMAGE_PATH));
+        imageCache.put(LOGO_IMAGE_PATH, new ClassPathResource(LOGO_IMAGE_PATH));
+        imageCache.put(TITLE_IMAGE_PATH, new ClassPathResource(TITLE_IMAGE_PATH));
     }
 
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
     }
 
-
     //메일 보내는 메소드
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);// T: html 형식, F: 텍스트 형식
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setFrom(senderEmail);
             helper.setSubject(title);
@@ -118,12 +119,10 @@ public class MailService {
         validateEmailRequest(decryptedEmailList);
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
-                .map(recipientEmail -> {
+                .forEach(recipientEmail -> {
                     Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
-                    return null;
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     /**
