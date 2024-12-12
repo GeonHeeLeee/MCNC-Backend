@@ -150,6 +150,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                         survey,
                         respond.respondId.count()))
                 .from(survey)
+                .join(respond).on(respond.survey.eq(survey))
                 .where(survey.user.userId.eq(userId)
                         .and(survey.title.containsIgnoreCase(title)))
                 .orderBy(survey.createDate.desc())
