@@ -89,7 +89,8 @@ public class AccountService {
         if (!StringUtils.hasText(profileModifyDTO.getName())) {
             profileModifyDTO.setName(user.getName());
         }
-        if (!StringUtils.hasText(profileModifyDTO.getEmail())) {
+        if (!StringUtils.hasText(profileModifyDTO.getEmail())
+                || user.getEmail().equals(profileModifyDTO.getEmail())) {
             profileModifyDTO.setEmail(user.getEmail());
         } else if (userRepository.existsByEmail(profileModifyDTO.getEmail())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, USER_EMAIL_ALREADY_EXISTS);
