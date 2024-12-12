@@ -144,10 +144,11 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     }
 
     @Override
-    public Page<SurveyDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable) {
-        List<SurveyDTO> surveyDTOList = jpaQueryFactory
-                .select(Projections.constructor(SurveyDTO.class,
-                        survey))
+    public Page<SurveyWithCountDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable) {
+        List<SurveyWithCountDTO> surveyWithCountDTOList = jpaQueryFactory
+                .select(Projections.constructor(SurveyWithCountDTO.class,
+                        survey,
+                        respond.respondId.count()))
                 .from(survey)
                 .where(survey.user.userId.eq(userId)
                         .and(survey.title.containsIgnoreCase(title)))
@@ -162,7 +163,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .where(survey.user.userId.eq(userId)
                         .and(survey.title.containsIgnoreCase(title)));
 
-        return PageableExecutionUtils.getPage(surveyDTOList, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(surveyWithCountDTOList, pageable, countQuery::fetchOne);
     }
 
 }

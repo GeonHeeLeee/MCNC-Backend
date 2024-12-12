@@ -23,6 +23,7 @@ import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ import static mcnc.survwey.global.exception.custom.ErrorCode.INVALID_EMAIL_FORMA
 public class MailService {
 
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
+    private final SpringTemplateEngine templateEngine;
     private final UserService userService;
     private final SurveyService surveyService;
     private final EncryptionUtil encryptionUtil;
@@ -60,13 +61,6 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
-
-    @PostConstruct
-    public void init() {
-        imageCache.put(LOGO_IMAGE_PATH, new ClassPathResource(LOGO_IMAGE_PATH));
-        imageCache.put(TITLE_IMAGE_PATH, new ClassPathResource(TITLE_IMAGE_PATH));
-        log.info("Successfully Initialize ImageCache");
-    }
 
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
@@ -119,12 +113,11 @@ public class MailService {
         validateEmailRequest(decryptedEmailList);
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
-                .map(recipientEmail -> {
+                .forEach(recipientEmail -> {
                     Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
-                    return null;
-                })
-                .collect(Collectors.toList());
+                });
+
     }
 
     /**
