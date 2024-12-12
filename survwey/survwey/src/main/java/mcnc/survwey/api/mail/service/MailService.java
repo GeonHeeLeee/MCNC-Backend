@@ -88,8 +88,6 @@ public class MailService {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, FAILED_TO_SEND_EMAIL);
         }
     }
-
-
     /**
      * 설문 초대
      *
@@ -117,7 +115,6 @@ public class MailService {
                     Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
-
     }
 
     /**
