@@ -109,6 +109,7 @@ public class SurveyResponseController {
                 - 해당 아이디의 설문이 존재하지 않습니다.
                 """
             ),
+            @ApiResponse(responseCode = "401", description = "세션이 존재하지 않습니다."),
             @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다."),
             @ApiResponse(responseCode = "410", description = "해당 설문은 종료된 설문입니다.")
     })
@@ -121,7 +122,11 @@ public class SurveyResponseController {
         }
         if (survey.getExpireDate().isBefore(LocalDateTime.now())) {
             throw new CustomException(HttpStatus.GONE, EXPIRED_SURVEY);
-        } else {
+        }
+//        if (userId.equals(survey.getUser().getUserId())) {
+//            throw new CustomException(HttpStatus)
+//        }
+        else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }
     }
