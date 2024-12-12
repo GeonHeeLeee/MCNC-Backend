@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static mcnc.survwey.global.exception.custom.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,11 +45,11 @@ public class AccountService {
      */
     public void registerUser(RegisterDTO registerDTO) {
         if (userRepository.existsById(registerDTO.getUserId())) {//해당 아이디 이미 존재
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_ID_ALREADY_EXISTS);
+            throw new CustomException(HttpStatus.BAD_REQUEST, USER_ID_ALREADY_EXISTS);
         }
 
         if (userRepository.existsByEmail(registerDTO.getEmail())) {//해당 이메일 존재
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_EMAIL_ALREADY_EXISTS);
+            throw new CustomException(HttpStatus.BAD_REQUEST, USER_EMAIL_ALREADY_EXISTS);
         }
 
         //ID, EMAIL 중복이 없을 경우 저장
@@ -89,6 +91,8 @@ public class AccountService {
         }
         if (!StringUtils.hasText(profileModifyDTO.getEmail())) {
             profileModifyDTO.setEmail(user.getEmail());
+        } else if (userRepository.existsByEmail(profileModifyDTO.getEmail())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, USER_EMAIL_ALREADY_EXISTS);
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
         //아이디, 성별, 생일은 변경하지 않음
