@@ -61,6 +61,7 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
+    private static final ThreadLocal<Context> threadLocalContext = ThreadLocal.withInitial(Context::new);
 
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
@@ -113,10 +114,10 @@ public class MailService {
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
-                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
-                    synchronized (this){
-                        sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
-                    }
+//                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+                    Context context = threadLocalContext.get();
+                    thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
 
     }

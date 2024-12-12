@@ -1,15 +1,18 @@
 package mcnc.survwey.api.mail.utils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.user.User;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ThymeleafUtil {
     /**
      * 날짜 형식에 맞게 변환
