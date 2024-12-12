@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -83,11 +84,10 @@ public class AccountService {
      */
     public void modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
         User user = userService.findByUserId(userId);
-
-        if (profileModifyDTO.getName() == null || profileModifyDTO.getName().isEmpty() || profileModifyDTO.getName().isBlank()) {
+        if (StringUtils.hasText(profileModifyDTO.getName())) {
             profileModifyDTO.setName(user.getName());
         }
-        if (profileModifyDTO.getEmail() == null || profileModifyDTO.getEmail().isEmpty() || profileModifyDTO.getEmail().isBlank()) {
+        if (StringUtils.hasText(profileModifyDTO.getEmail())) {
             profileModifyDTO.setEmail(user.getEmail());
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
