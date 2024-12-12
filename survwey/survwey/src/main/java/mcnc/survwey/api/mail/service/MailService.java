@@ -114,9 +114,7 @@ public class MailService {
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
-//                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
-                    Context context = threadLocalContext.get();
-                    thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
 
