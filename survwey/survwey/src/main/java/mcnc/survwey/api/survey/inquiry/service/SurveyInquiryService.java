@@ -26,8 +26,6 @@ import java.util.*;
 public class SurveyInquiryService {
 
     private final SurveyRepository surveyRepository;
-    private final SurveyService surveyService;
-
     /**
      * 사용자가 생성한 설문 리스트 조회
      * - 페이지네이션 적용
@@ -117,7 +115,7 @@ public class SurveyInquiryService {
      * @param size
      * @return
      */
-    public Page<SurveyDTO> searchUserCreatedSurvey(String userId, String title, int page, int size) {
+    public Page<SurveyWithCountDTO> searchUserCreatedSurvey(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findUserCreatedSurveyByTitleAndUserId(title, userId, pageable);

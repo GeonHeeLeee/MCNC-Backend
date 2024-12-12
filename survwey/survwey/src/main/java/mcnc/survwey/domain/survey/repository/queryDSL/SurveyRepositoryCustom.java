@@ -19,5 +19,5 @@ public interface SurveyRepositoryCustom {
 
     Page<SurveyWithDateDTO> findRespondedSurveyByTitleAndUserId(String title, String userId, Pageable pageable);
 
-    Page<SurveyDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable);
+    Page<SurveyWithCountDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable);
 }
