@@ -19,11 +19,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ import static mcnc.survwey.global.exception.custom.ErrorCode.INVALID_EMAIL_FORMA
 public class MailService {
 
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
+    private final SpringTemplateEngine templateEngine;
     private final UserService userService;
     private final SurveyService surveyService;
     private final EncryptionUtil encryptionUtil;
@@ -62,23 +62,17 @@ public class MailService {
 
     private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
 
-
-    @PostConstruct
-    public void init() {
-        imageCache.put(LOGO_IMAGE_PATH, new ClassPathResource(LOGO_IMAGE_PATH));
-        imageCache.put(TITLE_IMAGE_PATH, new ClassPathResource(TITLE_IMAGE_PATH));
-    }
-
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
     }
+
 
     //메일 보내는 메소드
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);// T: html 형식, F: 텍스트 형식
 
             helper.setFrom(senderEmail);
             helper.setSubject(title);
@@ -123,6 +117,7 @@ public class MailService {
                     Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
+
     }
 
     /**

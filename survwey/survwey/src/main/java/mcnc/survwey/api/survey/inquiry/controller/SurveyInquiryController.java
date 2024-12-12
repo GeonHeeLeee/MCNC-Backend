@@ -119,12 +119,12 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "200", description = "생성한 설문 검색 성공"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Page<SurveyDTO>> searchUserCreatedSurvey(@RequestParam(name = "title") String title,
+    public ResponseEntity<Page<SurveyWithCountDTO>> searchUserCreatedSurvey(@RequestParam(name = "title") String title,
                                                                    @RequestParam(name = "page", defaultValue = "0") int page,
                                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
         String userId = SessionContext.getCurrentUser();
-        Page<SurveyDTO> surveyDTOList = surveyInquiryService.searchUserCreatedSurvey(userId, title, page, size);
-        return ResponseEntity.ok(surveyDTOList);
+        Page<SurveyWithCountDTO> surveyWithCountDTOPage = surveyInquiryService.searchUserCreatedSurvey(userId, title, page, size);
+        return ResponseEntity.ok(surveyWithCountDTOPage);
     }
 
     /**
