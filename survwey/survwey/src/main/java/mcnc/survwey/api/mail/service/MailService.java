@@ -114,7 +114,9 @@ public class MailService {
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
                     Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
-                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+                    synchronized (this){
+                        sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+                    }
                 });
 
     }
