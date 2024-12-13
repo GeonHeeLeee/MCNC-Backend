@@ -72,32 +72,40 @@ public class AnsweredSurveyService {
      * @param subjAnswerMap - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
      */
     private void assignAnswersToQuestion(AnsweredQuestionDTO question, Map<Object, List<ObjAnswer>> objAnswerMap, Map<Long, String> subjAnswerMap) {
-        if (!objAnswerMap.containsKey(question.getQuesId()) && !subjAnswerMap.containsKey(question.getQuesId())) {
+        long quesId = question.getQuesId();
+        if (!objAnswerMap.containsKey(quesId) && !subjAnswerMap.containsKey(quesId)) {
             return;
         }
         switch (question.getQuestionType()) {
             case OBJ_MULTI:
-                objAnswerMap.get(question.getQuesId()).forEach(objAnswer -> {
-                    int sequence = objAnswer.getSelection().getId().getSequence();
-                    question.getObjAnswerList().add(sequence);
-                    setEtcAnswerIfPresent(question, objAnswer);
+                objAnswerMap.get(quesId).forEach(objAnswer -> {
+                    addObjectiveResponse(question, objAnswer);
                 });
                 break;
 
             case OBJ_SINGLE:
-                ObjAnswer objAnswer = objAnswerMap.get(question.getQuesId()).get(0);
-                int sequence = objAnswer.getSelection().getId().getSequence();
-                question.getObjAnswerList().add(sequence);
-                setEtcAnswerIfPresent(question, objAnswer);
+                ObjAnswer objAnswer = objAnswerMap.get(quesId).get(0);
+                addObjectiveResponse(question, objAnswer);
                 break;
 
             case SUBJECTIVE:
-                question.setSubjAnswer(subjAnswerMap.get(question.getQuesId()));
+                question.setSubjAnswer(subjAnswerMap.get(quesId));
                 break;
 
             default:
                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INVALID_QUESTION_TYPE);
         }
+    }
+
+    /**
+     * 객관식 응답 추가
+     * @param question
+     * @param objAnswer
+     */
+    private void addObjectiveResponse(AnsweredQuestionDTO question, ObjAnswer objAnswer) {
+        int sequence = objAnswer.getSelection().getId().getSequence();
+        question.getObjAnswerList().add(sequence);
+        setEtcAnswerIfPresent(question, objAnswer);
     }
 
     /**

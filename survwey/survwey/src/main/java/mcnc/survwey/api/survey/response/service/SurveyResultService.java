@@ -63,8 +63,8 @@ public class SurveyResultService {
         //응답 객체에 나이, 성별 분포 추가
         addAgeAndGenderDistribution(surveyId, surveyResultDTO);
 
-        //설문에 질문, 보기, 응답 추가
-        processQuestionResults(surveyResultQueryDTOList, surveyResultDTO);
+        // 질문 및 응답 데이터 처리
+        mapQuestionsAndResponses(surveyResultQueryDTOList, surveyResultDTO);
 
         return surveyResultDTO;
     }
@@ -78,8 +78,8 @@ public class SurveyResultService {
      * @param surveyResultQueryDTOList
      * @param surveyResultDTO
      */
-    private void processQuestionResults(List<SurveyResultQueryDTO> surveyResultQueryDTOList,
-                                        SurveyResultDTO surveyResultDTO) {
+    private void mapQuestionsAndResponses(List<SurveyResultQueryDTO> surveyResultQueryDTOList,
+                                          SurveyResultDTO surveyResultDTO) {
         //중복되지 않은 QuestionResultDTO를 위한 Map(Key: quesId, Value: QuestionResultDTO)
         Map<Long, QuestionResultDTO> questionResultMap = new HashMap<>();
 
@@ -95,7 +95,7 @@ public class SurveyResultService {
             });
 
             //질문 타입에 따라 응답 처리
-            addResponsesByQuestionType(queryDTO, questionResult);
+            assignResponsesByQuestionType(queryDTO, questionResult);
         }
     }
 
@@ -106,7 +106,7 @@ public class SurveyResultService {
      * @param queryDTO
      * @param questionResult
      */
-    private void addResponsesByQuestionType(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
+    private void assignResponsesByQuestionType(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
         switch (queryDTO.getQuestionType()) {
             //객관식은 다중, 단일 동일 처리
             case OBJ_MULTI:
@@ -130,18 +130,16 @@ public class SurveyResultService {
      * @param questionResult
      */
     private void addObjectiveResponse(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
-        QuestionResultDTO.SelectionResultDTO existingSelection =
-                questionResult.getSelectionList().stream()
-                        //순서(sequence)가 일치하는 보기 가져오기
-                        .filter(selection -> selection.getSequence() == queryDTO.getSequence())
-                        .findFirst()
-                        //해당하는 값이 없을 시 만들고 저장 후 가져오기
-                        .orElseGet(() -> {
-                            QuestionResultDTO.SelectionResultDTO selectionResultDTO =
-                                    new QuestionResultDTO.SelectionResultDTO(queryDTO);
-                            questionResult.getSelectionList().add(selectionResultDTO);
-                            return selectionResultDTO;
-                        });
+        QuestionResultDTO.SelectionResultDTO existingSelection = questionResult.getSelectionList().stream()
+                //순서(sequence)가 일치하는 보기 가져오기
+                .filter(selection -> selection.getSequence() == queryDTO.getSequence())
+                .findFirst()
+                //해당하는 값이 없을 시 만들고 저장 후 가져오기
+                .orElseGet(() -> {
+                    QuestionResultDTO.SelectionResultDTO selectionResultDTO = new QuestionResultDTO.SelectionResultDTO(queryDTO);
+                    questionResult.getSelectionList().add(selectionResultDTO);
+                    return selectionResultDTO;
+                });
 
         // 응답한 사람 수 업데이트
         existingSelection.setResponseCount((int) (existingSelection.getResponseCount() + queryDTO.getResponseCount()));
