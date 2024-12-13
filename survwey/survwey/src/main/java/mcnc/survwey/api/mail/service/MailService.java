@@ -110,29 +110,19 @@ public class MailService {
         surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
 
         //암호화 된 이메일 복호화
-//        List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
+        List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
         //이메일 요청 정규식 검사
-//        validateEmailRequest(decryptedEmailList);
+        validateEmailRequest(decryptedEmailList);
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
-//        decryptedEmailList.parallelStream()
-//                .forEach(recipientEmail -> {
-//                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
-//                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
-//                });
-
-        // 병렬 처리
-        encryptedEmailList.parallelStream()
-                .forEach(encryptedEmail -> {
+        decryptedEmailList.parallelStream()
+                .forEach(recipientEmail -> {
+                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
                     try {
-                        String decryptedEmail = encryptionUtil.decrypt(encryptedEmail);
-                        validateEmailRequest(decryptedEmail);
-
-                        Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
-                        sendMail(context, surveyToInvite.getTitle(), decryptedEmail, "mail/invitation");
-                    } catch (Exception e) {
-                        // 개별 이메일 처리 실패 시 로깅
-                        log.error("Failed to process email: {}", encryptedEmail, e);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
+                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
     }
 
@@ -152,17 +142,6 @@ public class MailService {
             }
         }
     }
-
-    public void validateEmailRequest(String email) {
-        String emailPattern = "^(?=.{1,255}$)(?![_.-])[A-Za-z0-9._-]+(?<![_.-])@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        Pattern pattern = Pattern.compile(emailPattern);
-
-            Matcher matcher = pattern.matcher(email);
-            if (!matcher.matches()) {
-                throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_EMAIL_FORMAT);
-            }
-    }
-
     /**
      * URL 파라미터 암호화
      *
