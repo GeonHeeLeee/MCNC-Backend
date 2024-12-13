@@ -66,17 +66,6 @@ public class MailService {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
     }
 
-    /**
-     * 병렬 스트림 동시성 문제로 인한 초기화
-     * - 더미 Context로 mail/invitaion 초기화
-     */
-    @PostConstruct
-    public void initialize() {
-        Context dummyContext = new Context();
-        templateEngine.process("mail/invitation", dummyContext);
-        log.info("Successfully initialized Dummy Context");
-    }
-
     //메일 보내는 메소드
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
