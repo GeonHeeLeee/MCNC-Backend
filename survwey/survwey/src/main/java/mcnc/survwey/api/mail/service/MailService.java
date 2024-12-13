@@ -61,10 +61,20 @@ public class MailService {
     private static final String TITLE_IMAGE_PATH = "static/images/title.png";
 
     private static final Map<String, ClassPathResource> imageCache = new ConcurrentHashMap<>();
-    private static final ThreadLocal<Context> threadLocalContext = ThreadLocal.withInitial(Context::new);
 
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
+    }
+
+    /**
+     * 병렬 스트림 동시성 문제로 인한 초기화
+     * - 더미 Context로 mail/invitaion 초기화
+     */
+    @PostConstruct
+    public void initialize() {
+        Context dummyContext = new Context();
+        templateEngine.process("mail/invitation", dummyContext);
+        log.info("Successfully initialized Dummy Context");
     }
 
     //메일 보내는 메소드
