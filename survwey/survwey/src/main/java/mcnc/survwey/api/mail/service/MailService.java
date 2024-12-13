@@ -19,6 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -28,6 +29,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,6 +70,7 @@ public class MailService {
     }
 
     //메일 보내는 메소드
+    @Async
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
@@ -95,6 +99,7 @@ public class MailService {
      * @param encryptedEmailList
      * @throws MessagingException
      */
+    @Async
     public void sendInvitationLink(String senderId, Long surveyId, List<String> encryptedEmailList) {
         User sender = userService.findByUserId(senderId);
         Survey surveyToInvite = surveyService.findBySurveyId(surveyId);
@@ -105,14 +110,29 @@ public class MailService {
         surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
 
         //암호화 된 이메일 복호화
-        List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
+//        List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
         //이메일 요청 정규식 검사
-        validateEmailRequest(decryptedEmailList);
+//        validateEmailRequest(decryptedEmailList);
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
-        decryptedEmailList.parallelStream()
-                .forEach(recipientEmail -> {
-                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
-                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+//        decryptedEmailList.parallelStream()
+//                .forEach(recipientEmail -> {
+//                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+//                    sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
+//                });
+
+        // 병렬 처리
+        encryptedEmailList.parallelStream()
+                .forEach(encryptedEmail -> {
+                    try {
+                        String decryptedEmail = encryptionUtil.decrypt(encryptedEmail);
+                        validateEmailRequest(decryptedEmail);
+
+                        Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+                        sendMail(context, surveyToInvite.getTitle(), decryptedEmail, "mail/invitation");
+                    } catch (Exception e) {
+                        // 개별 이메일 처리 실패 시 로깅
+                        log.error("Failed to process email: {}", encryptedEmail, e);
+                    }
                 });
     }
 
@@ -131,6 +151,16 @@ public class MailService {
                 throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_EMAIL_FORMAT);
             }
         }
+    }
+
+    public void validateEmailRequest(String email) {
+        String emailPattern = "^(?=.{1,255}$)(?![_.-])[A-Za-z0-9._-]+(?<![_.-])@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+        Pattern pattern = Pattern.compile(emailPattern);
+
+            Matcher matcher = pattern.matcher(email);
+            if (!matcher.matches()) {
+                throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_EMAIL_FORMAT);
+            }
     }
 
     /**
