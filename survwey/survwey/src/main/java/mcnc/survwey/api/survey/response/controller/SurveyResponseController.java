@@ -114,13 +114,9 @@ public class SurveyResponseController {
     })
     public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId){
         String userId = SessionContext.getCurrentUser();
-        Survey survey = surveyService.findBySurveyId(surveyId);
         if(respondService.hasUserRespondedToSurvey(surveyId, userId)){
             throw new CustomException(HttpStatus.CONFLICT, HAS_ALREADY_RESPOND_TO_SURVEY);
-        }
-        if (survey.getExpireDate().isBefore(LocalDateTime.now())) {
-            throw new CustomException(HttpStatus.GONE, EXPIRED_SURVEY);
-        }else {
+        } else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }
     }
