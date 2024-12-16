@@ -19,6 +19,11 @@ import java.util.stream.IntStream;
 public class SelectionService {
     private final SelectionRepository selectionRepository;
 
+    /**
+     * 보기 생성
+     * @param createdQuestion
+     * @param selectionDTOList
+     */
     public void buildAndSaveSelection(Question createdQuestion, List<QuestionDTO.SelectionDTO> selectionDTOList) {
         List<Selection> selectionList = IntStream.range(0, selectionDTOList.size())
                 .mapToObj(sequence -> {
@@ -32,7 +37,11 @@ public class SelectionService {
         selectionRepository.saveAll(selectionList);
     }
 
-
+    /**
+     * 보기 찾기
+     * @param selectionId
+     * @return
+     */
     public Selection findBySelectionId(SelectionId selectionId) {
         return selectionRepository.findById(selectionId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SELECTION_NOT_FOUND_BY_ID));

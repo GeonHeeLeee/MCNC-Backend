@@ -69,9 +69,10 @@ public class AccountService {
      * id, email 중복 검증
      * @param userId
      * @param email
-     * @return
+     * @return ture: 중복, false: 중복 X front에 전송
      */
     public Map<String, Boolean> validateDuplicatedUserIdAndEmail(String userId, String email) {
+        //id, email map에 저장 후 true일 경우 중복 
         Map<String, Boolean> map = new HashMap<>();
         map.put("id", userRepository.existsById(userId));
         map.put("email", userRepository.existsByEmail(email));
@@ -91,8 +92,10 @@ public class AccountService {
         }
         if (!StringUtils.hasText(profileModifyDTO.getEmail())
                 || user.getEmail().equals(profileModifyDTO.getEmail())) {
+            //사용자가 이메일을 변경하지 않았을 경우 기존에 이메일 유지
             profileModifyDTO.setEmail(user.getEmail());
         } else if (userRepository.existsByEmail(profileModifyDTO.getEmail())) {
+            //이메일이 중복일 경우
             throw new CustomException(HttpStatus.BAD_REQUEST, USER_EMAIL_ALREADY_EXISTS);
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
@@ -132,6 +135,7 @@ public class AccountService {
     public void modifyPassword(String userId, String password) {
         User user = userService.findByUserId(userId);
         user.setPassword(passwordEncoder.encode(password));
+        //변경된 비밀번호 저장 후 redis에 인증 토큰 삭제
         userRepository.save(user);
         userRedisService.deleteVerifiedStatus(userId);
     }

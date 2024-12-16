@@ -68,8 +68,14 @@ public class MailService {
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
     }
-
-    //메일 보내는 메소드
+    
+    /**
+     * Thymeleaf 템플릿에 저장된 데이터, 제목, 이메일, 경로를 받아서 메일 전송
+     * @param context
+     * @param title
+     * @param email
+     * @param htmlPath
+     */
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
         MimeMessage message = mailSender.createMimeMessage();// 이메일 메시지 생성 객체
