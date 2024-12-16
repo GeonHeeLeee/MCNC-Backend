@@ -22,11 +22,21 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    /**
+     * 아이디로 사용자 찾기
+     * @param userId
+     * @return
+     */
     public User findByUserId(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_ID));
     }
 
+    /**
+     * 이메일로 사용자 찾기
+     * @param email
+     * @return
+     */
     public User findByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_EMAIL));

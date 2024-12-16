@@ -19,6 +19,12 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
+    /**
+     * 해당 설문에 질문 생성
+     * @param questionDTO
+     * @param createdSurvey
+     * @return
+     */
     public Question buildAndSaveQuestion(QuestionDTO questionDTO, Survey createdSurvey) {
         Question createdQuestion = questionDTO.toEntity(createdSurvey);
         createdSurvey.addQuestion(createdQuestion);
@@ -26,11 +32,20 @@ public class QuestionService {
         return createdQuestion;
     }
 
+    /**
+     * 질문 찾기
+     * @param quesId
+     * @return
+     */
     public Question findByQuesId(Long quesId) {
         return questionRepository.findById(quesId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.QUESTION_NOT_FOUND_BY_ID));
     }
 
+    /**
+     * 질문 삭제
+     * @param surveyId
+     */
     public void deleteBySurveyId(Long surveyId) {
         questionRepository.deleteBySurvey_SurveyId(surveyId);
     }

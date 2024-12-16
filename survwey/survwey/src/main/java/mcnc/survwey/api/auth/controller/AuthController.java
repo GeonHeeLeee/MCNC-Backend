@@ -75,8 +75,7 @@ public class AuthController {
         session.invalidate();
         return ResponseEntity.ok().body(Map.of("message", "로그아웃 성공"));
     }
-
-
+    
     /**
      * 프론트 세션 체크
      * - 세션이 유효하지 않을 시 로그인 화면으로 리다이렉션 용
@@ -103,6 +102,7 @@ public class AuthController {
     })
     public ResponseEntity<Object> sendTempAuthCodeToModifyPassword(@RequestBody EmailSendDTO emailSendDTO) {
         try {
+            //이메일이 일치하면 메일 발송
             if (authService.verifyAndSendEmail(emailSendDTO)) {
                 return ResponseEntity.ok(null);
             }
@@ -120,6 +120,7 @@ public class AuthController {
     })
     public ResponseEntity<Object> checkPasswordModifyCode(@Valid @RequestBody AuthCodeDTO authCodeDTO) {
         String tempAuthCode = authCodeDTO.getTempAuthCode();
+        //인증번호 유효한지 체크
         boolean isVerified = userRedisService.verifyCode(authCodeDTO.getUserId(), tempAuthCode);
         if (isVerified) {
             userRedisService.saveVerifiedStatus(authCodeDTO.getUserId());

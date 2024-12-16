@@ -123,9 +123,6 @@ public class SurveyResponseController {
         if (survey.getExpireDate().isBefore(LocalDateTime.now())) {
             throw new CustomException(HttpStatus.GONE, EXPIRED_SURVEY);
         }
-//        if (userId.equals(survey.getUser().getUserId())) {
-//            throw new CustomException(HttpStatus)
-//        }
         else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }
