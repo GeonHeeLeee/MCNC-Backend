@@ -110,23 +110,14 @@ public class SurveyResponseController {
                 """
             ),
             @ApiResponse(responseCode = "401", description = "세션이 존재하지 않습니다."),
-            @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다."),
-            @ApiResponse(responseCode = "410", description = "해당 설문은 종료된 설문입니다.")
+            @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다.")
     })
     public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId){
         String userId = SessionContext.getCurrentUser();
-        Survey survey = surveyService.findBySurveyId(surveyId);
 
         if(respondService.hasUserRespondedToSurvey(surveyId, userId)){
             throw new CustomException(HttpStatus.CONFLICT, HAS_ALREADY_RESPOND_TO_SURVEY);
-        }
-        if (survey.getExpireDate().isBefore(LocalDateTime.now())) {
-            throw new CustomException(HttpStatus.GONE, EXPIRED_SURVEY);
-        }
-//        if (userId.equals(survey.getUser().getUserId())) {
-//            throw new CustomException(HttpStatus)
-//        }
-        else {
+        } else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }
     }
