@@ -41,6 +41,7 @@ public class SurveyResponseController {
 
     /**
      * 응답 저장
+     *
      * @param surveyReplyDTO
      * @return
      */
@@ -50,13 +51,13 @@ public class SurveyResponseController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 응답 성공"),
             @ApiResponse(responseCode = "400", description = """
-                잘못된 요청:
-                - 해당 아이디의 사용자가 존재하지 않습니다.
-                - 해당 아이디의 설문이 존재하지 않습니다.
-                - 해당 설문은 종료된 설문입니다.
-                - 이미 해당 설문에 응답하셨습니다.
-                - 해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다.(다른 설문의 QuesId를 요청하거나 설문의 모든 질문에 답하지 않았을때)
-                """),
+                    잘못된 요청:
+                    - 해당 아이디의 사용자가 존재하지 않습니다.
+                    - 해당 아이디의 설문이 존재하지 않습니다.
+                    - 해당 설문은 종료된 설문입니다.
+                    - 이미 해당 설문에 응답하셨습니다.
+                    - 해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다.(다른 설문의 QuesId를 요청하거나 설문의 모든 질문에 답하지 않았을때)
+                    """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<Object> replyToSurvey(@Valid @RequestBody SurveyReplyDTO surveyReplyDTO) {
@@ -67,6 +68,7 @@ public class SurveyResponseController {
 
     /**
      * 설문 결과(통계) 조회
+     *
      * @param surveyId
      * @return
      */
@@ -104,17 +106,17 @@ public class SurveyResponseController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "응답하지 않은 설문"),
             @ApiResponse(responseCode = "400", description = """
-                잘못된 요청:
-                - 해당 아이디의 사용자가 존재하지 않습니다.
-                - 해당 아이디의 설문이 존재하지 않습니다.
-                """
+                    잘못된 요청:
+                    - 해당 아이디의 설문이 존재하지 않습니다.
+                    """
             ),
             @ApiResponse(responseCode = "401", description = "세션이 존재하지 않습니다."),
             @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다.")
     })
-    public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId){
+    public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
-        if(respondService.hasUserRespondedToSurvey(surveyId, userId)){
+        Survey survey = surveyService.findBySurveyId(surveyId);
+        if (respondService.hasUserRespondedToSurvey(survey.getSurveyId(), userId)) {
             throw new CustomException(HttpStatus.CONFLICT, HAS_ALREADY_RESPOND_TO_SURVEY);
         } else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
