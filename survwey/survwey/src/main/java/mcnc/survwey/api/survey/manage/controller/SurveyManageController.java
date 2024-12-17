@@ -115,8 +115,8 @@ public class SurveyManageController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 수정 가능"),
             @ApiResponse(responseCode = "409", description = "응답한 사용자가 존재하는 경우"),
-            @ApiResponse(responseCode = "400", description = "요청자가 생성자가 아닌 경우<br>" +
-                    "만료일이 지난 경우")
+            @ApiResponse(responseCode = "403", description = "요청자가 생성자가 아닌 경우"),
+            @ApiResponse(responseCode = "410", description = "만료일이 지난 경우")
     })
     public ResponseEntity<Object> isSurveyModifiable(@PathVariable Long surveyId) {
         String userId = SessionContext.getCurrentUser();

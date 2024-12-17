@@ -105,8 +105,8 @@ public class MailService {
         String encryptedLink = encryptLink(invitationUrl, surveyToInvite.getSurveyId());
 
         //유효성 검사
-        surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
         surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
+        surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
 
         //암호화 된 이메일 복호화
         List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
