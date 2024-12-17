@@ -63,13 +63,13 @@ class AuthServiceTest {
 
     @BeforeEach
     public void saveUser(){
-        RegisterDTO registerDTO = RegisterDTO.builder()
-                .userId("asd123")
-                .email("asd@test.com")
-                .name("tester")
-                .password("qwer1234!@")
-                .birth(LocalDate.now())
-                .gender(Gender.F).build();
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUserId("asd123");
+        registerDTO.setEmail("asd@test.com");
+        registerDTO.setName("tester");
+        registerDTO.setPassword("qwer1234!@");
+        registerDTO.setBirth(LocalDate.now());
+        registerDTO.setGender(Gender.F);
 
         accountService.registerUser(registerDTO);
 

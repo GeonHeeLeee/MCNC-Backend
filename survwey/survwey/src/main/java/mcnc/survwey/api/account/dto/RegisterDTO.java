@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
-@Builder
+@NoArgsConstructor
 public class RegisterDTO {
 
     @NotBlank(message = "아이디는 필수입니다.")

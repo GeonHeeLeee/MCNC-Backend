@@ -51,13 +51,13 @@ class AccountServiceTest {
 
     @BeforeEach
     public void saveUser(){
-        RegisterDTO registerDTO = RegisterDTO.builder()
-                .userId("asd123")
-                .email("asd@test.com")
-                .name("tester")
-                .password("qwer1234!@")
-                .birth(LocalDate.now())
-                .gender(Gender.F).build();
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUserId("asd123");
+        registerDTO.setEmail("asd@test.com");
+        registerDTO.setName("tester");
+        registerDTO.setPassword("qwer1234!@");
+        registerDTO.setBirth(LocalDate.now());
+        registerDTO.setGender(Gender.F);
 
         accountService.registerUser(registerDTO);
     }
@@ -66,13 +66,13 @@ class AccountServiceTest {
     @Test
     public void 회원가입_성공(){
         //given
-        RegisterDTO registerDTO = RegisterDTO.builder()
-                .userId("test123")
-                .email("test@test.com")
-                .name("tester")
-                .password("qwer1234!@")
-                .birth(LocalDate.now())
-                .gender(Gender.M).build();
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUserId("test123");
+        registerDTO.setEmail("test@test.com");
+        registerDTO.setName("tester");
+        registerDTO.setPassword("qwer1234!@");
+        registerDTO.setBirth(LocalDate.now());
+        registerDTO.setGender(Gender.M);
 
         //when
         accountService.registerUser(registerDTO);

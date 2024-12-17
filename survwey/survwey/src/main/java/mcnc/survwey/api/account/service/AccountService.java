@@ -101,10 +101,8 @@ public class AccountService {
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
         //아이디, 성별, 생일은 변경하지 않음
 
-        user.setEmail(profileModifyDTO.getEmail());
-        user.setName(profileModifyDTO.getName());
-        
-        userRepository.save(user);
+        user.modifyUser(profileModifyDTO.getName(), profileModifyDTO.getEmail());
+
     }
 
     /**
