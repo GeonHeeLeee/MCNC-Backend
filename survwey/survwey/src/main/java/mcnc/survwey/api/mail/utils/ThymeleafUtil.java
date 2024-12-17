@@ -48,10 +48,11 @@ public class ThymeleafUtil {
      * @param encryptedLink
      * @return
      */
-    public Context initNotificationContext(User user, String title, String encryptedLink){
+    public Context initNotificationContext(User user, Survey survey, String encryptedLink){
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
         context.setVariable("inviterName", user.getName());
-        context.setVariable("surveyTitle", title);
+        context.setVariable("surveyTitle", survey.getTitle());
+        context.setVariable("surveyExpireDate", getFormatedDate(survey.getExpireDate()));
         context.setVariable("surveyLink", encryptedLink);
         return context;
     }
