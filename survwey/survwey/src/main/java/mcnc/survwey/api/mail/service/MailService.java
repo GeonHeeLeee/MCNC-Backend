@@ -1,6 +1,5 @@
 package mcnc.survwey.api.mail.service;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,26 +13,20 @@ import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.utils.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static mcnc.survwey.global.exception.custom.ErrorCode.FAILED_TO_SEND_EMAIL;
 import static mcnc.survwey.global.exception.custom.ErrorCode.INVALID_EMAIL_FORMAT;
@@ -57,7 +50,7 @@ public class MailService {
     @Value("${BASE_URL}")
     private String baseUrl;
 
-    @Value("${SURVEY_VERIFY_URL}")
+    @Value("${NOTIFICATION_URL}")
     private String notificationUrl;
 
     private static final String LOGO_IMAGE_PATH = "static/images/icon_logo.png";
@@ -160,10 +153,10 @@ public class MailService {
      * @param surveyId
      * @param link
      */
-    public void sendVerifySurveyLink(String userId, Long surveyId, String link) {
+    public void sendExpiredNotificationLink(String userId, Long surveyId, String link) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        Context context = thymeleafUtil.initNotificationContext(user, link);
+        Context context = thymeleafUtil.initNotificationContext(user, survey.getTitle(), link);
         sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
     }
 

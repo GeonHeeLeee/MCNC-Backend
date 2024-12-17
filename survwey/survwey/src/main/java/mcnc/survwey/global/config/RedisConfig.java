@@ -17,7 +17,7 @@ public class RedisConfig {
 
     private final MailService mailService;
 
-    @Value("${SURVEY_VERIFY_URL}")
+    @Value("${NOTIFICATION_URL}")
     private String notificationUrl;
 
     /**
@@ -37,7 +37,7 @@ public class RedisConfig {
                 String userId = key.split("/")[0];
                 Long surveyId = Long.parseLong(key.split("/")[1]);
                 //이메일 전송
-                mailService.sendVerifySurveyLink(userId, surveyId, notificationUrl);
+                mailService.sendExpiredNotificationLink(userId, surveyId, notificationUrl);
             }
         }, new PatternTopic("__keyevent@*__:expired"));
 
