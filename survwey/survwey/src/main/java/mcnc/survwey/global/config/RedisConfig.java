@@ -17,7 +17,7 @@ public class RedisConfig {
 
     private final MailService mailService;
 
-    @Value("${SURVEY_VERIFY_URL}")
+    @Value("${NOTIFICATION_URL}")
     private String notificationUrl;
 
     /**

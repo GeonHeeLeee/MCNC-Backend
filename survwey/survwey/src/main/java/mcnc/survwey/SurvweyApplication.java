@@ -18,7 +18,7 @@ public class SurvweyApplication {
 		System.setProperty("MAIL_USER_PASSWORD", dotenv.get("MAIL_USER_PASSWORD"));
 		System.setProperty("BASE_URL", dotenv.get("BASE_URL"));
 		System.setProperty("ENCRYPTION_SECRET_KEY", dotenv.get("ENCRYPTION_SECRET_KEY"));
-		System.setProperty("SURVEY_VERIFY_URL", dotenv.get("SURVEY_VERIFY_URL"));
+		System.setProperty("NOTIFICATION_URL", dotenv.get("NOTIFICATION_URL"));
 		SpringApplication.run(SurvweyApplication.class, args);
 
 	}

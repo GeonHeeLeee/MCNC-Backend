@@ -57,7 +57,7 @@ public class MailService {
     @Value("${BASE_URL}")
     private String baseUrl;
 
-    @Value("${SURVEY_VERIFY_URL}")
+    @Value("${NOTIFICATION_URL}")
     private String notificationUrl;
 
     private static final String LOGO_IMAGE_PATH = "static/images/icon_logo.png";
