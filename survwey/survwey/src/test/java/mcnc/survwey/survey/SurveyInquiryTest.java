@@ -2,6 +2,7 @@ package mcnc.survwey.survey;
 
 
 
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
@@ -96,7 +97,7 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
         String userId = "testUser1";
 
         //When
-        Page<SurveyDTO> result = surveyInquiryService.getUserRespondSurveyList(userId, PAGE_NUMBER, PAGE_SIZE);
+        Page<SurveyWithDateDTO> result = surveyInquiryService.getUserRespondSurveyList(userId, PAGE_NUMBER, PAGE_SIZE);
 
         //Then
         assertEquals(result.getTotalElements(), 1);

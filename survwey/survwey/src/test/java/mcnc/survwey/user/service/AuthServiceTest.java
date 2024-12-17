@@ -65,9 +65,9 @@ class AuthServiceTest {
     public void saveUser(){
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setUserId("asd123");
-        registerDTO.setEmail("asd@test.com");
+        registerDTO.setEmail("ccJ2ky8W1P-xITy45CREINOVq91sKDTABKPUnVjiwDc");
         registerDTO.setName("tester");
-        registerDTO.setPassword("qwer1234!@");
+        registerDTO.setPassword("-b4tdMhq4MAQpTFwIRLVRg");
         registerDTO.setBirth(LocalDate.now());
         registerDTO.setGender(Gender.F);
 
@@ -82,7 +82,7 @@ class AuthServiceTest {
         // given
         LoginDTO loginDTO = LoginDTO.builder()
                 .userId("asd123")
-                .password("qwer1234!@")
+                .password("-b4tdMhq4MAQpTFwIRLVRg")
                 .build();
 
         // when & then
@@ -95,7 +95,7 @@ class AuthServiceTest {
         // given
         LoginDTO loginDTO = LoginDTO.builder()
                 .userId("asd1234")
-                .password("qwer1234!@")
+                .password("-b4tdMhq4MAQpTFwIRLVRg")
                 .build();
 
         // when & then

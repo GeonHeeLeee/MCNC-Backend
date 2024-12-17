@@ -100,9 +100,7 @@ public class AccountService {
         }
         //사용자가 특정 항목을 수정하지 않을 시 원래 user 정보를 가져옴
         //아이디, 성별, 생일은 변경하지 않음
-
         user.modifyUser(profileModifyDTO.getName(), profileModifyDTO.getEmail());
-
     }
 
     /**
@@ -129,12 +127,9 @@ public class AccountService {
      * @param userId
      * @param password
      */
-    @Transactional
     public void modifyPassword(String userId, String password) {
         User user = userService.findByUserId(userId);
-        user.setPassword(passwordEncoder.encode(password));
-        //변경된 비밀번호 저장 후 redis에 인증 토큰 삭제
-        userRepository.save(user);
+        user.modifyPassword(passwordEncoder.encode(password));
         userRedisService.deleteVerifiedStatus(userId);
     }
 }

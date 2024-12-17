@@ -54,4 +54,8 @@ public class User {
         this.name = name;
         this.email = email;
     }
+
+    public void modifyPassword(String password) {
+        this.password = password;
+    }
 }

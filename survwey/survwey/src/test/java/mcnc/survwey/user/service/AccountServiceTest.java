@@ -53,9 +53,9 @@ class AccountServiceTest {
     public void saveUser(){
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setUserId("asd123");
-        registerDTO.setEmail("asd@test.com");
+        registerDTO.setEmail("ccJ2ky8W1P-xITy45CREINOVq91sKDTABKPUnVjiwDc");
         registerDTO.setName("tester");
-        registerDTO.setPassword("qwer1234!@");
+        registerDTO.setPassword("-b4tdMhq4MAQpTFwIRLVRg");
         registerDTO.setBirth(LocalDate.now());
         registerDTO.setGender(Gender.F);
 
@@ -68,9 +68,9 @@ class AccountServiceTest {
         //given
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setUserId("test123");
-        registerDTO.setEmail("test@test.com");
+        registerDTO.setEmail("ccJ2ky8W1P-xITy45CREINOVq71sKDTABKPUnVjiwDc");
         registerDTO.setName("tester");
-        registerDTO.setPassword("qwer1234!@");
+        registerDTO.setPassword("-b4tdMhq4MAQpTFwIRLVRg");
         registerDTO.setBirth(LocalDate.now());
         registerDTO.setGender(Gender.M);
 
@@ -117,18 +117,6 @@ class AccountServiceTest {
                 .isEqualTo(profileDTO);
         assertThat(user.getEmail()).isEqualTo(encryptionUtil.decrypt(profileDTO.getEmail()));
     }
-
-//    @Test
-//    public void 사용자_비밀번호_변경_이메일_인증(){
-//        //given
-//        User user = userService.findByUserId("asd123");
-//
-//        //when
-//        boolean isChecked = userRedisService.isVerified(user.getUserId());
-//
-//        //then
-//        assertThat(!isChecked).isTrue();
-//    }
 
     @Test
     public void 사용자_비밀번호_변경_성공(){
