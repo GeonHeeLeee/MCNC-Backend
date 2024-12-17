@@ -19,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 public class AnsweredQuestionDTO {
     private long quesId;
-    @NotBlank(message = "질문 내용은 필수입니다.")
     private String body;
     private QuestionType questionType;
     private String subjAnswer;
