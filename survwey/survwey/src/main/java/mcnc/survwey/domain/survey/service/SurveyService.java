@@ -49,7 +49,7 @@ public class SurveyService {
     public void checkSurveyExpiration(LocalDateTime expireDate) {
         if (expireDate.isBefore(LocalDateTime.now())
                 || expireDate.isEqual(LocalDateTime.now())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRED_SURVEY);
+            throw new CustomException(HttpStatus.GONE, ErrorCode.EXPIRED_SURVEY);
         }
     }
 
