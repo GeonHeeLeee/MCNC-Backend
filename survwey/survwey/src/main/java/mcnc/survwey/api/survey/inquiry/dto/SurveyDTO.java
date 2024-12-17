@@ -23,14 +23,12 @@ public class SurveyDTO {
     @Size(min = 1, max = 255, message = "설문 제목은 255자 이하입니다.")
     protected String title;
 
-    @Size(min = 1, max = 512, message = "설문 설명은 512자 이하입니다.")
     protected String description;
 
     protected LocalDateTime createDate;
     @NotNull(message = "만료일 지정은 필수입니다.")
     protected LocalDateTime expireDate;
 
-    @NotNull(message = "사용자 아이디는 필수입니다.")
     protected String creatorId;
 
     @AssertTrue(message = "만료일은 현재 시각보다 이후여야 합니다.")
