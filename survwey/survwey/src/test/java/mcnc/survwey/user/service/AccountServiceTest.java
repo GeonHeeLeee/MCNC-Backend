@@ -51,13 +51,13 @@ class AccountServiceTest {
 
     @BeforeEach
     public void saveUser(){
-        RegisterDTO registerDTO = RegisterDTO.builder()
-                .userId("asd123")
-                .email("asd@test.com")
-                .name("tester")
-                .password("qwer1234!@")
-                .birth(LocalDate.now())
-                .gender(Gender.F).build();
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUserId("asd123");
+        registerDTO.setEmail("ccJ2ky8W1P-xITy45CREINOVq91sKDTABKPUnVjiwDc");
+        registerDTO.setName("tester");
+        registerDTO.setPassword("-b4tdMhq4MAQpTFwIRLVRg");
+        registerDTO.setBirth(LocalDate.now());
+        registerDTO.setGender(Gender.F);
 
         accountService.registerUser(registerDTO);
     }
@@ -66,13 +66,13 @@ class AccountServiceTest {
     @Test
     public void 회원가입_성공(){
         //given
-        RegisterDTO registerDTO = RegisterDTO.builder()
-                .userId("test123")
-                .email("test@test.com")
-                .name("tester")
-                .password("qwer1234!@")
-                .birth(LocalDate.now())
-                .gender(Gender.M).build();
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUserId("test123");
+        registerDTO.setEmail("ccJ2ky8W1P-xITy45CREINOVq71sKDTABKPUnVjiwDc");
+        registerDTO.setName("tester");
+        registerDTO.setPassword("-b4tdMhq4MAQpTFwIRLVRg");
+        registerDTO.setBirth(LocalDate.now());
+        registerDTO.setGender(Gender.M);
 
         //when
         accountService.registerUser(registerDTO);
@@ -117,18 +117,6 @@ class AccountServiceTest {
                 .isEqualTo(profileDTO);
         assertThat(user.getEmail()).isEqualTo(encryptionUtil.decrypt(profileDTO.getEmail()));
     }
-
-//    @Test
-//    public void 사용자_비밀번호_변경_이메일_인증(){
-//        //given
-//        User user = userService.findByUserId("asd123");
-//
-//        //when
-//        boolean isChecked = userRedisService.isVerified(user.getUserId());
-//
-//        //then
-//        assertThat(!isChecked).isTrue();
-//    }
 
     @Test
     public void 사용자_비밀번호_변경_성공(){

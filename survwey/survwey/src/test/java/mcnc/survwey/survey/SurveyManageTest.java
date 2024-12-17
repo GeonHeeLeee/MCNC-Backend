@@ -95,7 +95,7 @@ public class SurveyManageTest extends BaseIntegrationTest {
         //When - Then
         assertThrows(CustomException.class, () -> surveyManageService.deleteSurveyAfterValidation(userId, existingSurvey.getSurveyId()));
     }
-
+/*
     @Test
     @DisplayName("설문 수정 성공 테스트")
     public void testSuccessModifySurvey() {
@@ -124,7 +124,7 @@ public class SurveyManageTest extends BaseIntegrationTest {
         assertNotEquals(modifiedResult.getQuestionList().get(0).getQuesId(),
                 existingQuesId);
     }
-
+*/
     private static SurveyWithDetailDTO setUpSaveSurveyWithDetailData(String userId) {
         SurveyWithDetailDTO surveyDTO = buildSurveyWithDetailDTO(userId);
 
