@@ -37,7 +37,7 @@ public class RedisConfig {
                 String userId = key.split("/")[0];
                 Long surveyId = Long.parseLong(key.split("/")[1]);
                 //이메일 전송
-                mailService.sendVerifySurveyLink(userId, surveyId, notificationUrl);
+                mailService.sendExpiredNotificationLink(userId, surveyId, notificationUrl);
             }
         }, new PatternTopic("__keyevent@*__:expired"));
 
