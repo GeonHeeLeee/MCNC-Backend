@@ -47,8 +47,8 @@ public class MailService {
     @Value("${MAIL_USER_NAME}")
     private String senderEmail;
 
-    @Value("${BASE_URL}")
-    private String baseUrl;
+    @Value("${INVITATION_URL}")
+    private String invitationUrl;
 
     @Value("${NOTIFICATION_URL}")
     private String notificationUrl;
@@ -61,9 +61,10 @@ public class MailService {
     private ClassPathResource getImage(String imagePath) {
         return imageCache.computeIfAbsent(imagePath, ClassPathResource::new);
     }
-    
+
     /**
      * Thymeleaf 템플릿에 저장된 데이터, 제목, 이메일, 경로를 받아서 메일 전송
+     *
      * @param context
      * @param title
      * @param email
@@ -89,6 +90,7 @@ public class MailService {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, FAILED_TO_SEND_EMAIL);
         }
     }
+
     /**
      * 설문 초대
      *
@@ -100,7 +102,7 @@ public class MailService {
     public void sendInvitationLink(String senderId, Long surveyId, List<String> encryptedEmailList) {
         User sender = userService.findByUserId(senderId);
         Survey surveyToInvite = surveyService.findBySurveyId(surveyId);
-        String encryptedLink = encryptLink(surveyToInvite.getSurveyId());
+        String encryptedLink = encryptLink(invitationUrl, surveyToInvite.getSurveyId());
 
         //유효성 검사
         surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
@@ -134,16 +136,17 @@ public class MailService {
             }
         }
     }
+
     /**
      * URL 파라미터 암호화
      *
      * @param surveyId
      * @return
      */
-    public String encryptLink(Long surveyId) {
+    public String encryptLink(String url, Long surveyId) {
         //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
         String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString());
-        return baseUrl + encryptedSurveyId;
+        return url + encryptedSurveyId;
     }
 
     /**
@@ -151,12 +154,12 @@ public class MailService {
      *
      * @param userId
      * @param surveyId
-     * @param link
      */
-    public void sendExpiredNotificationLink(String userId, Long surveyId, String link) {
+    public void sendExpiredNotificationLink(String userId, Long surveyId) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        Context context = thymeleafUtil.initNotificationContext(user, survey.getTitle(), link);
+        String encryptedUrl = encryptLink(notificationUrl, survey.getSurveyId());
+        Context context = thymeleafUtil.initNotificationContext(user, survey, encryptedUrl);
         sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
     }
 

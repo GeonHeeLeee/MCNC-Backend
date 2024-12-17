@@ -17,9 +17,6 @@ public class RedisConfig {
 
     private final MailService mailService;
 
-    @Value("${NOTIFICATION_URL}")
-    private String notificationUrl;
-
     /**
      * 설문 결과 알림
      * @param connectionFactory
@@ -37,7 +34,7 @@ public class RedisConfig {
                 String userId = key.split("/")[0];
                 Long surveyId = Long.parseLong(key.split("/")[1]);
                 //이메일 전송
-                mailService.sendExpiredNotificationLink(userId, surveyId, notificationUrl);
+                mailService.sendExpiredNotificationLink(userId, surveyId);
             }
         }, new PatternTopic("__keyevent@*__:expired"));
 
