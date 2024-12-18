@@ -14,17 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.offset;
@@ -115,7 +110,7 @@ class AccountServiceTest {
         assertThat(user).usingRecursiveComparison()
                 .ignoringFields("registerDate", "respondList", "password", "email")
                 .isEqualTo(profileDTO);
-        assertThat(user.getEmail()).isEqualTo(encryptionUtil.decrypt(profileDTO.getEmail()));
+        assertThat(user.getEmail()).isEqualTo(encryptionUtil.decryptText(profileDTO.getEmail()));
     }
 
     @Test

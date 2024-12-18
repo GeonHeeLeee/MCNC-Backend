@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -39,15 +38,29 @@ public class EncryptionUtil {
     }
 
     /**
-     * AES/CBC 비밀키로 암호화
-     * 16바이트 키 값은 환경변수로 저장됨
-     * @param encryptedText
+     * URL 파라미터 암호화
+     *
+     * @param surveyId
      * @return
      */
-    public String encrypt(String encryptedText) {
+    public String encryptURL(String url, Long surveyId) {
+        //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
+        String encryptedSurveyId = encryptText(surveyId.toString());
+        return url + encryptedSurveyId;
+    }
+
+
+
+    /**
+     * AES/CBC 비밀키로 암호화
+     * 16바이트 키 값은 환경변수로 저장됨
+     * @param rawText
+     * @return
+     */
+    public String encryptText(String rawText) {
         try {
             Cipher cipher = initializeCipher(ENCRYPT_MODE);
-            return Base64.getUrlEncoder().encodeToString(cipher.doFinal(encryptedText.getBytes(UTF_8)));
+            return Base64.getUrlEncoder().encodeToString(cipher.doFinal(rawText.getBytes(UTF_8)));
         } catch (Exception e) {
             throw new RuntimeException("암호화 실패: " + e.getMessage());
         }
@@ -59,7 +72,7 @@ public class EncryptionUtil {
      * @param encryptedText
      * @return
      */
-    public String decrypt(String encryptedText) {
+    public String decryptText(String encryptedText) {
         try {
             Cipher cipher = initializeCipher(DECRYPT_MODE);
             byte[] decodedBytes = Base64.getUrlDecoder().decode(encryptedText); // Base64 디코딩
@@ -80,7 +93,7 @@ public class EncryptionUtil {
             return Collections.emptyList();
         }
         return encryptedList.stream()
-                .map(this::decrypt)
+                .map(this::decryptText)
                 .collect(Collectors.toList());
     }
 }

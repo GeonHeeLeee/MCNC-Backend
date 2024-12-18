@@ -67,7 +67,7 @@ public class DecryptionRequestBodyAdvice implements RequestBodyAdvice {
                 log.info(encryptedValue);
                 if (encryptedValue != null && !encryptedValue.isEmpty()) {
                     try {
-                        String decryptedValue = encryptionUtil.decrypt(encryptedValue);
+                        String decryptedValue = encryptionUtil.decryptText(encryptedValue);
                         field.set(object, decryptedValue);
                         log.info(decryptedValue);
                     } catch (Exception e) {
