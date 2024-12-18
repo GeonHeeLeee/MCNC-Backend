@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -43,12 +42,26 @@ public class EncryptionUtil {
     }
 
     /**
-     * AES/CBC 비밀키로 암호화
-     * 16바이트 키 값은 환경변수로 저장됨
-     * @param encryptedText
+     * URL 파라미터 암호화
+     *
+     * @param surveyId
      * @return
      */
-    public String encrypt(String encryptedText) {
+    public String encryptURL(String url, Long surveyId) {
+        //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
+        String encryptedSurveyId = encryptText(surveyId.toString());
+        return url + encryptedSurveyId;
+    }
+
+
+
+    /**
+     * AES/CBC 비밀키로 암호화
+     * 16바이트 키 값은 환경변수로 저장됨
+     * @param rawText
+     * @return
+     */
+    public String encryptText(String rawText) {
         try {
             Cipher cipher = initializeCipher(ENCRYPT_MODE);
             //문자열 암호화 후 결과를 Base64 형식으로 String 으로 반환
@@ -63,7 +76,7 @@ public class EncryptionUtil {
      * @param encryptedText
      * @return
      */
-    public String decrypt(String encryptedText) {
+    public String decryptText(String encryptedText) {
         try {
             Cipher cipher = initializeCipher(DECRYPT_MODE);
             // Base64로 암호화된 문자열 디코딩해서 바이트로 변환
@@ -71,7 +84,7 @@ public class EncryptionUtil {
             // 디코딩된 바이트 배열 복호화 해서 원래 바이트 배열로 변환
             byte[] decryptedBytes = cipher.doFinal(decodedBytes);
             // UTF-8로 변환하여 반환
-            return new String(decryptedBytes, UTF_8); 
+            return new String(decryptedBytes, UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("복호화 실패: " + e.getMessage());
         }
@@ -88,7 +101,7 @@ public class EncryptionUtil {
             return Collections.emptyList();
         }
         return encryptedList.stream()
-                .map(this::decrypt)
+                .map(this::decryptText)
                 .collect(Collectors.toList());
     }
 }

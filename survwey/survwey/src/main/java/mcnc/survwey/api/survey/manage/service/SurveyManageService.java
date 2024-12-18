@@ -134,10 +134,10 @@ public class SurveyManageService {
      * 하나라도 만족 못하면 메서드 자체에서 400 에러 응답
      */
     public void checkSurveyModifiability(Survey survey, String userId) {
-        //응답을 했는지 확인
-        respondService.existsBySurveyId(survey.getSurveyId());
         //요청자가 생성자가 아니면 에러
         surveyService.validateUserMadeSurvey(userId, survey);
+        //응답을 했는지 확인
+        respondService.existsBySurveyId(survey.getSurveyId());
         //만료일 이후면 수정 불가
         surveyService.checkSurveyExpiration(survey.getExpireDate());
     }
@@ -154,9 +154,12 @@ public class SurveyManageService {
         Survey survey = surveyService.findBySurveyId(surveyId);
         //본인이 만든 설문인지 검증
         surveyService.validateUserMadeSurvey(userId, survey);
+        //만료일이 이미 지났는지 확인
+        surveyService.checkSurveyExpiration(survey.getExpireDate());
+        //만료일 현재로 지정
         survey.setExpireDate(LocalDateTime.now());
+        //Redis에서도 만료 시키기
         surveyRedisService.expireImmediately(userId, surveyId);
-        //만료일 현재로 변경
         surveyRepository.save(survey);
     }
 

@@ -138,7 +138,7 @@ public class AccountController {
     })
     public ResponseEntity<Object> getEmailToModifyPassword(@PathVariable String userId) {
         String email = userService.findByUserId(userId).getEmail();
-        String encryptedEmail = encryptionUtil.encrypt(email);
+        String encryptedEmail = encryptionUtil.encryptText(email);
         return ResponseEntity.ok().body(Map.of("email", encryptedEmail));
     }
 

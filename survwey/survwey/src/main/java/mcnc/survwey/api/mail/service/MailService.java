@@ -104,18 +104,20 @@ public class MailService {
      * @throws MessagingException
      */
     public void sendInvitationLink(String senderId, Long surveyId, List<String> encryptedEmailList) {
-        User sender = userService.findByUserId(senderId);
-        Survey surveyToInvite = surveyService.findBySurveyId(surveyId);
-        String encryptedLink = encryptLink(invitationUrl, surveyToInvite.getSurveyId());
-
-        //유효성 검사
-        surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
-        surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
-
         //암호화 된 이메일 복호화
         List<String> decryptedEmailList = encryptionUtil.decryptList(encryptedEmailList);
         //이메일 요청 정규식 검사
         validateEmailRequest(decryptedEmailList);
+
+        User sender = userService.findByUserId(senderId);
+        Survey surveyToInvite = surveyService.findBySurveyId(surveyId);
+
+        //유효성 검사
+        surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
+        surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
+
+        String encryptedLink = encryptionUtil.encryptURL(invitationUrl, surveyToInvite.getSurveyId());
+
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
@@ -144,18 +146,6 @@ public class MailService {
     }
 
     /**
-     * URL 파라미터 암호화
-     *
-     * @param surveyId
-     * @return
-     */
-    public String encryptLink(String url, Long surveyId) {
-        //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
-        String encryptedSurveyId = encryptionUtil.encrypt(surveyId.toString());
-        return url + encryptedSurveyId;
-    }
-
-    /**
      * 설문결과 알림
      *
      * @param userId
@@ -164,8 +154,7 @@ public class MailService {
     public void sendExpiredNotificationLink(String userId, Long surveyId) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        //해당 설문 id 암호화 처리
-        String encryptedUrl = encryptLink(notificationUrl, survey.getSurveyId());
+        String encryptedUrl = encryptionUtil.encryptURL(notificationUrl, survey.getSurveyId());
         Context context = thymeleafUtil.initNotificationContext(user, survey, encryptedUrl);
         sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
     }

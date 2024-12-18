@@ -2,6 +2,7 @@ package mcnc.survwey.api.survey.manage.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,8 +24,11 @@ import java.util.List;
 public class QuestionDTO {
 
     private Long quesId;
+
     @NotBlank(message = "질문 내용은 필수입니다.")
+    @Size(min = 1, max = 255, message = "질문 내용은 255자 이하입니다.")
     private String body;
+
     private QuestionType questionType;
     private List<SelectionDTO> selectionList;
 
@@ -60,6 +64,7 @@ public class QuestionDTO {
         private SelectionId selectionId;
 
         @NotBlank(message = "보기 내용은 필수입니다.")
+        @Size(min = 1, max = 255, message = "보기 내용은 255자 이하입니다.")
         private String body;
 
         @JsonProperty("isEtc")

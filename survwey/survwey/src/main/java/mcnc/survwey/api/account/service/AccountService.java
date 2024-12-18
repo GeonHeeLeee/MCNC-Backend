@@ -12,7 +12,6 @@ import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
-import mcnc.survwey.global.exception.custom.ErrorCode;
 import mcnc.survwey.global.utils.EncryptionUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -116,7 +115,7 @@ public class AccountService {
         return ProfileDTO.builder()
                 .userId(user.getUserId())
                 .name(user.getName())
-                .email(encryptionUtil.encrypt(user.getEmail()))
+                .email(encryptionUtil.encryptText(user.getEmail()))
                 .birth(user.getBirth())
                 .gender(user.getGender())
                 .build();

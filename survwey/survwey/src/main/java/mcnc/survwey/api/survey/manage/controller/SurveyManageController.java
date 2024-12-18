@@ -115,8 +115,8 @@ public class SurveyManageController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 수정 가능"),
             @ApiResponse(responseCode = "409", description = "응답한 사용자가 존재하는 경우"),
-            @ApiResponse(responseCode = "400", description = "요청자가 생성자가 아닌 경우<br>" +
-                    "만료일이 지난 경우")
+            @ApiResponse(responseCode = "403", description = "요청자가 생성자가 아닌 경우"),
+            @ApiResponse(responseCode = "410", description = "만료일이 지난 경우")
     })
     public ResponseEntity<Object> isSurveyModifiable(@PathVariable Long surveyId) {
         String userId = SessionContext.getCurrentUser();
@@ -144,6 +144,10 @@ public class SurveyManageController {
             @ApiResponse(responseCode = "403", description = """
                     잘못된 요청:
                     - 본인이 생성한 설문이 아닌 경우: 본인이 생성한 설문이 아닙니다.
+                    """),
+            @ApiResponse(responseCode = "410", description = """
+                    잘못된 요청:
+                    - 설문이 이미 만료 되었을 경우: 해당 설문은 종료된 설문입니다.
                     """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
