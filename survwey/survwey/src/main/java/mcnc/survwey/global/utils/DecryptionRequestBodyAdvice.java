@@ -25,6 +25,7 @@ public class DecryptionRequestBodyAdvice implements RequestBodyAdvice {
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         String packageName = methodParameter.getContainingClass().getPackageName();
+        //해당하는 패키지 경로인 요청/응답에 대한 처리
         return packageName.startsWith("mcnc.survwey.api.account") ||
                 packageName.startsWith("mcnc.survwey.api.auth");
     }

@@ -84,6 +84,7 @@ public class SurveyRedisService {
         LocalDateTime currentTime = LocalDateTime.now();
         Duration duration = Duration.between(currentTime, expireDateTime);
         long ttlSeconds = duration.getSeconds();
+        //만료시간 재설정
         redisTemplate.expire(key, ttlSeconds, TimeUnit.SECONDS);
     }
 

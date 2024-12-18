@@ -73,9 +73,11 @@ public class AnsweredSurveyService {
      */
     private void assignAnswersToQuestion(AnsweredQuestionDTO question, Map<Object, List<ObjAnswer>> objAnswerMap, Map<Long, String> subjAnswerMap) {
         long quesId = question.getQuesId();
+        //해당 질문에 응답을 하지 않았을 경우
         if (!objAnswerMap.containsKey(quesId) && !subjAnswerMap.containsKey(quesId)) {
             return;
         }
+        //해당하는 질문 유형에 따라 추가 없을 경우 에러 코드와 메시지 발송
         switch (question.getQuestionType()) {
             case OBJ_MULTI:
                 objAnswerMap.get(quesId).forEach(objAnswer -> {
@@ -105,6 +107,7 @@ public class AnsweredSurveyService {
     private void addObjectiveResponse(AnsweredQuestionDTO question, ObjAnswer objAnswer) {
         int sequence = objAnswer.getSelection().getId().getSequence();
         question.getObjAnswerList().add(sequence);
+        //기타 응답일 경우
         setEtcAnswerIfPresent(question, objAnswer);
     }
 

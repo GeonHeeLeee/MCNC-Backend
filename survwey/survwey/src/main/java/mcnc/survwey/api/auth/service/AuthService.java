@@ -35,9 +35,11 @@ public class AuthService {
      * - 비밀번호가 일치하지 않으면 에러
      */
     public void loginUser(LoginDTO loginDTO, HttpServletRequest request) {
+        //사용자 id를 찾아서 존재하지 않으면 에러 코드
         User foundUser = Optional.ofNullable(userService.findByUserId(loginDTO.getUserId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND_BY_ID));
 
+        //비밀번호가 일치하지 않을 경우 에러 코드
         if (!passwordEncoder.matches(loginDTO.getPassword(), foundUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
@@ -64,6 +66,7 @@ public class AuthService {
      */
     public boolean verifyAndSendEmail(EmailSendDTO emailSendDTO) throws Exception {
         User user = userService.findByUserId(emailSendDTO.getUserId());
+        //이메일가 일치하는지 확인 있으면 true, 없으면 false
         if(user.getEmail().equals(emailSendDTO.getEmail())) {
             mailService.sendPasswordModifyAuthCode(user);
             return true;

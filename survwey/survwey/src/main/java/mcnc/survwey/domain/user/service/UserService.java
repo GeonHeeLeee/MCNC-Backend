@@ -1,5 +1,6 @@
 package mcnc.survwey.domain.user.service;
 
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.response.dto.result.SurveyResultDTO;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
+
+import static mcnc.survwey.domain.user.QUser.user;
 
 @Slf4j
 @Service
@@ -50,8 +53,7 @@ public class UserService {
      * @return
      */
     public List<SurveyResultDTO.GenderCountDTO> getGenderCountListBySurveyId(Long surveyId) {
-        List<Object[]> recordList = userRepository.findGenderCountBySurveyId(surveyId);
-
+        List<Tuple> recordList = userRepository.findGenderCountBySurveyId(surveyId);
         //응답 Map 생성
         Map<Gender, SurveyResultDTO.GenderCountDTO> genderCountDTOMap = new LinkedHashMap<>();
 
@@ -60,9 +62,9 @@ public class UserService {
         genderCountDTOMap.put(Gender.F, new SurveyResultDTO.GenderCountDTO(Gender.F.getValue(), 0));
 
         //응답 Map에 값 할당
-        for (Object[] record : recordList) {
-            Gender gender = (Gender) record[0];
-            Long count = (Long) record[1];
+        for (Tuple record : recordList) {
+            Gender gender = record.get(user.gender);
+            Long count = record.get(user.count());
             genderCountDTOMap.get(gender).setCount(count);
         }
         return genderCountDTOMap.values().stream().toList();
@@ -117,6 +119,7 @@ public class UserService {
     private List<SurveyResultDTO.AgeCountDTO> mapAgeGroupsToDTO(Map<Integer, Integer> ageMap) {
         List<SurveyResultDTO.AgeCountDTO> ageCountDTOList = new ArrayList<>();
         ageCountDTOList.add(new SurveyResultDTO.AgeCountDTO("10대 미만", ageMap.getOrDefault(0, 0)));
+        //10 ~ 70대
         for (int decade = 1; decade <= 7; decade++) {
             String ageGroup = decade * 10 + "대";
             ageCountDTOList.add(new SurveyResultDTO.AgeCountDTO(ageGroup, ageMap.getOrDefault(decade, 0)));
