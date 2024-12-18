@@ -151,9 +151,12 @@ public class SurveyManageService {
         Survey survey = surveyService.findBySurveyId(surveyId);
         //본인이 만든 설문인지 검증
         surveyService.validateUserMadeSurvey(userId, survey);
+        //만료일이 이미 지났는지 확인
+        surveyService.checkSurveyExpiration(survey.getExpireDate());
+        //만료일 현재로 지정
         survey.setExpireDate(LocalDateTime.now());
+        //Redis에서도 만료 시키기
         surveyRedisService.expireImmediately(userId, surveyId);
-        //만료일 현재로 변경
         surveyRepository.save(survey);
     }
 

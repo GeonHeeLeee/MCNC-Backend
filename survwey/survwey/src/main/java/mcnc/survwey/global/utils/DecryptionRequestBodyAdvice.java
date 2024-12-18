@@ -56,18 +56,25 @@ public class DecryptionRequestBodyAdvice implements RequestBodyAdvice {
         return body; // 비어 있는 바디 처리 (필요 없으면 그대로 반환)
     }
 
+    /**
+     * DTO에서 @DecryptField가 붙은 어노테이션에 대하여 복호화 수행
+     * - ControllerAdvice의 RequstBodyAdvice를 구현하여 @Valid보다 먼저 수행
+     *  - 즉, ExceptionHandler보다 먼저 수행
+     * @param object
+     * @throws IllegalAccessException
+     */
     private void decryptObject(Object object) throws IllegalAccessException {
         Class<?> clazz = object.getClass();
 
         for (Field field : clazz.getDeclaredFields()) {
-
+            //DecryptField 어노테이션이 붙고, type이 String인 것에 대해서 복호화 수행
             if (field.isAnnotationPresent(DecryptField.class) && field.getType() == String.class) {
                 field.setAccessible(true);
                 String encryptedValue = (String) field.get(object);
                 log.info(encryptedValue);
                 if (encryptedValue != null && !encryptedValue.isEmpty()) {
                     try {
-                        String decryptedValue = encryptionUtil.decrypt(encryptedValue);
+                        String decryptedValue = encryptionUtil.decryptText(encryptedValue);
                         field.set(object, decryptedValue);
                         log.info(decryptedValue);
                     } catch (Exception e) {
