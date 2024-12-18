@@ -87,9 +87,10 @@ public class SurveyReplyService {
      * @param respondedSurvey
      */
     private void validateQuestionInputForSurvey(SurveyReplyDTO surveyReplyDTO, Survey respondedSurvey) {
+        //질문 ID 집합
         Set<Long> inputQuestionSet = respondedSurvey.getQuestionList()
                 .stream().map(Question::getQuesId).collect(Collectors.toSet());
-
+        //응답 ID 집합
         Set<Long> existingQuestionSet = surveyReplyDTO.getResponseList()
                 .stream().map(SurveyReplyDTO.ReplyResponseDTO::getQuesId).collect(Collectors.toSet());
 

@@ -82,8 +82,11 @@ public class SurveyManageService {
     @CacheEvict(value = "survey")
     public void deleteSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
+        //본인이 생성한 설문인지 확인
         surveyService.validateUserMadeSurvey(userId, survey);
+        //설문 redis에서 삭제
         surveyRedisService.deleteSurveyFromRedis(userId, surveyId);
+        //설문 삭제
         surveyRepository.delete(survey);
     }
 

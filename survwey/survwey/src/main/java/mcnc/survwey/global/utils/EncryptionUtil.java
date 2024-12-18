@@ -31,10 +31,14 @@ public class EncryptionUtil {
      * @throws Exception
      */
     private Cipher initializeCipher(int mode) throws Exception {
-        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(UTF_8), "AES");//키 세팅 -> AES 기준으로 secretKey 부분에 들어오는 길이에 따라 암호화 방식 결정
-        Cipher cipher = getInstance("AES/CBC/PKCS5Padding");//AES 알고리즘으로 CBC 모드, PKCS5Padding scheme 으로 초기화
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(secretKey.substring(0, 16).getBytes());//키를 16 바이트로 잘라 초기화 벡터 byte 로 변경
-        cipher.init(mode, keySpec, ivParameterSpec);//암호 모드 결정
+        //키 세팅 -> AES 기준으로 secretKey 부분에 들어오는 길이에 따라 암호화 방식 결정
+        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(UTF_8), "AES");
+        //AES 알고리즘으로 CBC 모드, PKCS5Padding scheme 으로 초기화
+        Cipher cipher = getInstance("AES/CBC/PKCS5Padding");
+        //키를 16 바이트로 잘라 초기화 벡터 byte 로 변경
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(secretKey.substring(0, 16).getBytes());
+        //암호 모드 결정
+        cipher.init(mode, keySpec, ivParameterSpec);
         return cipher;
     }
 
@@ -47,12 +51,12 @@ public class EncryptionUtil {
     public String encrypt(String encryptedText) {
         try {
             Cipher cipher = initializeCipher(ENCRYPT_MODE);
+            //문자열 암호화 후 결과를 Base64 형식으로 String 으로 반환
             return Base64.getUrlEncoder().encodeToString(cipher.doFinal(encryptedText.getBytes(UTF_8)));
         } catch (Exception e) {
             throw new RuntimeException("암호화 실패: " + e.getMessage());
         }
     }
-
 
     /**
      * AES/CBC 비밀키로 복호화
@@ -62,9 +66,12 @@ public class EncryptionUtil {
     public String decrypt(String encryptedText) {
         try {
             Cipher cipher = initializeCipher(DECRYPT_MODE);
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(encryptedText); // Base64 디코딩
-            byte[] decryptedBytes = cipher.doFinal(decodedBytes); // 복호화 수행
-            return new String(decryptedBytes, UTF_8); // UTF-8로 변환하여 반환
+            // Base64로 암호화된 문자열 디코딩해서 바이트로 변환
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(encryptedText);
+            // 디코딩된 바이트 배열 복호화 해서 원래 바이트 배열로 변환
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            // UTF-8로 변환하여 반환
+            return new String(decryptedBytes, UTF_8); 
         } catch (Exception e) {
             throw new RuntimeException("복호화 실패: " + e.getMessage());
         }
@@ -77,6 +84,7 @@ public class EncryptionUtil {
      */
     public List<String> decryptList(List<String> encryptedList) {
         if (encryptedList == null) {
+            //암호화된 문자열이 없을 경우
             return Collections.emptyList();
         }
         return encryptedList.stream()

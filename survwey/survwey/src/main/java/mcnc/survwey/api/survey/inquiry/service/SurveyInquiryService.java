@@ -62,6 +62,7 @@ public class SurveyInquiryService {
      * @return - 해당 Id의 설문이 없을 시, 오류 발생
      */
     public SurveyWithDetailDTO findSurveyWithDetail(Long surveyId) {
+        //설문 id로 설문 정보 조회 후 결과가 있으면  SurveyWithDetailDto 반환, null이면 에러코드
         return Optional.ofNullable(surveyRepository.findSurveyWithDetail(surveyId))
                 .map(SurveyWithDetailDTO::of)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.SURVEY_NOT_FOUND_BY_ID));
@@ -120,5 +121,4 @@ public class SurveyInquiryService {
         Pageable pageable = PageRequest.of(page, size);
         return surveyRepository.findUserCreatedSurveyByTitleAndUserId(title, userId, pageable);
     }
-
 }

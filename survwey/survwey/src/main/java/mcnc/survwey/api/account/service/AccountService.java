@@ -44,11 +44,12 @@ public class AccountService {
      * @param registerDTO
      */
     public void registerUser(RegisterDTO registerDTO) {
-        if (userRepository.existsById(registerDTO.getUserId())) {//해당 아이디 이미 존재
+        //해당 아이디 이미 존재
+        if (userRepository.existsById(registerDTO.getUserId())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, USER_ID_ALREADY_EXISTS);
         }
-
-        if (userRepository.existsByEmail(registerDTO.getEmail())) {//해당 이메일 존재
+        //해당 이메일 존재
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, USER_EMAIL_ALREADY_EXISTS);
         }
 
@@ -87,6 +88,7 @@ public class AccountService {
      */
     public void modifyUserProfile(ProfileModifyDTO profileModifyDTO, String userId) {
         User user = userService.findByUserId(userId);
+        //프로필 null, 빈칸, 띄어쓰기만 입력될 경우
         if (!StringUtils.hasText(profileModifyDTO.getName())) {
             profileModifyDTO.setName(user.getName());
         }
@@ -120,7 +122,6 @@ public class AccountService {
                 .build();
     }
 
-
     /**
      * 비밀번호 변경
      * - 비밀번호 변경 후 Redis에 저장된 인증 성공 상태 삭제
@@ -129,6 +130,7 @@ public class AccountService {
      */
     public void modifyPassword(String userId, String password) {
         User user = userService.findByUserId(userId);
+        //사용자 ID 존재 확인 후 비밀번호 변경
         user.modifyPassword(passwordEncoder.encode(password));
         userRedisService.deleteVerifiedStatus(userId);
     }

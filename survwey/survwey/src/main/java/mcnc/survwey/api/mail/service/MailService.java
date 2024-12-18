@@ -76,9 +76,13 @@ public class MailService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);//파일첨부 혀용
 
+            //메일 보내는 email
             helper.setFrom(senderEmail);
+            //메일 제목
             helper.setSubject(title);
+            //메일 받는 email
             helper.setTo(email);
+            //메일에 보낼 html
             helper.setText(htmlContent, true);
 
             // 이미지 첨부 (첨부파일로 cid를 사용)
@@ -127,10 +131,12 @@ public class MailService {
      * @param emailList
      */
     public void validateEmailRequest(List<String> emailList) {
+        //유효한 이메일인지 검증
         String emailPattern = "^(?=.{1,255}$)(?![_.-])[A-Za-z0-9._-]+(?<![_.-])@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(emailPattern);
         for (String email : emailList) {
             Matcher matcher = pattern.matcher(email);
+            //유효한 이메일이 아닐 경우 에러 코드
             if (!matcher.matches()) {
                 throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_EMAIL_FORMAT);
             }
@@ -158,6 +164,7 @@ public class MailService {
     public void sendExpiredNotificationLink(String userId, Long surveyId) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
+        //해당 설문 id 암호화 처리
         String encryptedUrl = encryptLink(notificationUrl, survey.getSurveyId());
         Context context = thymeleafUtil.initNotificationContext(user, survey, encryptedUrl);
         sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
@@ -170,10 +177,11 @@ public class MailService {
      * @throws Exception
      */
     public void sendPasswordModifyAuthCode(User user) throws Exception {
+        //인증번호 생성
         String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
         Context context = thymeleafUtil.initAutheticationContext(user, tempAuthCode);
+        //redis에 인증번호 저장
         userRedisService.saveVerificationCode(user.getUserId(), tempAuthCode);
         sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "mail/authentication");
     }
-
 }

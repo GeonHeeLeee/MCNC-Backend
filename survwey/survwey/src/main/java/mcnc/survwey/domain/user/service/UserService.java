@@ -117,6 +117,7 @@ public class UserService {
     private List<SurveyResultDTO.AgeCountDTO> mapAgeGroupsToDTO(Map<Integer, Integer> ageMap) {
         List<SurveyResultDTO.AgeCountDTO> ageCountDTOList = new ArrayList<>();
         ageCountDTOList.add(new SurveyResultDTO.AgeCountDTO("10대 미만", ageMap.getOrDefault(0, 0)));
+        //10 ~ 70대
         for (int decade = 1; decade <= 7; decade++) {
             String ageGroup = decade * 10 + "대";
             ageCountDTOList.add(new SurveyResultDTO.AgeCountDTO(ageGroup, ageMap.getOrDefault(decade, 0)));
