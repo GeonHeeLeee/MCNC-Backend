@@ -145,6 +145,10 @@ public class SurveyManageController {
                     잘못된 요청:
                     - 본인이 생성한 설문이 아닌 경우: 본인이 생성한 설문이 아닙니다.
                     """),
+            @ApiResponse(responseCode = "410", description = """
+                    잘못된 요청:
+                    - 설문이 이미 만료 되었을 경우: 해당 설문은 종료된 설문입니다.
+                    """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<Object> expireSurvey(@PathVariable(value = "surveyId") Long surveyId) {
