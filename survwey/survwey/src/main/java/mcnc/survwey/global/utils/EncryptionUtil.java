@@ -65,7 +65,7 @@ public class EncryptionUtil {
         try {
             Cipher cipher = initializeCipher(ENCRYPT_MODE);
             //문자열 암호화 후 결과를 Base64 형식으로 String 으로 반환
-            return Base64.getUrlEncoder().encodeToString(cipher.doFinal(encryptedText.getBytes(UTF_8)));
+            return Base64.getUrlEncoder().encodeToString(cipher.doFinal(rawText.getBytes(UTF_8)));
         } catch (Exception e) {
             throw new RuntimeException("암호화 실패: " + e.getMessage());
         }
