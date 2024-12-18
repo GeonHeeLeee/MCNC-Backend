@@ -35,7 +35,7 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 .leftJoin(objAnswer).on(selection.eq(objAnswer.selection))
                 .leftJoin(subjAnswer).on(question.eq(subjAnswer.question))
                 .where(question.survey.surveyId.eq(surveyId))
-                .groupBy(question.quesId, selection.id.sequence, selection.body, subjAnswer.response, objAnswer.etcAnswer, selection.isEtc)
+                .groupBy(question.quesId, selection.id.sequence, selection.body, subjAnswer.subjId, subjAnswer.response, objAnswer.etcAnswer, selection.isEtc)
                 .orderBy(question.quesId.asc(), selection.id.sequence.asc())
                 .fetch();
     }
