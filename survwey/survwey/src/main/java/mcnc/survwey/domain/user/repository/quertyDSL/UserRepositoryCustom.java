@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserRepositoryCustom {
     //성별 분포 조회
-//    List<Tuple[]> findGenderCountBySurveyId(Long surveyId);
+    List<Tuple> findGenderCountBySurveyId(Long surveyId);
     //나이대 분포 조회
     List<LocalDate> findBirthBySurveyId(Long surveyId);
 }

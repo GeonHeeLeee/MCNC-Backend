@@ -78,7 +78,7 @@ public class SurveyResponseController {
             @ApiResponse(responseCode = "400", description = "errorMessage : 해당 아이디의 설문이 존재하지 않습니다."),
             @ApiResponse(responseCode = "403", description = "errorMessage : 본인이 생성한 설문이 아닙니다.")
     })
-    public ResponseEntity<SurveyResultDTO> getSurveyResults(@PathVariable Long surveyId) {
+    public ResponseEntity<SurveyResultDTO> getSurveyResults(@PathVariable("surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         SurveyResultDTO surveyResultDTO = surveyResultService.getSurveyResponsesResult(surveyId, userId);
         return ResponseEntity.ok(surveyResultDTO);
