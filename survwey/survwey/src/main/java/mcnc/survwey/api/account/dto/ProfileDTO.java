@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.enums.Gender;
 
 import java.time.LocalDate;
@@ -23,4 +24,13 @@ public class ProfileDTO {
 
     private Gender gender;
 
+    public static ProfileDTO of(User user, String encryptedEmail) {
+        return ProfileDTO.builder()
+                .userId(user.getUserId())
+                .name(user.getName())
+                .email(encryptedEmail)
+                .birth(user.getBirth())
+                .gender(user.getGender())
+                .build();
+    }
 }

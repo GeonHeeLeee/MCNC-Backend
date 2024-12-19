@@ -58,14 +58,13 @@ public class AccountController {
                     - name 미입력: "이름은 필수입니다."
                     """)
     })
-    public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
         accountService.registerUser(registerDTO);
         return ResponseEntity.ok(registerDTO.getUserId());
     }
 
     /**
      * ID 중복 검사
-     *
      * @return
      */
     @PostMapping("/join/check")
@@ -111,7 +110,7 @@ public class AccountController {
             @ApiResponse(responseCode = "400", description = "userId가 맞지 않을 때 - errorMessage: 해당 아이디의 사용자가 존재하지 않습니다."),
             @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
     })
-    public ResponseEntity<ProfileDTO> getProfileDetails() {
+    public ResponseEntity<ProfileDTO> getUserProfile() {
         String userId = SessionContext.getCurrentUser();
         ProfileDTO profileDTO = accountService.getProfile(userId);
         return ResponseEntity.ok(profileDTO);

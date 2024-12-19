@@ -19,11 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static mcnc.survwey.global.exception.custom.ErrorCode.*;
+import static mcnc.survwey.global.exception.custom.ErrorCode.USER_EMAIL_ALREADY_EXISTS;
+import static mcnc.survwey.global.exception.custom.ErrorCode.USER_ID_ALREADY_EXISTS;
 
 @Service
 @RequiredArgsConstructor
@@ -52,21 +52,14 @@ public class AccountService {
             throw new CustomException(HttpStatus.BAD_REQUEST, USER_EMAIL_ALREADY_EXISTS);
         }
 
+        User newUser = registerDTO.toEntity(passwordEncoder.encode(registerDTO.getPassword()));
         //ID, EMAIL 중복이 없을 경우 저장
-        userRepository.save(User.builder()
-                .userId(registerDTO.getUserId())
-                .email(registerDTO.getEmail())
-                .password(passwordEncoder.encode(registerDTO.getPassword()))
-                .name(registerDTO.getName())
-                .registerDate(LocalDateTime.now())
-                .birth(registerDTO.getBirth())
-                .gender(registerDTO.getGender())
-                .build()
-        );
+        userRepository.save(newUser);
     }
 
     /**
      * id 중복 검증
+     *
      * @param userId
      * @return ture: 중복, false: 중복 X front에 전송
      */
@@ -110,18 +103,13 @@ public class AccountService {
      */
     public ProfileDTO getProfile(String userId) {
         User user = userService.findByUserId(userId);
-        return ProfileDTO.builder()
-                .userId(user.getUserId())
-                .name(user.getName())
-                .email(encryptionUtil.encryptText(user.getEmail()))
-                .birth(user.getBirth())
-                .gender(user.getGender())
-                .build();
+        return ProfileDTO.of(user, encryptionUtil.encryptText(user.getEmail()));
     }
 
     /**
      * 비밀번호 변경
      * - 비밀번호 변경 후 Redis에 저장된 인증 성공 상태 삭제
+     *
      * @param userId
      * @param password
      */

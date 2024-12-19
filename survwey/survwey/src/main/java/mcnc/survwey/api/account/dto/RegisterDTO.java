@@ -4,11 +4,13 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mcnc.survwey.domain.user.User;
 import mcnc.survwey.domain.user.enums.Gender;
 import mcnc.survwey.global.utils.DecryptField;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -44,5 +46,17 @@ public class RegisterDTO {
     @Size(min = 2, max = 50, message = "이름은 2자 이상, 50자 이하로 입력해주세요.")
     @Pattern(regexp = "^[a-zA-Z가-힣 ]*$", message = "이름은 영어, 한글, 공백만 포함할 수 있습니다.")
     private String name;
+
+    public User toEntity(String encryptedPassword) {
+        return User.builder()
+                .userId(this.getUserId())
+                .email(this.getEmail())
+                .password(encryptedPassword)
+                .name(this.getName())
+                .registerDate(LocalDateTime.now())
+                .birth(this.getBirth())
+                .gender(this.getGender())
+                .build();
+    }
 
 }

@@ -22,9 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
-import static mcnc.survwey.global.exception.custom.ErrorCode.*;
+import static mcnc.survwey.global.exception.custom.ErrorCode.HAS_ALREADY_RESPOND_TO_SURVEY;
+import static mcnc.survwey.global.exception.custom.ErrorCode.HAS_NOT_RESPOND_TO_SURVEY;
 
 @Slf4j
 @RestController
