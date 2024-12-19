@@ -60,10 +60,11 @@ public class AccountController {
             @ApiResponse(responseCode = "403", description = "인증되지 않거나 인증 유효 시간이 끝남: body는 없음")
     })
     public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
-        accountService.registerUser(registerDTO);
         if (!userRedisService.isStatusVerified(registerDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+        accountService.registerUser(registerDTO);
+        userRedisService.deleteVerifiedStatus(registerDTO.getEmail());
         return ResponseEntity.ok(registerDTO.getUserId());
     }
 
