@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import static mcnc.survwey.global.config.AuthInterceptor.LOGIN_USER;
 
 @Slf4j
@@ -37,8 +35,7 @@ public class AuthService {
      */
     public void loginUser(LoginDTO loginDTO, HttpServletRequest request) {
         //사용자 id를 찾아서 존재하지 않으면 에러 코드
-        User foundUser = Optional.ofNullable(userService.findByUserId(loginDTO.getUserId()))
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND_BY_ID));
+        User foundUser = userService.findByUserId(loginDTO.getUserId());
 
         //비밀번호가 일치하지 않을 경우 에러 코드
         if (!passwordEncoder.matches(loginDTO.getPassword(), foundUser.getPassword())) {
@@ -64,14 +61,13 @@ public class AuthService {
      * @param passwordAuthDTO
      * @return
      */
-    public boolean validateEmailAndSendPasswordResetCode(PasswordAuthDTO passwordAuthDTO) {
+    public void sendPasswordAuthCodeAfterValidation(PasswordAuthDTO passwordAuthDTO) {
         User user = userService.findByUserId(passwordAuthDTO.getUserId());
         //이메일가 일치하는지 확인 있으면 true, 없으면 false
-        if(user.getEmail().equals(passwordAuthDTO.getEmail())) {
-            mailService.sendPasswordModifyAuthCode(user);
-            return true;
+        if(!user.getEmail().equals(passwordAuthDTO.getEmail())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_DOES_NOT_MATCH);
         }
-        return false;
+        mailService.sendPasswordModifyAuthCode(user);
     }
 
     /**
@@ -80,7 +76,7 @@ public class AuthService {
      * - 중복되지 않으면 해당 이메일로 인증 번호 전송
      * @param email
      */
-    public void checkDuplicateEmailAndSendVerificationCode(String email) {
+    public void sendEmailAuthCodeAfterValidation(String email) {
         if(userService.isEmailDuplicated(email)) {
             throw new CustomException(HttpStatus.CONFLICT, ErrorCode.USER_EMAIL_ALREADY_EXISTS);
         }

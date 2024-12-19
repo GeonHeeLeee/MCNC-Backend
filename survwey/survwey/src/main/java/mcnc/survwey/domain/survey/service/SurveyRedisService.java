@@ -19,8 +19,6 @@ public class SurveyRedisService {
 
     private static final String SURVEY_EXPIRATION_KEY_PREFIX = "survey:end:";
 
-    // TODO: 현재 에외 처리가 완벽하지 않은데 추후 예외처리 더 확실히 하기
-
     /**
      * 설문 Redis에서 삭제
      * - 설문 조기 종료나 수정 등의 이유로 설문 삭제 시 실행
@@ -105,7 +103,7 @@ public class SurveyRedisService {
      * @param surveyId
      * @return
      */
-    public boolean isSurveyKeyExist(String creatorId, Long surveyId) {
+    public boolean isSurveyExists(String creatorId, Long surveyId) {
         String key = generateRedisKey(creatorId, surveyId);
         return redisTemplate.hasKey(key);  // 해당 키가 Redis에 존재하면 true, 아니면 false
     }

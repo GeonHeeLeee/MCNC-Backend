@@ -112,7 +112,7 @@ public class SurveyManageService {
         surveyRedisService.resetExpireTime(userId, existingSurvey.getSurveyId(), surveyWithDetailDTO.getExpireDate());
 
         //설문 값 업데이트
-        surveyService.updateSurveyData(existingSurvey, surveyWithDetailDTO);
+        surveyService.updateSurvey(existingSurvey, surveyWithDetailDTO);
 
         //질문과 보기 삭제(Cascade여서 질문 삭제 시 보기 자동 삭제)
         questionService.deleteBySurveyId(existingSurvey.getSurveyId());
@@ -150,7 +150,7 @@ public class SurveyManageService {
      * @param surveyId
      */
     @Transactional
-    public void enforceCloseSurvey(String userId, Long surveyId) {
+    public void expireSurveyAfterValidation(String userId, Long surveyId) {
         Survey survey = surveyService.findBySurveyId(surveyId);
         //본인이 만든 설문인지 검증
         surveyService.validateUserMadeSurvey(userId, survey);

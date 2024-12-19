@@ -1,8 +1,10 @@
 package mcnc.survwey.api.survey.manage.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.user.User;

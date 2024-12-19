@@ -18,21 +18,5 @@ public enum Gender {
     F("FEMALE");
 
     private final String value;
-
-    /**
-     * 유효한 성별 유형 체크 없는 유형일 경우 BAD_REQUEST
-     * @param type
-     */
-    public static void checkUserGender(String type){
-        for (Gender genderType : values()) {
-            if (genderType.name().equals(type)) {
-                //타입이 맞을 경우
-                return;
-            } else {
-                log.info("Gender Type error: {}", type);
-                throw new CustomException(BAD_REQUEST, INVALID_GENDER_TYPE);
-            }
-        }
-    }
 }
 

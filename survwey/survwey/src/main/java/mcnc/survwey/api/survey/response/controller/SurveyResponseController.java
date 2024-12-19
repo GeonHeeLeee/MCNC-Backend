@@ -22,9 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
-import static mcnc.survwey.global.exception.custom.ErrorCode.*;
+import static mcnc.survwey.global.exception.custom.ErrorCode.HAS_ALREADY_RESPOND_TO_SURVEY;
+import static mcnc.survwey.global.exception.custom.ErrorCode.HAS_NOT_RESPOND_TO_SURVEY;
 
 @Slf4j
 @RestController
@@ -60,7 +59,7 @@ public class SurveyResponseController {
                     """),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
-    public ResponseEntity<Object> replyToSurvey(@Valid @RequestBody SurveyReplyDTO surveyReplyDTO) {
+    public ResponseEntity<Object> replySurvey(@Valid @RequestBody SurveyReplyDTO surveyReplyDTO) {
         String userId = SessionContext.getCurrentUser();
         surveyReplyService.saveSurveyReply(surveyReplyDTO, userId);
         return ResponseEntity.ok(null);
@@ -94,7 +93,7 @@ public class SurveyResponseController {
     public ResponseEntity<Object> getUserAnsweredSurvey(@PathVariable("surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         //응답하지 않은 설문이면 에러 전송
-        if (!respondService.hasUserRespondedToSurvey(surveyId, userId)) {
+        if (!respondService.isUserRespondedToSurvey(surveyId, userId)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, HAS_NOT_RESPOND_TO_SURVEY);
         }
         AnsweredSurveyDTO userRespondedSurvey = answeredSurveyService.getUserAnsweredSurvey(surveyId, userId);
@@ -113,10 +112,10 @@ public class SurveyResponseController {
             @ApiResponse(responseCode = "401", description = "세션이 존재하지 않습니다."),
             @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다.")
     })
-    public ResponseEntity<Object> getUserRespondedSurvey(@PathVariable("surveyId") Long surveyId) {
+    public ResponseEntity<Object> checkIfUserAnsweredSurvey(@PathVariable("surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
         Survey survey = surveyService.findBySurveyId(surveyId);
-        if (respondService.hasUserRespondedToSurvey(survey.getSurveyId(), userId)) {
+        if (respondService.isUserRespondedToSurvey(survey.getSurveyId(), userId)) {
             throw new CustomException(HttpStatus.CONFLICT, HAS_ALREADY_RESPOND_TO_SURVEY);
         } else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");

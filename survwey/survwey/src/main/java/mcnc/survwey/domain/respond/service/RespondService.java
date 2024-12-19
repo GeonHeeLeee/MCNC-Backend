@@ -33,7 +33,7 @@ public class RespondService {
      * @param userId
      * @return
      */
-    public boolean hasUserRespondedToSurvey(Long surveyId, String userId) {
+    public boolean isUserRespondedToSurvey(Long surveyId, String userId) {
         return respondRepository.existsBySurvey_SurveyIdAndUser_UserId(surveyId, userId);
     }
 }

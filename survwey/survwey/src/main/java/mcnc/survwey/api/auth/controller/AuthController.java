@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.auth.dto.*;
 import mcnc.survwey.api.auth.service.AuthService;
+import mcnc.survwey.api.mail.service.MailService;
 import mcnc.survwey.domain.user.service.UserRedisService;
-import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
@@ -29,7 +29,6 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService userService;
     private final UserRedisService userRedisService;
 
     /**
@@ -102,15 +101,8 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "errorMessage : 메일 전송 실패")
     })
     public ResponseEntity<Object> sendTempAuthCodeToModifyPassword(@RequestBody PasswordAuthDTO passwordAuthDTO) {
-        try {
-            //이메일이 일치하면 메일 발송
-            if (authService.validateEmailAndSendPasswordResetCode(passwordAuthDTO)) {
-                return ResponseEntity.ok(null);
-            }
-            return ResponseEntity.badRequest().body(Map.of("errorMessage", "입력한 이메일이 일치하지 않습니다."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "메일 전송 실패"));
-        }
+        authService.sendPasswordAuthCodeAfterValidation(passwordAuthDTO);
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("/password/check")
@@ -122,7 +114,7 @@ public class AuthController {
     public ResponseEntity<Object> checkPasswordModifyCode(@Valid @RequestBody AuthCodeUserIdDTO authCodeUserIdDTO) {
         String tempAuthCode = authCodeUserIdDTO.getTempAuthCode();
         //인증번호 유효한지 체크
-        boolean isVerified = userRedisService.verifyCode(authCodeUserIdDTO.getUserId(), tempAuthCode);
+        boolean isVerified = userRedisService.isCodeVerified(authCodeUserIdDTO.getUserId(), tempAuthCode);
         if (isVerified) {
             userRedisService.saveVerifiedStatus(authCodeUserIdDTO.getUserId());
             return ResponseEntity.ok(null);
@@ -139,7 +131,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "errorMessage : 메일 전송 실패")
     })
     public ResponseEntity<Object> sendTempAuthCodeToVerifyEmail(@Valid @RequestBody EmailDTO emailDTO) {
-        authService.checkDuplicateEmailAndSendVerificationCode(emailDTO.getEmail());
+        authService.sendEmailAuthCodeAfterValidation(emailDTO.getEmail());
         return ResponseEntity.ok(null);
     }
 
@@ -151,7 +143,7 @@ public class AuthController {
     })
     public ResponseEntity<Object> checkEmailVerificationCode(@Valid @RequestBody AuthCodeEmailDTO authCodeEmailDTO) {
         //인증번호 유효한지 체크
-        boolean isVerified = userRedisService.verifyCode(authCodeEmailDTO.getEmail(), authCodeEmailDTO.getTempAuthCode());
+        boolean isVerified = userRedisService.isCodeVerified(authCodeEmailDTO.getEmail(), authCodeEmailDTO.getTempAuthCode());
         if (isVerified) {
             userRedisService.saveVerifiedStatus(authCodeEmailDTO.getEmail());
             return ResponseEntity.ok(null);

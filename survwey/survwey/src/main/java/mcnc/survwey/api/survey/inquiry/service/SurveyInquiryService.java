@@ -3,10 +3,8 @@ package mcnc.survwey.api.survey.inquiry.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
-import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
-import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
 import mcnc.survwey.domain.survey.repository.SurveyRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
@@ -52,7 +50,7 @@ public class SurveyInquiryService {
      */
     public Page<SurveyWithDateDTO> getUserRespondSurveyList(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findRespondedSurveyByUserId(userId, pageable);
+        return surveyRepository.findRespondedSurveyListByUserId(userId, pageable);
     }
 
     /**
@@ -61,7 +59,7 @@ public class SurveyInquiryService {
      * @param surveyId
      * @return - 해당 Id의 설문이 없을 시, 오류 발생
      */
-    public SurveyWithDetailDTO findSurveyWithDetail(Long surveyId) {
+    public SurveyWithDetailDTO getSurveyWithDetail(Long surveyId) {
         //설문 id로 설문 정보 조회 후 결과가 있으면  SurveyWithDetailDto 반환, null이면 에러코드
         return Optional.ofNullable(surveyRepository.findSurveyWithDetail(surveyId))
                 .map(SurveyWithDetailDTO::of)
@@ -89,7 +87,7 @@ public class SurveyInquiryService {
     public Page<SurveyDTO> searchAvailableSurvey(String title, String userId, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findAvailableSurvey(title, userId, pageable);
+        return surveyRepository.findAvailableSurveyList(title, userId, pageable);
     }
 
     /**
@@ -104,7 +102,7 @@ public class SurveyInquiryService {
     public Page<SurveyWithDateDTO> searchRespondedSurveys(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findRespondedSurveyByTitleAndUserId(title, userId, pageable);
+        return surveyRepository.findRespondedSurveyListByTitleAndUserId(title, userId, pageable);
     }
 
     /**
@@ -119,6 +117,6 @@ public class SurveyInquiryService {
     public Page<SurveyWithCountDTO> searchUserCreatedSurvey(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);
         Pageable pageable = PageRequest.of(page, size);
-        return surveyRepository.findUserCreatedSurveyByTitleAndUserId(title, userId, pageable);
+        return surveyRepository.findUserCreatedSurveyListByTitleAndUserId(title, userId, pageable);
     }
 }

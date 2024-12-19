@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ public class SurveyReplyService {
         Survey respondedSurvey = surveyService.findBySurveyId(surveyReplyDTO.getSurveyId());
 
         //이미 응답했으면 에러 전송
-        if (respondService.hasUserRespondedToSurvey(surveyReplyDTO.getSurveyId(), userId)) {
+        if (respondService.isUserRespondedToSurvey(surveyReplyDTO.getSurveyId(), userId)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.HAS_ALREADY_RESPOND_TO_SURVEY);
         }
 
