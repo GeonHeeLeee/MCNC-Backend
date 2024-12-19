@@ -46,7 +46,7 @@ public class SurveyRedisService {
 
         // 종료 시간이 이미 지난 경우 예외 발생
         if (duration.isNegative()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.EXPIRE_DATE_MUST_BE_AFTER_CURRENT_TIME);
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_EXPIRE_DATE);
         }
 
         // TTL을 초 단위로 변환
