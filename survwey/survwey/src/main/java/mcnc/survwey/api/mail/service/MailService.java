@@ -160,17 +160,31 @@ public class MailService {
     }
 
     /**
-     * 비밀번호 찾기 인증 메일
+     * 비밀번호 찾기 인증 메일 전송
      *
      * @param user
-     * @throws Exception
      */
-    public void sendPasswordModifyAuthCode(User user) throws Exception {
+    public void sendPasswordModifyAuthCode(User user) {
         //인증번호 생성
         String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
-        Context context = thymeleafUtil.initAutheticationContext(user, tempAuthCode);
+        Context context = thymeleafUtil.initPasswordAuthContext(user, tempAuthCode);
         //redis에 인증번호 저장
         userRedisService.saveVerificationCode(user.getUserId(), tempAuthCode);
-        sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "mail/authentication");
+        sendMail(context, "Survwey 비밀번호 변경 인증번호 발급", user.getEmail(), "mail/passwordAuth");
+    }
+
+    /**
+     * 이메일 인증 메일 전송
+     *
+     * @param email
+     * @throws Exception
+     */
+    public void sendEmailVerifyAuthCode(String email) {
+        //인증번호 생성
+        String tempAuthCode = KeyGenerators.string().generateKey().substring(0, 8);
+        Context context = thymeleafUtil.initEmailVerifyContext(tempAuthCode);
+        //redis에 인증번호 저장
+        userRedisService.saveVerificationCode(email, tempAuthCode);
+        sendMail(context, "Survwey 회원가입 이메일 인증", email, "mail/emailAuth");
     }
 }

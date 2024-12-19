@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.mail.service.MailService;
 import mcnc.survwey.domain.user.User;
-import mcnc.survwey.api.auth.dto.EmailSendDTO;
+import mcnc.survwey.api.auth.dto.PasswordAuthDTO;
 import mcnc.survwey.api.auth.dto.LoginDTO;
 import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,17 +61,29 @@ public class AuthService {
      * 이메일이 일치하는지 확인, 전송
      * - 요청한 이메일이 일치하는지 확인
      * - 일치하다면 해당 이메일로 전송
-     * @param emailSendDTO
+     * @param passwordAuthDTO
      * @return
-     * @throws Exception
      */
-    public boolean verifyAndSendEmail(EmailSendDTO emailSendDTO) throws Exception {
-        User user = userService.findByUserId(emailSendDTO.getUserId());
+    public boolean validateEmailAndSendPasswordResetCode(PasswordAuthDTO passwordAuthDTO) {
+        User user = userService.findByUserId(passwordAuthDTO.getUserId());
         //이메일가 일치하는지 확인 있으면 true, 없으면 false
-        if(user.getEmail().equals(emailSendDTO.getEmail())) {
+        if(user.getEmail().equals(passwordAuthDTO.getEmail())) {
             mailService.sendPasswordModifyAuthCode(user);
             return true;
         }
         return false;
+    }
+
+    /**
+     * 이메일 중복 확인 후, 중복이 되지 않으면 이메일 인증 번호 전송
+     * - 이메일이 중복되지 않는지 확인
+     * - 중복되지 않으면 해당 이메일로 인증 번호 전송
+     * @param email
+     */
+    public void checkDuplicateEmailAndSendVerificationCode(String email) {
+        if(userService.isEmailDuplicated(email)) {
+            throw new CustomException(HttpStatus.CONFLICT, ErrorCode.USER_EMAIL_ALREADY_EXISTS);
+        }
+        mailService.sendEmailVerifyAuthCode(email);
     }
 }

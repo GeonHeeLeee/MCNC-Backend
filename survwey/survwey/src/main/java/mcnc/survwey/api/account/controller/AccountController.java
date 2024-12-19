@@ -7,11 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.account.dto.RegisterDTO;
+import mcnc.survwey.api.account.dto.*;
 
-import mcnc.survwey.api.account.dto.PasswordModifyDTO;
-import mcnc.survwey.api.account.dto.ProfileDTO;
-import mcnc.survwey.api.account.dto.ProfileModifyDTO;
 import mcnc.survwey.api.account.service.AccountService;
 import mcnc.survwey.global.utils.EncryptionUtil;
 import mcnc.survwey.domain.user.service.UserRedisService;
@@ -67,20 +64,18 @@ public class AccountController {
     }
 
     /**
-     * ID, Email 중복 검사
+     * ID 중복 검사
      *
-     * @param request
      * @return
      */
     @PostMapping("/join/check")
-    @Operation(summary = "ID, Email 중복 검사", description = "userId, email Map 응답으로 주면 됨 (미응답 X)<br>  "
-            + " userId (5~20 글자, 영문과 숫자 조합), email(유효한 이메일 주소 형식)")
+    @Operation(summary = "ID", description = "userId (5~20 글자, 영문과 숫자 조합)")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "중복 검사 성공"),
+            @ApiResponse(responseCode = "200", description = "isDuplicated : true -> 중복, false -> 중복되지 않음"),
     })
-    public ResponseEntity<Map<String, Boolean>> checkIdAndEmail(@Valid @RequestBody Map<String, String> request) {
-        Map<String, Boolean> map = accountService.validateDuplicatedUserIdAndEmail(request.get("userId"), request.get("email"));
-        return ResponseEntity.ok(map);
+    public ResponseEntity<Map<String, Boolean>> checkDuplicatedUserId(@Valid @RequestBody UserIdDTO userIdDTO) {
+        Map<String, Boolean> response = accountService.validateDuplicatedUserId(userIdDTO.getUserId());
+        return ResponseEntity.ok(response);
     }
 
     /**

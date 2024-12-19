@@ -24,7 +24,8 @@ public enum ErrorCode {
     USER_NOT_FOUND_BY_EMAIL("해당 이메일의 사용자가 존재하지 않습니다."),
     INVALID_ENCRYPTED_FIELD("잘못된 암호화 형식입니다."),
     INVALID_EMAIL_FORMAT("잘못된 이메일 형식입니다."),
-    FAILED_TO_SEND_EMAIL("메일 전송 실패");
+    FAILED_TO_SEND_EMAIL("메일 전송 실패"),
+    AUTH_CODE_NOT_VALID("인증번호가 유효하지 않습니다.");
     private final String errorMessage;
 
     ErrorCode(String errorMessage) {

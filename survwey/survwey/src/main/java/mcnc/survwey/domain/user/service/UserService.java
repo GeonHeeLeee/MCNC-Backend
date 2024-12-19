@@ -40,9 +40,8 @@ public class UserService {
      * @param email
      * @return
      */
-    public User findByEmail(String email){
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.USER_NOT_FOUND_BY_EMAIL));
+    public boolean isEmailDuplicated(String email){
+        return userRepository.existsByEmail(email);
     }
 
     /**

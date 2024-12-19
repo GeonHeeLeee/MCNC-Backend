@@ -24,6 +24,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/auth/password/**", "/account/modify/password/**", "/mail/password",
                         "/mail/{token}", "/account/join/**", "/account/modify/password", "/auth/login",
-                        "/swagger-ui/**", "/v3/api-docs/**");
+                        "/swagger-ui/**", "/v3/api-docs/**", "/auth/email/**");
     }
 }
