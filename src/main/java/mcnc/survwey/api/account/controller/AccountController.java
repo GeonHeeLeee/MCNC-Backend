@@ -61,7 +61,7 @@ public class AccountController {
     })
     public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
         if (!userRedisService.isStatusVerified(registerDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         accountService.registerUser(registerDTO);
         userRedisService.deleteVerifiedStatus(registerDTO.getEmail());
