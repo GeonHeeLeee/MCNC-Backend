@@ -114,7 +114,7 @@ class AuthServiceTest {
 
         //when
         userRedisService.saveVerificationCode(authCodeUserIdDTO.getUserId(), authCodeUserIdDTO.getTempAuthCode());
-        boolean isVerified = userRedisService.verifyCode(authCodeUserIdDTO.getUserId(), authCodeUserIdDTO.getTempAuthCode());
+        boolean isVerified = userRedisService.isCodeVerified(authCodeUserIdDTO.getUserId(), authCodeUserIdDTO.getTempAuthCode());
 
         //then
         assertThat(isVerified).isTrue();
@@ -131,7 +131,7 @@ class AuthServiceTest {
 
         //when
         userRedisService.saveVerificationCode(authCodeUserIdDTO.getUserId(), "인증번호가 없거나 다를경우");
-        boolean isVerified = userRedisService.verifyCode(authCodeUserIdDTO.getUserId(), authCodeUserIdDTO.getTempAuthCode());
+        boolean isVerified = userRedisService.isCodeVerified(authCodeUserIdDTO.getUserId(), authCodeUserIdDTO.getTempAuthCode());
 
         //then
         assertThat(isVerified).isFalse();

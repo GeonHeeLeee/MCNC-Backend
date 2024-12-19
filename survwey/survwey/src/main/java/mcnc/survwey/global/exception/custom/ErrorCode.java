@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
     USER_NOT_FOUND_BY_ID("해당 아이디의 사용자가 존재하지 않습니다."),
+    EMAIL_DOES_NOT_MATCH("요청 이메일이 일치하지 않습니다."),
     INVALID_QUESTION_TYPE("유효하지 않은 질문 유형입니다."),
     INVALID_GENDER_TYPE("유효하지 않은 성별 유형입니다."),
     INVALID_PASSWORD("비밀번호가 일치하지 않습니다."),

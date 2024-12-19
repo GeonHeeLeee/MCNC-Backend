@@ -36,7 +36,7 @@ public class UserRedisService {
      * @param inputCode
      * @return
      */
-    public boolean verifyCode(String suffix, String inputCode) {
+    public boolean isCodeVerified(String suffix, String inputCode) {
         String key = VERIFICATION_KEY_PREFIX + suffix;
         String savedCode = redisTemplate.opsForValue().get(key);
         if (savedCode != null && savedCode.equals(inputCode)) {
