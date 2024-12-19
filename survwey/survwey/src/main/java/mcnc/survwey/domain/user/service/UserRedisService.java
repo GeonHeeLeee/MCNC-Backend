@@ -20,11 +20,11 @@ public class UserRedisService {
     /**
      * 인증 번호 Redis에 저장
      * - 중복되는 키가 있을 경우 덮어쓰기
-     * @param userId
+     * @param suffix
      * @param code
      */
-    public void saveVerificationCode(String userId, String code) {
-        String key = VERIFICATION_KEY_PREFIX + userId;
+    public void saveVerificationCode(String suffix, String code) {
+        String key = VERIFICATION_KEY_PREFIX + suffix;
         redisTemplate.opsForValue().set(key, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
     }
 
@@ -32,12 +32,12 @@ public class UserRedisService {
      * 인증번호 검증
      * - 키가 존재하면 삭제 후 true 반환
      * - 키가 존재하지 않거나 유효하지 않을 시 false 반환
-     * @param userId
+     * @param suffix
      * @param inputCode
      * @return
      */
-    public boolean verifyCode(String userId, String inputCode) {
-        String key = VERIFICATION_KEY_PREFIX + userId;
+    public boolean verifyCode(String suffix, String inputCode) {
+        String key = VERIFICATION_KEY_PREFIX + suffix;
         String savedCode = redisTemplate.opsForValue().get(key);
         if (savedCode != null && savedCode.equals(inputCode)) {
             redisTemplate.delete(key);
@@ -49,21 +49,21 @@ public class UserRedisService {
     /**
      * 인증 상태 저장
      * - 인증번호 인증이 완료된 사용자가 비밀번호 변경 시에 필요한 상태 저장
-     * @param userId
+     * @param suffix
      */
-    public void saveVerifiedStatus(String userId) {
-        String verifiedKey = VERIFIED_KEY_PREFIX + userId;
+    public void saveVerifiedStatus(String suffix) {
+        String verifiedKey = VERIFIED_KEY_PREFIX + suffix;
         redisTemplate.opsForValue().set(verifiedKey, "true", VERIFIED_STATUS_EXPIRATION_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
      * 인증을 확인
      * - 비밀번호 변경 시 이미 인증이 완료된 사용자인지 검증
-     * @param userId
+     * @param suffix
      * @return
      */
-    public boolean isVerified(String userId) {
-        String verifiedKey = VERIFIED_KEY_PREFIX + userId;
+    public boolean isVerified(String suffix) {
+        String verifiedKey = VERIFIED_KEY_PREFIX + suffix;
         String status = redisTemplate.opsForValue().get(verifiedKey);
         return "true".equals(status);
     }
@@ -71,10 +71,10 @@ public class UserRedisService {
     /**
      * 작업 수행 후 인증 상태 삭제
      * - redis의 delete는 키가 없는 상태에서 삭제해도 문제가 되지 않음
-     * @param userId
+     * @param suffix
      */
-    public void deleteVerifiedStatus(String userId) {
-        String verifiedKey = VERIFIED_KEY_PREFIX + userId;
+    public void deleteVerifiedStatus(String suffix) {
+        String verifiedKey = VERIFIED_KEY_PREFIX + suffix;
         redisTemplate.delete(verifiedKey);
     }
 }

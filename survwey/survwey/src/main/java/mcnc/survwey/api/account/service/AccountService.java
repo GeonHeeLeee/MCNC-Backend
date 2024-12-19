@@ -66,17 +66,15 @@ public class AccountService {
     }
 
     /**
-     * id, email 중복 검증
+     * id 중복 검증
      * @param userId
-     * @param email
      * @return ture: 중복, false: 중복 X front에 전송
      */
-    public Map<String, Boolean> validateDuplicatedUserIdAndEmail(String userId, String email) {
+    public Map<String, Boolean> validateDuplicatedUserId(String userId) {
         //id, email map에 저장 후 true일 경우 중복 
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("id", userRepository.existsById(userId));
-        map.put("email", userRepository.existsByEmail(email));
-        return map;
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicated", userRepository.existsById(userId));
+        return response;
     }
 
     /**

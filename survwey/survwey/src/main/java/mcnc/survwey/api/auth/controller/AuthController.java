@@ -9,12 +9,12 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.auth.dto.AuthCodeDTO;
-import mcnc.survwey.api.auth.dto.EmailSendDTO;
-import mcnc.survwey.api.auth.dto.LoginDTO;
+import mcnc.survwey.api.auth.dto.*;
 import mcnc.survwey.api.auth.service.AuthService;
 import mcnc.survwey.domain.user.service.UserRedisService;
+import mcnc.survwey.domain.user.service.UserService;
 import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +29,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
     private final UserRedisService userRedisService;
 
     /**
@@ -75,7 +76,7 @@ public class AuthController {
         session.invalidate();
         return ResponseEntity.ok().body(Map.of("message", "로그아웃 성공"));
     }
-    
+
     /**
      * 프론트 세션 체크
      * - 세션이 유효하지 않을 시 로그인 화면으로 리다이렉션 용
@@ -97,13 +98,13 @@ public class AuthController {
     @Operation(summary = "비밀번호 변경 임시 인증번호 메일 전송", description = "해당 유저 아이디의 이메일로 전송")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "일치(유효)"),
-            @ApiResponse(responseCode = "400", description = "errorMessage : 입력한 이메일이 일치하지 않습니다."),
+            @ApiResponse(responseCode = "400", description = "errorMessage : 입력한 이메일이 일치하지 않습니다.."),
             @ApiResponse(responseCode = "500", description = "errorMessage : 메일 전송 실패")
     })
-    public ResponseEntity<Object> sendTempAuthCodeToModifyPassword(@RequestBody EmailSendDTO emailSendDTO) {
+    public ResponseEntity<Object> sendTempAuthCodeToModifyPassword(@RequestBody PasswordAuthDTO passwordAuthDTO) {
         try {
             //이메일이 일치하면 메일 발송
-            if (authService.verifyAndSendEmail(emailSendDTO)) {
+            if (authService.validateEmailAndSendPasswordResetCode(passwordAuthDTO)) {
                 return ResponseEntity.ok(null);
             }
             return ResponseEntity.badRequest().body(Map.of("errorMessage", "입력한 이메일이 일치하지 않습니다."));
@@ -118,14 +119,43 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "일치(유효)"),
             @ApiResponse(responseCode = "403", description = "인증번호가 일치하지 않거나 유효하지 않음")
     })
-    public ResponseEntity<Object> checkPasswordModifyCode(@Valid @RequestBody AuthCodeDTO authCodeDTO) {
-        String tempAuthCode = authCodeDTO.getTempAuthCode();
+    public ResponseEntity<Object> checkPasswordModifyCode(@Valid @RequestBody AuthCodeUserIdDTO authCodeUserIdDTO) {
+        String tempAuthCode = authCodeUserIdDTO.getTempAuthCode();
         //인증번호 유효한지 체크
-        boolean isVerified = userRedisService.verifyCode(authCodeDTO.getUserId(), tempAuthCode);
+        boolean isVerified = userRedisService.verifyCode(authCodeUserIdDTO.getUserId(), tempAuthCode);
         if (isVerified) {
-            userRedisService.saveVerifiedStatus(authCodeDTO.getUserId());
+            userRedisService.saveVerifiedStatus(authCodeUserIdDTO.getUserId());
             return ResponseEntity.ok(null);
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("errorMessage", "인증번호가 유효하지 않습니다."));
+        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.AUTH_CODE_NOT_VALID);
+    }
+
+
+    @PostMapping("/email/send")
+    @Operation(summary = "이메일 인증 인증번호 메일 전송", description = "해당 유저 아이디의 이메일로 전송/이메일 암호화 해서 전송해야됨")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일치(유효) 및 이메일 전송"),
+            @ApiResponse(responseCode = "409", description = "errorMessage : 중복된 이메일 존재"),
+            @ApiResponse(responseCode = "500", description = "errorMessage : 메일 전송 실패")
+    })
+    public ResponseEntity<Object> sendTempAuthCodeToVerifyEmail(@Valid @RequestBody EmailDTO emailDTO) {
+        authService.checkDuplicateEmailAndSendVerificationCode(emailDTO.getEmail());
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/email/check")
+    @Operation(summary = "이메일 인증 인증번호 체크", description = "입력한 인증번호가 일치하는지 체크/이메일 암호화 해서 전송해야됨")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "일치(유효)"),
+            @ApiResponse(responseCode = "403", description = "인증번호가 일치하지 않거나 유효하지 않음")
+    })
+    public ResponseEntity<Object> checkEmailVerificationCode(@Valid @RequestBody AuthCodeEmailDTO authCodeEmailDTO) {
+        //인증번호 유효한지 체크
+        boolean isVerified = userRedisService.verifyCode(authCodeEmailDTO.getEmail(), authCodeEmailDTO.getTempAuthCode());
+        if (isVerified) {
+            userRedisService.saveVerifiedStatus(authCodeEmailDTO.getEmail());
+            return ResponseEntity.ok(null);
+        }
+        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.AUTH_CODE_NOT_VALID);
     }
 }

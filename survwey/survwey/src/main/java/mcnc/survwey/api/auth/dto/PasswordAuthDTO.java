@@ -7,7 +7,7 @@ import mcnc.survwey.global.utils.DecryptField;
 
 @Data
 @NoArgsConstructor
-public class EmailSendDTO {
+public class PasswordAuthDTO {
 
     @NotBlank(message = "아이디는 필수입니다.")
     @Size(min = 5, max = 20, message = "사용자 아이디는 5글자 이상, 20글자 이하입니다.")

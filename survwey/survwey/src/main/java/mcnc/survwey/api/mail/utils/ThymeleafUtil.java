@@ -63,9 +63,21 @@ public class ThymeleafUtil {
      * @param tempAuthCode
      * @return
      */
-    public Context initAutheticationContext(User user, String tempAuthCode){
+    public Context initPasswordAuthContext(User user, String tempAuthCode){
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
         context.setVariable("receiverName", user.getName());
+        context.setVariable("tempAuthCode", tempAuthCode);
+        context.setVariable("expireDate", getFormatedDate(LocalDateTime.now().plusMinutes(10)));
+        return context;
+    }
+
+    /**
+     * 이메일 인증 thymeleaf 템플릿에 전달할 데이터 저장
+     * @param tempAuthCode
+     * @return
+     */
+    public Context initEmailVerifyContext(String tempAuthCode){
+        Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
         context.setVariable("tempAuthCode", tempAuthCode);
         context.setVariable("expireDate", getFormatedDate(LocalDateTime.now().plusMinutes(10)));
         return context;
