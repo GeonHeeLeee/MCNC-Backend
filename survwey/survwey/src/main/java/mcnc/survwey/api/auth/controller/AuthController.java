@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.auth.dto.*;
 import mcnc.survwey.api.auth.service.AuthService;
-import mcnc.survwey.api.mail.service.MailService;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
@@ -119,7 +118,7 @@ public class AuthController {
             userRedisService.saveVerifiedStatus(authCodeUserIdDTO.getUserId());
             return ResponseEntity.ok(null);
         }
-        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.AUTH_CODE_NOT_VALID);
+        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.INVALID_AUTH_CODE);
     }
 
 
@@ -148,6 +147,6 @@ public class AuthController {
             userRedisService.saveVerifiedStatus(authCodeEmailDTO.getEmail());
             return ResponseEntity.ok(null);
         }
-        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.AUTH_CODE_NOT_VALID);
+        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.INVALID_AUTH_CODE);
     }
 }
