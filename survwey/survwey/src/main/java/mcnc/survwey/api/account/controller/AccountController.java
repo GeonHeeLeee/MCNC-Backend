@@ -56,10 +56,14 @@ public class AccountController {
                     - birth 미입력: "생년월일은 필수입니다."
                     - gender 미입력: "성별은 필수입니다."
                     - name 미입력: "이름은 필수입니다."
-                    """)
+                    """),
+            @ApiResponse(responseCode = "403", description = "인증되지 않거나 인증 유효 시간이 끝남: body는 없음")
     })
-    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
         accountService.registerUser(registerDTO);
+        if (!userRedisService.isStatusVerified(registerDTO.getEmail())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         return ResponseEntity.ok(registerDTO.getUserId());
     }
 
@@ -141,12 +145,12 @@ public class AccountController {
     @Operation(summary = "사용자 비밀번호 변경", description = "해당 비밀번호로 변경")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "403", description = "인증되지 않거나 인증 유효 시간이 끝남")
+            @ApiResponse(responseCode = "403", description = "인증되지 않거나 인증 유효 시간이 끝남: body는 없음")
     })
     public ResponseEntity<Object> modifyPassword(@Valid @RequestBody PasswordModifyDTO passwordModifyDTO) {
         String userId = passwordModifyDTO.getUserId();
-        if (!userRedisService.isVerified(userId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("errorMessage", "인증되지 않았습니다."));
+        if (!userRedisService.isStatusVerified(userId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         accountService.modifyPassword(userId, passwordModifyDTO.getPassword());
         return ResponseEntity.ok(null);

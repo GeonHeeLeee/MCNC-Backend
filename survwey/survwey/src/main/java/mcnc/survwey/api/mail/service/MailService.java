@@ -116,12 +116,12 @@ public class MailService {
         surveyService.validateUserMadeSurvey(senderId, surveyToInvite);//본인이 생성한 설문 확인
         surveyService.checkSurveyExpiration(surveyToInvite.getExpireDate());//만료일 확인
 
-        String encryptedLink = encryptionUtil.encryptURL(invitationUrl, surveyToInvite.getSurveyId());
+        String encryptedURL = encryptionUtil.encryptURL(invitationUrl, surveyToInvite.getSurveyId());
 
         //외부 선언 시 병렬 스트림에서 타임리프를 못 읽는 문제가 발생하여 독립적인 Context 생성
         decryptedEmailList.parallelStream()
                 .forEach(recipientEmail -> {
-                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedLink);
+                    Context context = thymeleafUtil.initInvitationContext(surveyToInvite, sender, encryptedURL);
                     sendMail(context, surveyToInvite.getTitle(), recipientEmail, "mail/invitation");
                 });
     }
@@ -146,16 +146,16 @@ public class MailService {
     }
 
     /**
-     * 설문결과 알림
+     * 설문 종료 알림
      *
      * @param userId
      * @param surveyId
      */
-    public void sendExpiredNotificationLink(String userId, Long surveyId) {
+    public void sendSurveyExpiredNotification(String userId, Long surveyId) {
         User user = userService.findByUserId(userId);
         Survey survey = surveyService.findBySurveyId(surveyId);
-        String encryptedUrl = encryptionUtil.encryptURL(notificationUrl, survey.getSurveyId());
-        Context context = thymeleafUtil.initNotificationContext(user, survey, encryptedUrl);
+        String encryptedURL = encryptionUtil.encryptURL(notificationUrl, survey.getSurveyId());
+        Context context = thymeleafUtil.initNotificationContext(user, survey, encryptedURL);
         sendMail(context, survey.getTitle(), user.getEmail(), "mail/notification");
     }
 

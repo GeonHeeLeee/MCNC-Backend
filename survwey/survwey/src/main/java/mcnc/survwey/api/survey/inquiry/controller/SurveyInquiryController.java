@@ -6,12 +6,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
-import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
-import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
+import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.api.survey.inquiry.service.SurveyInquiryService;
+import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.global.config.SessionContext;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +77,7 @@ public class SurveyInquiryController {
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<SurveyWithDetailDTO> getSurveyWithDetail(@PathVariable("surveyId") Long surveyId) {
-        SurveyWithDetailDTO surveyWithDetailDTO = surveyInquiryService.findSurveyWithDetail(surveyId);
+        SurveyWithDetailDTO surveyWithDetailDTO = surveyInquiryService.getSurveyWithDetail(surveyId);
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
 

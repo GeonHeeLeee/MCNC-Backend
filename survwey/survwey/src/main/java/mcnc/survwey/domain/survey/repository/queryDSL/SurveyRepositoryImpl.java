@@ -31,7 +31,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<SurveyDTO> findAvailableSurvey(String title, String userId, Pageable pageable) {
+    public Page<SurveyDTO> findAvailableSurveyList(String title, String userId, Pageable pageable) {
         List<SurveyDTO> surveyDTOList = jpaQueryFactory
                 .select(Projections.constructor(SurveyDTO.class, survey))
                 .from(survey)
@@ -83,7 +83,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     }
 
     @Override
-    public Page<SurveyWithDateDTO> findRespondedSurveyByUserId(String userId, Pageable pageable) {
+    public Page<SurveyWithDateDTO> findRespondedSurveyListByUserId(String userId, Pageable pageable) {
         List<SurveyWithDateDTO> surveyWithDateDTOList = jpaQueryFactory
                 .select(Projections.constructor(SurveyWithDateDTO.class,
                         survey,
@@ -119,7 +119,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     }
 
     @Override
-    public Page<SurveyWithDateDTO> findRespondedSurveyByTitleAndUserId(String title, String userId, Pageable pageable) {
+    public Page<SurveyWithDateDTO> findRespondedSurveyListByTitleAndUserId(String title, String userId, Pageable pageable) {
         List<SurveyWithDateDTO> surveyWithDateDTOList = jpaQueryFactory
                 .select(Projections.constructor(SurveyWithDateDTO.class,
                         survey,
@@ -144,7 +144,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     }
 
     @Override
-    public Page<SurveyWithCountDTO> findUserCreatedSurveyByTitleAndUserId(String title, String userId, Pageable pageable) {
+    public Page<SurveyWithCountDTO> findUserCreatedSurveyListByTitleAndUserId(String title, String userId, Pageable pageable) {
         List<SurveyWithCountDTO> surveyWithCountDTOList = jpaQueryFactory
                 .select(Projections.constructor(SurveyWithCountDTO.class,
                         survey,

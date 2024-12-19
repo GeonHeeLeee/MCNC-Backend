@@ -3,7 +3,6 @@ package mcnc.survwey.global.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.mail.service.MailService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -34,7 +33,7 @@ public class RedisConfig {
                 String userId = key.split("/")[0];
                 Long surveyId = Long.parseLong(key.split("/")[1]);
                 //이메일 전송
-                mailService.sendExpiredNotificationLink(userId, surveyId);
+                mailService.sendSurveyExpiredNotification(userId, surveyId);
             }
         }, new PatternTopic("__keyevent@*__:expired"));
 

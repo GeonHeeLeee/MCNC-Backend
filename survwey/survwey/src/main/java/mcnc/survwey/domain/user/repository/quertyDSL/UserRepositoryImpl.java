@@ -19,7 +19,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     //나이대 분포 조회
     @Override
-    public List<LocalDate> findBirthBySurveyId(Long surveyId) {
+    public List<LocalDate> findBirthListBySurveyId(Long surveyId) {
         return queryFactory
                 .select(user.birth)
                 .from(user)

@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.api.survey.manage.service.SurveyManageService;
 import mcnc.survwey.domain.survey.Survey;
@@ -132,11 +131,11 @@ public class SurveyManageController {
      * @return
      */
     @PatchMapping("/expire/{surveyId}")
-    @Operation(summary = "설문 강제 종료", description = "해당 설문의 생성자가 강제 종료를 원할경우 만료일을 현재 시간으로 변경하여 강제 종료")
+    @Operation(summary = "설문 종료", description = "해당 설문의 생성자가 종료를 원할경우 만료일을 현재 시간으로 변경하여 강제 종료")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = """
-                    - 설문 강제 종료 성공     
-                    - 설문 강제 종료 취소"""),
+                    - 설문 종료 성공     
+                    - 설문 종료 취소"""),
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청:
                     - 설문이 존재하지 않을 경우: 해당 설문이 존재하지 않습니다.
@@ -153,7 +152,7 @@ public class SurveyManageController {
     })
     public ResponseEntity<Object> expireSurvey(@PathVariable(value = "surveyId") Long surveyId) {
         String userId = SessionContext.getCurrentUser();
-        surveyManageService.enforceCloseSurvey(userId, surveyId);
+        surveyManageService.expireSurveyAfterValidation(userId, surveyId);
         return ResponseEntity.ok().body(surveyId);
     }
 }

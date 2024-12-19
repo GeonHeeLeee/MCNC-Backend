@@ -7,8 +7,6 @@ import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.repository.SurveyRepository;
 import mcnc.survwey.domain.survey.service.SurveyRedisService;
 import mcnc.survwey.api.survey.manage.service.SurveyManageService;
-import mcnc.survwey.domain.user.User;
-import mcnc.survwey.domain.user.repository.UserRepository;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.util.BaseIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
@@ -18,10 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static mcnc.survwey.domain.question.enums.QuestionType.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +45,7 @@ public class SurveyManageTest extends BaseIntegrationTest {
 
         //When
         Survey createdSurvey = surveyManageService.saveSurveyWithDetails(surveyWithDetailDTO, userId);
-        boolean isSurveyKeyExists = surveyRedisService.isSurveyKeyExist(userId, createdSurvey.getSurveyId());
+        boolean isSurveyKeyExists = surveyRedisService.isSurveyExists(userId, createdSurvey.getSurveyId());
 
         //Then
         assertEquals(createdSurvey.getQuestionList().size(), 3);
@@ -81,7 +77,7 @@ public class SurveyManageTest extends BaseIntegrationTest {
         assertDoesNotThrow(() -> {
             surveyManageService.deleteSurveyAfterValidation(creatorId, existingSurvey.getSurveyId());
         });
-        assertFalse(surveyRedisService.isSurveyKeyExist(creatorId, existingSurvey.getSurveyId()));
+        assertFalse(surveyRedisService.isSurveyExists(creatorId, existingSurvey.getSurveyId()));
         assertTrue(surveyRepository.findById(existingSurvey.getSurveyId()).isEmpty());
     }
 

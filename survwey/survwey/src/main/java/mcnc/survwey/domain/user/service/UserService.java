@@ -77,7 +77,7 @@ public class UserService {
      * @return
      */
     public List<SurveyResultDTO.AgeCountDTO> getAgeGroupCountBySurveyId(Long surveyId) {
-        List<LocalDate> birthList = userRepository.findBirthBySurveyId(surveyId);
+        List<LocalDate> birthList = userRepository.findBirthListBySurveyId(surveyId);
         //DB 조회 결과를 나이대(10대, 20대 ...)를 key로 하는 Map 생성
         Map<Integer, Integer> ageMap = groupAgesByDecade(birthList);
         return mapAgeGroupsToDTO(ageMap);

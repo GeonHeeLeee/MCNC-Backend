@@ -4,7 +4,6 @@ package mcnc.survwey.survey;
 
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithDateDTO;
 import mcnc.survwey.domain.survey.Survey;
-import mcnc.survwey.api.survey.inquiry.dto.SurveyDTO;
 import mcnc.survwey.api.survey.manage.dto.SurveyWithDetailDTO;
 import mcnc.survwey.domain.survey.repository.SurveyRepository;
 import mcnc.survwey.api.survey.inquiry.dto.SurveyWithCountDTO;
@@ -72,7 +71,7 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
         Survey survey = surveyRepository.findById(1L).get();
 
         // When
-        SurveyWithDetailDTO surveyWithDetail = surveyInquiryService.findSurveyWithDetail(survey.getSurveyId());
+        SurveyWithDetailDTO surveyWithDetail = surveyInquiryService.getSurveyWithDetail(survey.getSurveyId());
 
         // Then
         assertEquals(surveyWithDetail.getSurveyId(), survey.getSurveyId());
@@ -86,7 +85,7 @@ public class SurveyInquiryTest extends BaseIntegrationTest {
         // Given
         long notExistingSurveyId = Integer.MAX_VALUE;
         // When-Then
-        assertThrows(CustomException.class, () -> surveyInquiryService.findSurveyWithDetail(notExistingSurveyId));
+        assertThrows(CustomException.class, () -> surveyInquiryService.getSurveyWithDetail(notExistingSurveyId));
     }
 
 

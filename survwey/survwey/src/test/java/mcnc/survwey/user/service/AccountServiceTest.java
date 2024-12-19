@@ -123,7 +123,7 @@ class AccountServiceTest {
         passwordModifyDTO.setPassword("zxcv1234@!");
 
         //when
-        boolean isChecked = userRedisService.isVerified(user.getUserId());
+        boolean isChecked = userRedisService.isStatusVerified(user.getUserId());
         accountService.modifyPassword(user.getUserId(), passwordModifyDTO.getPassword());
         boolean isChange = passwordEncoder.matches(passwordModifyDTO.getPassword(), user.getPassword());
 

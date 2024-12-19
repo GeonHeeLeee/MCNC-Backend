@@ -1,6 +1,7 @@
 package mcnc.survwey.global.config;
 
 public class SessionContext {
+    //사용자 세션 정보 저장
     private static final ThreadLocal<String> currentUser = new ThreadLocal<>();
 
     public static void setCurrentUser(String userId) {
