@@ -83,26 +83,6 @@ public class AccountController {
     }
 
     /**
-     * 프로필 수정 로직
-     * 사용자 이름, 생일, 성별 변경
-     *
-     * @param profileDTO
-     * @return
-     */
-    @PostMapping("/modify/profile")
-    @Operation(summary = "프로필 수정", description = "email, name<br>"
-            + "name, email 빈 값으로 들어오면 기존 사용자 정보 재사용")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
-            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
-    })
-    public ResponseEntity<ProfileModifyDTO> modifyProfile(@RequestBody ProfileModifyDTO profileDTO) {
-        String userId = SessionContext.getCurrentUser();
-        accountService.modifyUserProfile(profileDTO, userId);
-        return ResponseEntity.ok(null);
-    }
-
-    /**
      * 사용자 프로필 조회
      * 사용자 ID 세션으로 가져온 후 조회
      *

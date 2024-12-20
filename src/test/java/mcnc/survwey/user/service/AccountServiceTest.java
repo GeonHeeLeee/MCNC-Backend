@@ -4,7 +4,6 @@ import mcnc.survwey.api.account.dto.PasswordModifyDTO;
 import mcnc.survwey.domain.user.enums.Gender;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.api.account.dto.ProfileDTO;
-import mcnc.survwey.api.account.dto.ProfileModifyDTO;
 import mcnc.survwey.api.account.dto.RegisterDTO;
 import mcnc.survwey.api.account.service.AccountService;
 import mcnc.survwey.domain.user.service.UserRedisService;
