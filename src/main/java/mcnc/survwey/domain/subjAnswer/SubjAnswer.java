@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class SubjAnswer {
     @Column(nullable = false)
     private Long subjId;
 
+    @CreationTimestamp
     private LocalDateTime writtenDate;
 
     @Column(columnDefinition = "TEXT")
@@ -32,13 +34,6 @@ public class SubjAnswer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.writtenDate == null) {
-            this.writtenDate = LocalDateTime.now();
-        }
-    }
 
     public static SubjAnswer create(User user, String response, Question question) {
         return SubjAnswer.builder()

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,7 @@ public class ObjAnswer {
     @Column(nullable = false)
     private Long objId;
 
+    @CreationTimestamp
     private LocalDateTime writtenDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,13 +37,6 @@ public class ObjAnswer {
             @JoinColumn(name = "sequence", referencedColumnName = "sequence")
     })
     private Selection selection;
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.writtenDate == null) {
-            this.writtenDate = LocalDateTime.now();
-        }
-    }
 
     public static ObjAnswer create(User user, String etcAnswer, Selection selection) {
         return ObjAnswer.builder()
