@@ -4,7 +4,6 @@ import mcnc.survwey.api.account.dto.PasswordModifyDTO;
 import mcnc.survwey.domain.user.enums.Gender;
 import mcnc.survwey.domain.user.User;
 import mcnc.survwey.api.account.dto.ProfileDTO;
-import mcnc.survwey.api.account.dto.ProfileModifyDTO;
 import mcnc.survwey.api.account.dto.RegisterDTO;
 import mcnc.survwey.api.account.service.AccountService;
 import mcnc.survwey.domain.user.service.UserRedisService;
@@ -80,23 +79,6 @@ class AccountServiceTest {
                 .isEqualTo(registerDTO);
         assertThat(userPassword).isTrue();
     }
-    @Test
-    public void 사용자_프로필_수정(){
-        //given
-        ProfileModifyDTO profileModifyDTO = ProfileModifyDTO.builder()
-                .name("프로필_수정_테스트")
-                .email("ProfileModifyTest@test.com")
-                .build();
-
-        User user = userService.findByUserId("asd123");
-
-        //when
-        accountService.modifyUserProfile(profileModifyDTO, user.getUserId());
-
-        //then
-        assertThat(user.getEmail()).isEqualTo(profileModifyDTO.getEmail());
-        assertThat(user.getName()).isEqualTo(profileModifyDTO.getName());
-    }
 
     @Test
     public void 사용자_프로필_조회(){
@@ -131,5 +113,6 @@ class AccountServiceTest {
         assertThat(isChecked).isFalse();
         assertThat(isChange).isTrue();
     }
+
 
 }

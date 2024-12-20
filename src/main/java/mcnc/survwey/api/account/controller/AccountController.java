@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.account.dto.*;
 
 import mcnc.survwey.api.account.service.AccountService;
+import mcnc.survwey.global.error.ErrorResponse;
+import mcnc.survwey.global.exception.custom.ErrorCode;
 import mcnc.survwey.global.utils.EncryptionUtil;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
@@ -19,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
+import static mcnc.survwey.global.exception.custom.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,7 +65,7 @@ public class AccountController {
     })
     public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
         if (!userRedisService.isStatusVerified(registerDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(NOT_AUTHORIZED));
         }
         accountService.registerUser(registerDTO);
         userRedisService.deleteVerifiedStatus(registerDTO.getEmail());
@@ -80,26 +84,6 @@ public class AccountController {
     public ResponseEntity<Map<String, Boolean>> checkDuplicatedUserId(@Valid @RequestBody UserIdDTO userIdDTO) {
         Map<String, Boolean> response = accountService.validateDuplicatedUserId(userIdDTO.getUserId());
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * 프로필 수정 로직
-     * 사용자 이름, 생일, 성별 변경
-     *
-     * @param profileDTO
-     * @return
-     */
-    @PostMapping("/modify/profile")
-    @Operation(summary = "프로필 수정", description = "email, name<br>"
-            + "name, email 빈 값으로 들어오면 기존 사용자 정보 재사용")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
-            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
-    })
-    public ResponseEntity<ProfileModifyDTO> modifyProfile(@RequestBody ProfileModifyDTO profileDTO) {
-        String userId = SessionContext.getCurrentUser();
-        accountService.modifyUserProfile(profileDTO, userId);
-        return ResponseEntity.ok(null);
     }
 
     /**
@@ -151,7 +135,7 @@ public class AccountController {
     public ResponseEntity<Object> modifyPassword(@Valid @RequestBody PasswordModifyDTO passwordModifyDTO) {
         String userId = passwordModifyDTO.getUserId();
         if (!userRedisService.isStatusVerified(userId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(NOT_AUTHORIZED));
         }
         accountService.modifyPassword(userId, passwordModifyDTO.getPassword());
         return ResponseEntity.ok(null);

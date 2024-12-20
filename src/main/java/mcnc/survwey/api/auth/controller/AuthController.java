@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.auth.dto.*;
 import mcnc.survwey.api.auth.service.AuthService;
 import mcnc.survwey.domain.user.service.UserRedisService;
+import mcnc.survwey.global.error.ErrorResponse;
 import mcnc.survwey.global.exception.custom.CustomException;
 import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
+import static mcnc.survwey.global.exception.custom.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,7 +55,7 @@ public class AuthController {
             authService.loginUser(loginDTO, request);
             return ResponseEntity.ok().body(null);
         } catch (CustomException e) {
-            return ResponseEntity.badRequest().body(Map.of("errorMessage", "아이디/비밀번호가 일치하지 않습니다."));
+            return ResponseEntity.badRequest().body(new ErrorResponse(USER_ID_PASSWORD_NOT_MATCH));
         }
     }
 
@@ -118,7 +121,7 @@ public class AuthController {
             userRedisService.saveVerifiedStatus(authCodeUserIdDTO.getUserId());
             return ResponseEntity.ok(null);
         }
-        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.INVALID_AUTH_CODE);
+        throw new CustomException(HttpStatus.FORBIDDEN, INVALID_AUTH_CODE);
     }
 
 
@@ -147,6 +150,6 @@ public class AuthController {
             userRedisService.saveVerifiedStatus(authCodeEmailDTO.getEmail());
             return ResponseEntity.ok(null);
         }
-        throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.INVALID_AUTH_CODE);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(INVALID_AUTH_CODE));
     }
 }
