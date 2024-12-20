@@ -6,6 +6,7 @@ import lombok.*;
 import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.domain.selection.Selection;
 import mcnc.survwey.domain.survey.Survey;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class Question {
     private Long quesId;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime createDate;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -42,13 +44,6 @@ public class Question {
     @JsonIgnore
     @Builder.Default
     private List<Selection> selectionList = new ArrayList<>();
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.createDate == null) {
-            this.createDate = LocalDateTime.now();
-        }
-    }
 
     /**
      * 연관관계 편의 메서드

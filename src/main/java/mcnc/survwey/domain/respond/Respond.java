@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ public class Respond {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long respondId;
 
+    @CreationTimestamp
     private LocalDateTime respondDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,13 +34,6 @@ public class Respond {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "surveyId", nullable = false)
     private Survey survey;
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.respondDate == null) {
-            this.respondDate = LocalDateTime.now();
-        }
-    }
 
     public Respond(User user, Survey survey) {
         this.user = user;

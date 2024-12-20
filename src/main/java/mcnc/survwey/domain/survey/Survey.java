@@ -6,6 +6,7 @@ import lombok.*;
 import mcnc.survwey.domain.question.Question;
 import mcnc.survwey.domain.respond.Respond;
 import mcnc.survwey.domain.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,17 +27,15 @@ public class Survey {
     private Long surveyId;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime createDate;
 
-    @Setter
     @Column(nullable = false)
     private LocalDateTime expireDate;
 
-    @Setter
     @Column(nullable = false)
     private String title;
 
-    @Setter
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -54,14 +53,6 @@ public class Survey {
     @Builder.Default
     private List<Respond> respondList = new ArrayList<>();
 
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.createDate == null) {
-            this.createDate = LocalDateTime.now();
-        }
-    }
-
     /**
      * 연관관계 편의 메서드
      * @param question
@@ -70,4 +61,15 @@ public class Survey {
         questionList.add(question);
         question.setSurvey(this);
     }
+
+    public void updateExpireDate(LocalDateTime expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public void updateSurvey(String title, String description, LocalDateTime expireDate){
+        this.title = title;
+        this.description = description;
+        this.expireDate = expireDate;
+    }
+
 }

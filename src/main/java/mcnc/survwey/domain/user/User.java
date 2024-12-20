@@ -23,11 +23,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userId;
 
-    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Setter
     @Column(nullable = false)
     private String password;
 
@@ -41,7 +39,6 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime registerDate;
 
-    @Setter
     @Column(nullable = false)
     private String name;
 

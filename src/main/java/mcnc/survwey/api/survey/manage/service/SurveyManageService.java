@@ -112,7 +112,7 @@ public class SurveyManageService {
         surveyRedisService.resetExpireTime(userId, existingSurvey.getSurveyId(), surveyWithDetailDTO.getExpireDate());
 
         //설문 값 업데이트
-        surveyService.updateSurvey(existingSurvey, surveyWithDetailDTO);
+        existingSurvey.updateSurvey(surveyWithDetailDTO.getTitle(), surveyWithDetailDTO.getDescription(), surveyWithDetailDTO.getExpireDate());
 
         //질문과 보기 삭제(Cascade여서 질문 삭제 시 보기 자동 삭제)
         questionService.deleteBySurveyId(existingSurvey.getSurveyId());
@@ -157,7 +157,7 @@ public class SurveyManageService {
         //만료일이 이미 지났는지 확인
         surveyService.checkSurveyExpiration(survey.getExpireDate());
         //만료일 현재로 지정
-        survey.setExpireDate(LocalDateTime.now());
+        survey.updateExpireDate(LocalDateTime.now());
         //Redis에서도 만료 시키기
         surveyRedisService.expireImmediately(userId, surveyId);
         surveyRepository.save(survey);

@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.domain.objAnswer.ObjAnswer;
 import mcnc.survwey.domain.question.Question;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Persistable;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class Selection implements Persistable<SelectionId> {
     private String body;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime createDate;
 
     private boolean isEtc;
@@ -43,13 +45,6 @@ public class Selection implements Persistable<SelectionId> {
     @Builder.Default
     private List<ObjAnswer> objAnswerList = new ArrayList<>();
 
-    @PrePersist
-    protected void onCreate() {
-        if (this.createDate == null) {
-            this.createDate = LocalDateTime.now();
-        }
-    }
-
     /**
      * 복합키일 경우 insert시 select 쿼리가 나가는 문제 해결
      * - createDate가 null일 경우 새로운 Entity임
@@ -60,4 +55,5 @@ public class Selection implements Persistable<SelectionId> {
     public boolean isNew() {
         return createDate == null;
     }
+
 }
