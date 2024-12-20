@@ -19,6 +19,7 @@ public class SurvweyApplication {
 		System.setProperty("INVITATION_URL", dotenv.get("INVITATION_URL"));
 		System.setProperty("ENCRYPTION_SECRET_KEY", dotenv.get("ENCRYPTION_SECRET_KEY"));
 		System.setProperty("NOTIFICATION_URL", dotenv.get("NOTIFICATION_URL"));
+		System.setProperty("ALLOWED_URL", dotenv.get("ALLOWED_URL"));
 		SpringApplication.run(SurvweyApplication.class, args);
 
 	}
