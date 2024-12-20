@@ -9,10 +9,12 @@ public enum ErrorCode {
     INVALID_PASSWORD("비밀번호가 일치하지 않습니다."),
     INVALID_ENCRYPTED_FIELD("잘못된 암호화 형식입니다."),
     INVALID_AUTH_CODE("인증번호가 유효하지 않습니다."),
+    NOT_AUTHORIZED("인증되지 않았습니다."),
 
     //User
     USER_NOT_FOUND_BY_ID("해당 아이디의 사용자가 존재하지 않습니다."),
     USER_ID_ALREADY_EXISTS("해당 아이디의 사용자가 이미 존재합니다."),
+    USER_ID_PASSWORD_NOT_MATCH("아이디/비밀번호가 일치하지 않습니다."),
 
     //Survey
     SURVEY_NOT_FOUND_BY_ID("해당 아이디의 설문이 존재하지 않습니다."),

@@ -79,23 +79,6 @@ class AccountServiceTest {
                 .isEqualTo(registerDTO);
         assertThat(userPassword).isTrue();
     }
-    @Test
-    public void 사용자_프로필_수정(){
-        //given
-        ProfileModifyDTO profileModifyDTO = ProfileModifyDTO.builder()
-                .name("프로필_수정_테스트")
-                .email("ProfileModifyTest@test.com")
-                .build();
-
-        User user = userService.findByUserId("asd123");
-
-        //when
-        accountService.modifyUserProfile(profileModifyDTO, user.getUserId());
-
-        //then
-        assertThat(user.getEmail()).isEqualTo(profileModifyDTO.getEmail());
-        assertThat(user.getName()).isEqualTo(profileModifyDTO.getName());
-    }
 
     @Test
     public void 사용자_프로필_조회(){
@@ -130,5 +113,6 @@ class AccountServiceTest {
         assertThat(isChecked).isFalse();
         assertThat(isChange).isTrue();
     }
+
 
 }

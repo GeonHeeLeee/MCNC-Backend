@@ -17,7 +17,7 @@ import mcnc.survwey.domain.respond.service.RespondService;
 import mcnc.survwey.domain.survey.Survey;
 import mcnc.survwey.domain.survey.service.SurveyService;
 import mcnc.survwey.global.config.SessionContext;
-import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +46,7 @@ public class SurveyResponseController {
      */
     @PostMapping()
     @Operation(summary = "설문 응답", description = "SUBJECTIVE인 경우, SelectionId는 주지 않고, response에 응답을 담아서 주면 됨<br>" +
-            "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
+                                                "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "설문 응답 성공"),
             @ApiResponse(responseCode = "400", description = """
@@ -94,7 +94,7 @@ public class SurveyResponseController {
         String userId = SessionContext.getCurrentUser();
         //응답하지 않은 설문이면 에러 전송
         if (!respondService.isUserRespondedToSurvey(surveyId, userId)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, HAS_NOT_RESPOND_TO_SURVEY);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HAS_NOT_RESPOND_TO_SURVEY));
         }
         AnsweredSurveyDTO userRespondedSurvey = answeredSurveyService.getUserAnsweredSurvey(surveyId, userId);
         return ResponseEntity.ok(userRespondedSurvey);
@@ -116,7 +116,7 @@ public class SurveyResponseController {
         String userId = SessionContext.getCurrentUser();
         Survey survey = surveyService.findBySurveyId(surveyId);
         if (respondService.isUserRespondedToSurvey(survey.getSurveyId(), userId)) {
-            throw new CustomException(HttpStatus.CONFLICT, HAS_ALREADY_RESPOND_TO_SURVEY);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(HAS_ALREADY_RESPOND_TO_SURVEY));
         } else {
             return ResponseEntity.ok("참여하지 않은 설문입니다.");
         }

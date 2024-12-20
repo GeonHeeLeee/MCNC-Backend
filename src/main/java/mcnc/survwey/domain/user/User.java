@@ -47,10 +47,6 @@ public class User {
     @Builder.Default
     private List<Respond> respondList = new ArrayList<>();
 
-    public void modifyUser(String name, String email){
-        this.name = name;
-        this.email = email;
-    }
 
     public void modifyPassword(String password) {
         this.password = password;

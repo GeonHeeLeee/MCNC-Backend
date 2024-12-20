@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import mcnc.survwey.api.account.dto.*;
 
 import mcnc.survwey.api.account.service.AccountService;
+import mcnc.survwey.global.error.ErrorResponse;
+import mcnc.survwey.global.exception.custom.ErrorCode;
 import mcnc.survwey.global.utils.EncryptionUtil;
 import mcnc.survwey.domain.user.service.UserRedisService;
 import mcnc.survwey.domain.user.service.UserService;
@@ -19,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
+import static mcnc.survwey.global.exception.custom.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,7 +65,7 @@ public class AccountController {
     })
     public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
         if (!userRedisService.isStatusVerified(registerDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(NOT_AUTHORIZED));
         }
         accountService.registerUser(registerDTO);
         userRedisService.deleteVerifiedStatus(registerDTO.getEmail());
@@ -131,7 +135,7 @@ public class AccountController {
     public ResponseEntity<Object> modifyPassword(@Valid @RequestBody PasswordModifyDTO passwordModifyDTO) {
         String userId = passwordModifyDTO.getUserId();
         if (!userRedisService.isStatusVerified(userId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(NOT_AUTHORIZED));
         }
         accountService.modifyPassword(userId, passwordModifyDTO.getPassword());
         return ResponseEntity.ok(null);
