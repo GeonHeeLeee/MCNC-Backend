@@ -23,6 +23,7 @@ public class SurveyDTO {
     @Size(min = 1, max = 255, message = "설문 제목은 255자 이하입니다.")
     protected String title;
 
+    @Size(max = 2000, message = "설명은 2000자 이하로 작성해야 합니다.")
     protected String description;
 
     protected LocalDateTime createDate;
