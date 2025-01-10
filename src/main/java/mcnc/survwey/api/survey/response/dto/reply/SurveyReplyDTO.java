@@ -29,7 +29,7 @@ public class SurveyReplyDTO {
         private QuestionType questionType;
 
         @NotNull(message = "응답은 필수입니다.")
-        @Size(min = 1, max = 512, message = "응답 내용은 512자 이하입니다.")
+        @Size(min = 1, max = 2000, message = "응답 내용은 2000자 이하입니다.")
         private String response;
 
         private SelectionId selectionId;
