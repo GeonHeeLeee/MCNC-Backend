@@ -16,6 +16,7 @@ public class CustomExceptionInterceptor {
      * @param ex
      * @param request
      * @return
+     * @Author 이건희
      */
     @ExceptionHandler(CustomException.class)
     public final ResponseEntity<ErrorDTO> handleCustomException(CustomException ex, HttpServletRequest request) {

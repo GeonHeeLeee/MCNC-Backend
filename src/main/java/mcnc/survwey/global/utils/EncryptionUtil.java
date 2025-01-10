@@ -1,7 +1,10 @@
 package mcnc.survwey.global.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import mcnc.survwey.global.exception.custom.CustomException;
+import mcnc.survwey.global.exception.custom.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -13,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.*;
+import static mcnc.survwey.global.exception.custom.ErrorCode.*;
 
 
 @Slf4j
@@ -28,6 +32,7 @@ public class EncryptionUtil {
      * @param mode
      * @return
      * @throws Exception
+     * @Author 이강민
      */
     private Cipher initializeCipher(int mode) throws Exception {
         //키 세팅 -> AES 기준으로 secretKey 부분에 들어오는 길이에 따라 암호화 방식 결정
@@ -46,6 +51,7 @@ public class EncryptionUtil {
      *
      * @param surveyId
      * @return
+     * @Author 이강민
      */
     public String encryptURL(String url, Long surveyId) {
         //EncryptLink에 중복 검사, Survey, User 중복 조회들 있어서 따로 뺐음
@@ -60,6 +66,7 @@ public class EncryptionUtil {
      * 16바이트 키 값은 환경변수로 저장됨
      * @param rawText
      * @return
+     * @Author 이강민
      */
     public String encryptText(String rawText) {
         try {
@@ -67,7 +74,7 @@ public class EncryptionUtil {
             //문자열 암호화 후 결과를 Base64 형식으로 String 으로 반환
             return Base64.getUrlEncoder().encodeToString(cipher.doFinal(rawText.getBytes(UTF_8)));
         } catch (Exception e) {
-            throw new RuntimeException("암호화 실패: " + e.getMessage());
+            throw new CustomException(HttpStatus.BAD_REQUEST, INVALID_ENCRYPTED_FIELD);
         }
     }
 
@@ -75,6 +82,7 @@ public class EncryptionUtil {
      * AES/CBC 비밀키로 복호화
      * @param encryptedText
      * @return
+     * @Author 이강민
      */
     public String decryptText(String encryptedText) {
         try {
@@ -94,6 +102,7 @@ public class EncryptionUtil {
      * AES/CBC 비밀키로 리스트 복호화
      * @param encryptedList
      * @return
+     * @Author 이강민
      */
     public List<String> decryptList(List<String> encryptedList) {
         if (encryptedList == null) {

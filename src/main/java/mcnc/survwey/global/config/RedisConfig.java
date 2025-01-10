@@ -20,6 +20,7 @@ public class RedisConfig {
      * 설문 결과 알림
      * @param connectionFactory
      * @return
+     * @Author 이강민
      */
     @Bean
     public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory) {

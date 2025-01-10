@@ -44,7 +44,9 @@ public class MailController {
                     - 존재하지 않은 설문 : "해당 아이디의 설문이 존재하지 않습니다."
                     - 사용자가 만들지 않은 설문 : "본인이 생성한 설문이 아닙니다."
                     """),
-            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음")
+            @ApiResponse(responseCode = "401", description = "세션이 유효하지 않음"),
+            @ApiResponse(responseCode = "403", description = "본인이 생성한 설문이 아닙니다."),
+            @ApiResponse(responseCode = "410", description = "해당 설문은 종료된 설문입니다.")
     })
     public ResponseEntity<Object> sendInvitationMail(@PathVariable("surveyId") Long surveyId, @RequestBody List<String> encryptedEmailList) {
         if (encryptedEmailList.isEmpty()) {

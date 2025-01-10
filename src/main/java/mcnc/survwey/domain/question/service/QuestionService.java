@@ -24,6 +24,7 @@ public class QuestionService {
      * @param questionDTO
      * @param createdSurvey
      * @return
+     * @Author 이건희
      */
     public Question buildAndSaveQuestion(QuestionDTO questionDTO, Survey createdSurvey) {
         Question createdQuestion = questionDTO.toEntity(createdSurvey);
@@ -36,6 +37,7 @@ public class QuestionService {
      * 질문 찾기
      * @param quesId
      * @return
+     * @Author 이건희
      */
     public Question findByQuesId(Long quesId) {
         return questionRepository.findById(quesId)
@@ -45,6 +47,7 @@ public class QuestionService {
     /**
      * 질문 삭제
      * @param surveyId
+     * @Author 이건희
      */
     public void deleteBySurveyId(Long surveyId) {
         questionRepository.deleteBySurvey_SurveyId(surveyId);

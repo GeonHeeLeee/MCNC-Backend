@@ -42,6 +42,7 @@ public class SurveyResultService {
      * @param userId
      * @return - 해당 설문이 존재하지 않으면 에러
      * - 요청자의 아이디가 설문 생성자의 아이디와 일치하지 않으면 에러
+     * @Author 이건희
      */
     @Transactional(readOnly = true)
     public SurveyResultDTO getSurveyResponsesResult(Long surveyId, String userId) {
@@ -77,6 +78,7 @@ public class SurveyResultService {
      *
      * @param surveyResultQueryDTOList
      * @param surveyResultDTO
+     * @Author 이건희
      */
     private void mapQuestionsAndResponses(List<SurveyResultQueryDTO> surveyResultQueryDTOList,
                                           SurveyResultDTO surveyResultDTO) {
@@ -105,6 +107,7 @@ public class SurveyResultService {
      *
      * @param queryDTO
      * @param questionResult
+     * @Author 이건희
      */
     private void assignResponsesByQuestionType(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
         switch (queryDTO.getQuestionType()) {
@@ -128,6 +131,7 @@ public class SurveyResultService {
      *
      * @param queryDTO
      * @param questionResult
+     * @Author 이건희
      */
     private void addObjectiveResponse(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResult) {
         QuestionResultDTO.SelectionResultDTO existingSelection = questionResult.getSelectionList().stream()
@@ -155,6 +159,7 @@ public class SurveyResultService {
      *
      * @param queryDTO
      * @param questionResultDTO
+     * @Author 이건희
      */
     private void addSubjectiveResponse(SurveyResultQueryDTO queryDTO, QuestionResultDTO questionResultDTO) {
         if (queryDTO.getSubjectiveResponse() != null) {
@@ -168,6 +173,7 @@ public class SurveyResultService {
      *
      * @param surveyId
      * @param surveyResultDTO
+     * @Author 이건희
      */
     private void addAgeAndGenderDistribution(Long surveyId, SurveyResultDTO surveyResultDTO) {
         List<SurveyResultDTO.GenderCountDTO> genderCountDTOList = userService.getGenderCountListBySurveyId(surveyId);

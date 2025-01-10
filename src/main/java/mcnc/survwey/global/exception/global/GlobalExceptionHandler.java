@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
      * - 클라이언트에게 에러 응답
      * @param ex
      * @return
+     * @Author 이건희
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {

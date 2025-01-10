@@ -17,6 +17,7 @@ public class RespondService {
      * 해당 설문에 응답한 사용자가 있는지 검증
      * @param surveyId
      * - 응답한 사람이 존재하면 에러
+     * @Author 이강민
      */
     public void existsBySurveyId(Long surveyId){
         if(respondRepository.existsBySurvey_SurveyId(surveyId)){
@@ -32,6 +33,7 @@ public class RespondService {
      * @param surveyId
      * @param userId
      * @return
+     * @Author 이건희
      */
     public boolean isUserRespondedToSurvey(Long surveyId, String userId) {
         return respondRepository.existsBySurvey_SurveyIdAndUser_UserId(surveyId, userId);

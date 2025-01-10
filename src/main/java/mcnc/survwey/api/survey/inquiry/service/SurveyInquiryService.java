@@ -32,6 +32,7 @@ public class SurveyInquiryService {
      * @param page
      * @param size
      * @return
+     * @Author 이건희
      */
     public Page<SurveyWithCountDTO> getUserCreatedSurveyList(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -47,6 +48,7 @@ public class SurveyInquiryService {
      * @param page
      * @param size
      * @return
+     * @Author 이건희
      */
     public Page<SurveyWithDateDTO> getUserRespondSurveyList(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -58,6 +60,7 @@ public class SurveyInquiryService {
      *
      * @param surveyId
      * @return - 해당 Id의 설문이 없을 시, 오류 발생
+     * @Author 이건희
      */
     public SurveyWithDetailDTO getSurveyWithDetail(Long surveyId) {
         //설문 id로 설문 정보 조회 후 결과가 있으면  SurveyWithDetailDto 반환, null이면 에러코드
@@ -71,10 +74,12 @@ public class SurveyInquiryService {
      *
      * @param title
      * @return
+     * @Author 이건희
      */
     private String removeTitleSpaces(String title) {
         return title.replaceAll("\\s", "");
     }
+
 
     /**
      * 참여 가능한 설문 검색
@@ -83,6 +88,7 @@ public class SurveyInquiryService {
      * @param page
      * @param size
      * @return
+     * @Author 이강민
      */
     public Page<SurveyDTO> searchAvailableSurvey(String title, String userId, int page, int size) {
         title = removeTitleSpaces(title);
@@ -98,6 +104,7 @@ public class SurveyInquiryService {
      * @param page
      * @param size
      * @return
+     * @Author 이강민
      */
     public Page<SurveyWithDateDTO> searchRespondedSurveys(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);
@@ -113,6 +120,7 @@ public class SurveyInquiryService {
      * @param page
      * @param size
      * @return
+     * @Author 이강민
      */
     public Page<SurveyWithCountDTO> searchUserCreatedSurvey(String userId, String title, int page, int size) {
         title = removeTitleSpaces(title);

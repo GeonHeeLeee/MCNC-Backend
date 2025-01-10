@@ -26,12 +26,7 @@ public class SurveyInquiryController {
 
     private final SurveyInquiryService surveyInquiryService;
 
-    /**
-     * 사용자가 생성한 설문 목록 조회
-     *
-     * @param
-     * @return
-     */
+
     @GetMapping("/created")
     @Operation(summary = "사용자 본인이 생성한 설문 리스트 조회", description = "쿼리 파라미터 형식으로 size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
@@ -45,12 +40,7 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(userCreatedSurveyList);
     }
 
-    /**
-     * 사용자가 응답한 설문 목록 조회
-     *
-     * @param
-     * @return
-     */
+
     @GetMapping("/respond")
     @Operation(summary = "사용자 본인이 응답한 설문 리스트 조회", description = "쿼리 파라미터 형식으로 size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
@@ -64,16 +54,12 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(userRespondSurveyList);
     }
 
-    /**
-     * 설문 응답을 위한 설문, 질문, 보기 조회
-     *
-     * @param surveyId
-     * @return
-     */
+
     @GetMapping("/detail/{surveyId}")
     @Operation(summary = "특정 설문/질문/보기 조회", description = "surveyId(설문 아이디)로 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "특정 설문 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "해당 아이디의 설문이 존재하지 않음"),
             @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
     })
     public ResponseEntity<SurveyWithDetailDTO> getSurveyWithDetail(@PathVariable("surveyId") Long surveyId) {
@@ -81,14 +67,7 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyWithDetailDTO);
     }
 
-    /**
-     * 설문 특정 키워드로 검색
-     *
-     * @param title
-     * @param page
-     * @param size
-     * @return
-     */
+
     @GetMapping("/search")
     @Operation(summary = "내가 참여할 수 있는 설문 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
@@ -104,14 +83,7 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyDTOList);
     }
 
-    /**
-     * 사용자가 특정키워드로 본인이 생성한 설문 검색
-     *
-     * @param title
-     * @param page
-     * @param size
-     * @return
-     */
+
     @GetMapping("/search/created")
     @Operation(summary = "사용자 본인이 생성한 설문 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({
@@ -126,14 +98,7 @@ public class SurveyInquiryController {
         return ResponseEntity.ok(surveyWithCountDTOPage);
     }
 
-    /**
-     * 사용자가 특정 키워드로 참여한 설문 검색
-     *
-     * @param title
-     * @param page
-     * @param size
-     * @return
-     */
+
     @GetMapping("/search/respond")
     @Operation(summary = "사용자 본인이 참여한 설문 검색", description = "쿼리 파라미터 형식으로 title(검색할 키워드), size(페이지 당 개수), page(페이지 번호)를 주면 페이지네이션으로 처리됨")
     @ApiResponses({

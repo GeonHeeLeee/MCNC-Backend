@@ -25,6 +25,7 @@ public class SubjAnswerService {
      * @param responseList
      * @param respondedUser
      * @return
+     * @Author 이건희
      */
     public List<SubjAnswer> createSubjectiveAnswers(List<SurveyReplyDTO.ReplyResponseDTO> responseList, User respondedUser) {
         return responseList.stream()

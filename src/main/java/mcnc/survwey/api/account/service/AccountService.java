@@ -38,6 +38,7 @@ public class AccountService {
      * 회원가입 메소드
      *
      * @param registerDTO
+     * @Author 이강민
      */
     public void registerUser(RegisterDTO registerDTO) {
         //해당 아이디 이미 존재
@@ -59,6 +60,7 @@ public class AccountService {
      *
      * @param userId
      * @return ture: 중복, false: 중복 X front에 전송
+     * @Author 이강민
      */
     public Map<String, Boolean> validateDuplicatedUserId(String userId) {
         //id, email map에 저장 후 true일 경우 중복 
@@ -72,6 +74,7 @@ public class AccountService {
      *
      * @param userId
      * @return
+     * @Author 이강민
      */
     public ProfileDTO getProfile(String userId) {
         User user = userService.findByUserId(userId);
@@ -84,6 +87,7 @@ public class AccountService {
      *
      * @param userId
      * @param password
+     * @Author 이건희
      */
     public void modifyPassword(String userId, String password) {
         User user = userService.findByUserId(userId);

@@ -9,6 +9,11 @@ import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 @Configuration
 public class ThymeleafConfig {
 
+    /**
+     * 템플릿 엔진 초기화
+     * @return
+     * @Author 이강민
+     */
     @Bean
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -17,6 +22,11 @@ public class ThymeleafConfig {
         return templateEngine;
     }
 
+    /**
+     * 템플릿 엔진 초기화
+     * @return
+     * @Author 이강민
+     */
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();

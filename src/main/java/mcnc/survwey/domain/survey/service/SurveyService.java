@@ -22,6 +22,7 @@ public class SurveyService {
      * @param surveyWithDetailDTO
      * @param creator
      * @return
+     * @Author 이건희
      */
     public Survey buildAndSaveSurvey(SurveyWithDetailDTO surveyWithDetailDTO, User creator) {
         Survey createdSurvey = surveyWithDetailDTO.toEntity(surveyWithDetailDTO.getSurveyId(), creator);
@@ -35,6 +36,7 @@ public class SurveyService {
      * @param surveyId
      * @return
      * - 해당하는 설문이 존재하지 않을 시 에러
+     * @Author 이강민
      */
     public Survey findBySurveyId(Long surveyId) {
         return surveyRepository.findById(surveyId)
@@ -45,6 +47,7 @@ public class SurveyService {
      * 설문 만료 확인
      * - 설문 만료일이 현재 시간보다 이전이면 에러
      * @param expireDate
+     * @Author 이건희
      */
     public void checkSurveyExpiration(LocalDateTime expireDate) {
         if (expireDate.isBefore(LocalDateTime.now())
@@ -58,6 +61,7 @@ public class SurveyService {
      * - 생성자와 요청자가 일치하지 않으면 에러
      * @param userId
      * @param survey
+     * @Author 이건희
      */
     public void validateUserMadeSurvey(String userId, Survey survey) {
         if (!survey.getUser().getUserId().equals(userId)) {

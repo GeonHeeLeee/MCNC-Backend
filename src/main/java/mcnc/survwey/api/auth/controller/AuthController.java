@@ -33,14 +33,6 @@ public class AuthController {
     private final AuthService authService;
     private final UserRedisService userRedisService;
 
-    /**
-     * 사용자 로그인
-     * 로그인 성공시 세션으로 저장
-     *
-     * @param loginDTO
-     * @param request
-     * @return
-     */
     @PostMapping("/login")
     @Operation(summary = "사용자 로그인", description = "userId, password를 응답에 받아 주면 됨")
     @ApiResponses({
@@ -59,14 +51,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * 사용자 로그아웃
-     * - 요청 시 세션이 유효하면 200
-     * - 세션이 유효하지 않으면 401
-     *
-     * @param request
-     * @return
-     */
     @PostMapping("/logout")
     @Operation(summary = "사용자 로그아웃", description = "요청 Body 없이 요청<br>세션이 유효하면 세션 값 파기, 세션이 없거나 유효하지 않으면 401 응답")
     @ApiResponses({
@@ -78,12 +62,7 @@ public class AuthController {
         return ResponseEntity.ok().body(Map.of("message", "로그아웃 성공"));
     }
 
-    /**
-     * 프론트 세션 체크
-     * - 세션이 유효하지 않을 시 로그인 화면으로 리다이렉션 용
-     *
-     * @return
-     */
+
     @GetMapping("/session")
     @Operation(summary = "세션 체크", description = "세션이 유효한지 체크")
     @ApiResponses({

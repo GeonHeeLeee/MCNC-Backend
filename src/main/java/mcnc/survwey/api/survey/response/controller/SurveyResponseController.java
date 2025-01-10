@@ -53,11 +53,12 @@ public class SurveyResponseController {
                     잘못된 요청:
                     - 해당 아이디의 사용자가 존재하지 않습니다.
                     - 해당 아이디의 설문이 존재하지 않습니다.
-                    - 해당 설문은 종료된 설문입니다.
                     - 이미 해당 설문에 응답하셨습니다.
+                    - 설문과 질문이 일치하지 않습니다.
                     - 해당 요청의 질문은 해당 설문의 질문이 아니거나 응답하지 않은 질문이 있습니다.(다른 설문의 QuesId를 요청하거나 설문의 모든 질문에 답하지 않았을때)
                     """),
-            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음")
+            @ApiResponse(responseCode = "401", description = "로그인 인증을 하지 않음"),
+            @ApiResponse(responseCode = "410", description = "해당 설문은 종료된 설문입니다.")
     })
     public ResponseEntity<Object> replySurvey(@Valid @RequestBody SurveyReplyDTO surveyReplyDTO) {
         String userId = SessionContext.getCurrentUser();
@@ -104,11 +105,7 @@ public class SurveyResponseController {
     @Operation(summary = "해당 설문에 본인이 응답 했는지 확인", description = "PathVariable로 surveyId 받아서 확인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "응답하지 않은 설문"),
-            @ApiResponse(responseCode = "400", description = """
-                    잘못된 요청:
-                    - 해당 아이디의 설문이 존재하지 않습니다.
-                    """
-            ),
+            @ApiResponse(responseCode = "400", description = " 해당 아이디의 설문이 존재하지 않습니다."),
             @ApiResponse(responseCode = "401", description = "세션이 존재하지 않습니다."),
             @ApiResponse(responseCode = "409", description = "해당 설문에 이미 응답하셨습니다.")
     })

@@ -23,6 +23,7 @@ public class SelectionService {
      * 보기 생성
      * @param createdQuestion
      * @param selectionDTOList
+     * @Author 이건희
      */
     public void buildAndSaveSelection(Question createdQuestion, List<QuestionDTO.SelectionDTO> selectionDTOList) {
         List<Selection> selectionList = IntStream.range(0, selectionDTOList.size())
@@ -41,6 +42,7 @@ public class SelectionService {
      * 보기 찾기
      * @param selectionId
      * @return
+     * @Author 이건희
      */
     public Selection findBySelectionId(SelectionId selectionId) {
         return selectionRepository.findById(selectionId)

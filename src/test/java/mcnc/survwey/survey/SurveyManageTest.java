@@ -91,36 +91,7 @@ public class SurveyManageTest extends BaseIntegrationTest {
         //When - Then
         assertThrows(CustomException.class, () -> surveyManageService.deleteSurveyAfterValidation(userId, existingSurvey.getSurveyId()));
     }
-/*
-    @Test
-    @DisplayName("설문 수정 성공 테스트")
-    public void testSuccessModifySurvey() {
-        //Given
-        String userId = "testUser1";
-        Survey survey = surveyRepository.findById(2L).get();
-        SurveyWithDetailDTO surveyWithDetailDTO = SurveyWithDetailDTO.of(survey);
-        Long existingQuesId = surveyWithDetailDTO.getQuestionList().get(0).getQuesId();
 
-        String modifiedTitle = "modified title";
-        String modifiedDescription = "modified description";
-        LocalDateTime modifiedExpireDate = LocalDateTime.of(2030,11,11,11,11);
-
-        surveyWithDetailDTO.setTitle(modifiedTitle);
-        surveyWithDetailDTO.setDescription(modifiedDescription);
-        surveyWithDetailDTO.setExpireDate(modifiedExpireDate);
-
-        //When
-        SurveyWithDetailDTO modifiedResult = surveyManageService.modifySurvey(surveyWithDetailDTO, userId);
-
-        //Then
-        assertEquals(modifiedResult.getSurveyId(), survey.getSurveyId());
-        assertEquals(modifiedResult.getTitle(), modifiedTitle);
-        assertEquals(modifiedResult.getDescription(), modifiedDescription);
-        assertEquals(modifiedResult.getExpireDate(), modifiedExpireDate);
-        assertNotEquals(modifiedResult.getQuestionList().get(0).getQuesId(),
-                existingQuesId);
-    }
-*/
     private static SurveyWithDetailDTO setUpSaveSurveyWithDetailData(String userId) {
         SurveyWithDetailDTO surveyDTO = buildSurveyWithDetailDTO(userId);
 
