@@ -38,12 +38,7 @@ public class SurveyResponseController {
     private final RespondService respondService;
     private final SurveyService surveyService;
 
-    /**
-     * 응답 저장
-     *
-     * @param surveyReplyDTO
-     * @return
-     */
+
     @PostMapping()
     @Operation(summary = "설문 응답", description = "SUBJECTIVE인 경우, SelectionId는 주지 않고, response에 응답을 담아서 주면 됨<br>" +
                                                 "객관식(OBJ_MULTI, OBJ_SINGLE)인 경우 SelectionId를 포함해서 주면 됨<br>기타인 경우 기타의 응답을 response에 담아서 주면 됨")
@@ -66,12 +61,7 @@ public class SurveyResponseController {
         return ResponseEntity.ok(null);
     }
 
-    /**
-     * 설문 결과(통계) 조회
-     *
-     * @param surveyId
-     * @return
-     */
+
     @GetMapping("/result/{surveyId}")
     @Operation(summary = "본인이 생성한 설문 결과 조회", description = "PathVariable로 설문 아이디를 넣어 조회")
     @ApiResponses({
