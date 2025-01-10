@@ -21,6 +21,7 @@ public class AuthInterceptor implements HandlerInterceptor {
      * @param handler
      * @return
      * @throws Exception
+     * @Author 이건희
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -48,6 +49,7 @@ public class AuthInterceptor implements HandlerInterceptor {
      * @param handler
      * @param ex
      * @throws Exception
+     * @Author 이건희
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {

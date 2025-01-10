@@ -25,6 +25,7 @@ public class SurveyRedisService {
      * - Redis에서 해당 키가 없어도 예외가 발생하지 않음
      * @param creatorId
      * @param surveyId
+     * @Author 이건희
      */
     public void deleteSurveyFromRedis(String creatorId, Long surveyId) {
         String key = generateRedisKey(creatorId, surveyId);
@@ -38,6 +39,7 @@ public class SurveyRedisService {
      * @param surveyId
      * @param creatorId
      * @param expireDateTime
+     * @Author 이건희
      */
     public void saveSurveyExpireTime(Long surveyId, String creatorId, LocalDateTime expireDateTime) {
         // 현재 시간과 종료 시간의 차이를 구하기
@@ -63,6 +65,7 @@ public class SurveyRedisService {
      * - 해당 키 만료하여 바로 이벤트 발생시킴
      * @param userId
      * @param surveyId
+     * @Author 이건희
      */
     public void expireImmediately(String userId, Long surveyId) {
         String key = generateRedisKey(userId, surveyId);
@@ -76,6 +79,7 @@ public class SurveyRedisService {
      * @param surveyId
      * @param expireDateTime
      * @return
+     * @Author 이건희
      */
     public void resetExpireTime(String creatorId, Long surveyId, LocalDateTime expireDateTime) {
         String key = generateRedisKey(creatorId, surveyId);
@@ -92,6 +96,7 @@ public class SurveyRedisService {
      * @param creatorId
      * @param surveyId
      * @return
+     * @Author 이건희
      */
     private String generateRedisKey(String creatorId, Long surveyId) {
         return SURVEY_EXPIRATION_KEY_PREFIX + creatorId + "/" + surveyId;
@@ -102,6 +107,7 @@ public class SurveyRedisService {
      * @param creatorId
      * @param surveyId
      * @return
+     * @Author 이건희
      */
     public boolean isSurveyExists(String creatorId, Long surveyId) {
         String key = generateRedisKey(creatorId, surveyId);

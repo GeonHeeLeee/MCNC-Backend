@@ -41,6 +41,7 @@ public class SurveyManageService {
      * @param surveyWithDetailDTO
      * @param userId
      * @return
+     * @Author 이건희
      */
     @Transactional
     public Survey saveSurveyWithDetails(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
@@ -59,6 +60,7 @@ public class SurveyManageService {
      *
      * @param surveyWithDetailDTO
      * @param survey
+     * @Author 이건희
      */
     public void saveQuestionAndSelection(SurveyWithDetailDTO surveyWithDetailDTO, Survey survey) {
         surveyWithDetailDTO.getQuestionList()
@@ -77,6 +79,7 @@ public class SurveyManageService {
      *
      * @param userId
      * @param surveyId
+     * @Author 이건희
      */
     @Transactional
     @CacheEvict(value = "survey")
@@ -101,6 +104,7 @@ public class SurveyManageService {
      * @return - 이미 응답한 사용자가 있는 경우 에러
      * - 해당 아이디의 설문이 존재하지 않으면 에러
      * - 수정자와 생성자가 일치하지 않으면 에러
+     * @Author 이강민
      */
     @Transactional
     public SurveyWithDetailDTO modifySurvey(SurveyWithDetailDTO surveyWithDetailDTO, String userId) {
@@ -132,6 +136,7 @@ public class SurveyManageService {
      * @param survey
      * @param userId
      * 하나라도 만족 못하면 메서드 자체에서 400 에러 응답
+     * @Author 이건희
      */
     public void checkSurveyModifiability(Survey survey, String userId) {
         //요청자가 생성자가 아니면 에러
@@ -148,6 +153,7 @@ public class SurveyManageService {
      *
      * @param userId
      * @param surveyId
+     * @Author 이강민
      */
     @Transactional
     public void expireSurveyAfterValidation(String userId, Long surveyId) {

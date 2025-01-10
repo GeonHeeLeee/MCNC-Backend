@@ -2,6 +2,7 @@ package mcnc.survwey.api.survey.response.dto.reply;
 
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import mcnc.survwey.domain.question.enums.QuestionType;
 import mcnc.survwey.domain.selection.SelectionId;
@@ -26,8 +27,11 @@ public class SurveyReplyDTO {
         @NotNull(message = "질문 아이디는 필수입니다.")
         private Long quesId;
         private QuestionType questionType;
+
         @NotNull(message = "응답은 필수입니다.")
+        @Size(min = 1, max = 512, message = "응답 내용은 512자 이하입니다.")
         private String response;
+
         private SelectionId selectionId;
     }
 }

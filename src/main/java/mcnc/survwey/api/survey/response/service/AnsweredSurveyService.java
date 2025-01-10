@@ -38,6 +38,7 @@ public class AnsweredSurveyService {
      * @param userId
      * @return - 해당 사용자가 응답하지 않은 설문이면 에러 전송
      * - 해당 아이디의 설문이 존재하지 않으면 에러 전송
+     * @Author 이건희
      */
     @Cacheable(value = "survey")
     @Transactional(readOnly = true)
@@ -70,6 +71,7 @@ public class AnsweredSurveyService {
      * @param question
      * @param objAnswerMap
      * @param subjAnswerMap - 만약 질문 타입이 3개중 해당 되지 않으면 유효하지 않은 질문 타입 에러 전송
+     * @Author 이건희
      */
     private void assignAnswersToQuestion(AnsweredQuestionDTO question, Map<Object, List<ObjAnswer>> objAnswerMap, Map<Long, String> subjAnswerMap) {
         long quesId = question.getQuesId();
@@ -103,6 +105,7 @@ public class AnsweredSurveyService {
      * 객관식 응답 추가
      * @param question
      * @param objAnswer
+     * @Author 이건희
      */
     private void addObjectiveResponse(AnsweredQuestionDTO question, ObjAnswer objAnswer) {
         int sequence = objAnswer.getSelection().getId().getSequence();
@@ -116,6 +119,7 @@ public class AnsweredSurveyService {
      *
      * @param question
      * @param objAnswer
+     * @Author 이건희
      */
     private void setEtcAnswerIfPresent(AnsweredQuestionDTO question, ObjAnswer objAnswer) {
         if (objAnswer.getEtcAnswer() != null && !objAnswer.getEtcAnswer().isEmpty()) {
@@ -130,6 +134,7 @@ public class AnsweredSurveyService {
      * @param surveyId
      * @param userId
      * @return
+     * @Author 이건희
      */
     private Map<Object, List<ObjAnswer>> getObjAnswerMap(Long surveyId, String userId) {
         //QuesId를 키로 가지도록
@@ -147,6 +152,7 @@ public class AnsweredSurveyService {
      * @param surveyId
      * @param userId
      * @return
+     * @Author 이건희
      */
     private Map<Long, String> getSubjAnswerMap(Long surveyId, String userId) {
         //QuesId를 키로 가지도록

@@ -18,6 +18,7 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    //질문과 질문에 대한 응답 조회
     @Override
     public List<Tuple> findQuestionsAndAnswersBySurveyId(Long surveyId) {
         return jpaQueryFactory.select(

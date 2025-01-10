@@ -30,6 +30,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    //참여 가능한 설문 검색
     @Override
     public Page<SurveyDTO> findAvailableSurveyList(String title, String userId, Pageable pageable) {
         List<SurveyDTO> surveyDTOList = jpaQueryFactory
@@ -59,6 +60,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
         return PageableExecutionUtils.getPage(surveyDTOList, pageable, totalQuery::fetchOne);
     }
 
+    //설문 목록 & 응답자 수 조회
     @Override
     public Page<SurveyWithCountDTO> findSurveyListWithRespondCountByUserId(String userId, Pageable pageable) {
         List<SurveyWithCountDTO> surveyWithCountDTOList = jpaQueryFactory
@@ -82,6 +84,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
         return PageableExecutionUtils.getPage(surveyWithCountDTOList, pageable, totalQuery::fetchOne);
     }
 
+    //응답한 설문 조회
     @Override
     public Page<SurveyWithDateDTO> findRespondedSurveyListByUserId(String userId, Pageable pageable) {
         List<SurveyWithDateDTO> surveyWithDateDTOList = jpaQueryFactory
@@ -106,6 +109,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
     }
 
 
+    //특정 설문 조회
     @Override
     public Survey findSurveyWithDetail(Long surveyId) {
         return jpaQueryFactory.selectDistinct(survey)
@@ -118,6 +122,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
                 .fetchFirst();
     }
 
+    //응답한 설문 검색
     @Override
     public Page<SurveyWithDateDTO> findRespondedSurveyListByTitleAndUserId(String title, String userId, Pageable pageable) {
         List<SurveyWithDateDTO> surveyWithDateDTOList = jpaQueryFactory
@@ -143,6 +148,7 @@ public class SurveyRepositoryImpl implements SurveyRepositoryCustom {
         return PageableExecutionUtils.getPage(surveyWithDateDTOList, pageable, countQuery::fetchOne);
     }
 
+    //사용자가 생성한 설문 검색
     @Override
     public Page<SurveyWithCountDTO> findUserCreatedSurveyListByTitleAndUserId(String title, String userId, Pageable pageable) {
         List<SurveyWithCountDTO> surveyWithCountDTOList = jpaQueryFactory

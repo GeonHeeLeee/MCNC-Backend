@@ -19,6 +19,7 @@ public class ThymeleafUtil {
      *
      * @param dateTime
      * @return
+     * @Author 이강민
      */
     public String getFormatedDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm");
@@ -31,6 +32,7 @@ public class ThymeleafUtil {
      * @param sender
      * @param encryptedLink
      * @return
+     * @Author 이강민
      */
     public Context initInvitationContext(Survey surveyToInvite, User sender, String encryptedLink){
         Context context = new Context();//타임리프 템플릿에 전달할 데이터를 저장하는 컨테이너
@@ -47,6 +49,7 @@ public class ThymeleafUtil {
      * @param user
      * @param encryptedLink
      * @return
+     * @Author 이강민
      */
     public Context initNotificationContext(User user, Survey survey, String encryptedLink){
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
@@ -62,6 +65,7 @@ public class ThymeleafUtil {
      * @param user
      * @param tempAuthCode
      * @return
+     * @Author 이강민
      */
     public Context initPasswordAuthContext(User user, String tempAuthCode){
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너
@@ -75,6 +79,7 @@ public class ThymeleafUtil {
      * 이메일 인증 thymeleaf 템플릿에 전달할 데이터 저장
      * @param tempAuthCode
      * @return
+     * @Author 이강민
      */
     public Context initEmailVerifyContext(String tempAuthCode){
         Context context = new Context();//타임리프 템플릿에 전달할 데이터 저장하는 컨테이너

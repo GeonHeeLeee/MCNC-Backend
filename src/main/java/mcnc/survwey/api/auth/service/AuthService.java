@@ -32,6 +32,7 @@ public class AuthService {
      * @param request
      * - 해당 사용자가 존재하지 않으면 에러
      * - 비밀번호가 일치하지 않으면 에러
+     * @Author 이건희
      */
     public void loginUser(LoginDTO loginDTO, HttpServletRequest request) {
         //사용자 id를 찾아서 존재하지 않으면 에러 코드
@@ -48,6 +49,7 @@ public class AuthService {
      * 세션 생성 메서드
      * @param loginDTO
      * @param request
+     * @Author 이건희
      */
     private void createUserSession(LoginDTO loginDTO, HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -60,6 +62,7 @@ public class AuthService {
      * - 일치하다면 해당 이메일로 전송
      * @param passwordAuthDTO
      * @return
+     * @Author 이건희
      */
     public void sendPasswordAuthCodeAfterValidation(PasswordAuthDTO passwordAuthDTO) {
         User user = userService.findByUserId(passwordAuthDTO.getUserId());
@@ -75,6 +78,7 @@ public class AuthService {
      * - 이메일이 중복되지 않는지 확인
      * - 중복되지 않으면 해당 이메일로 인증 번호 전송
      * @param email
+     * @Author 이건희
      */
     public void sendEmailAuthCodeAfterValidation(String email) {
         if(userService.isEmailDuplicated(email)) {

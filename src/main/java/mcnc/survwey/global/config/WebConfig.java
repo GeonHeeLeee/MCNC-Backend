@@ -17,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
      * - excludePathPatterns에 세션 검사 예외 URL 지정
      *
      * @param registry
+     * @Author 이강민, 이건희
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

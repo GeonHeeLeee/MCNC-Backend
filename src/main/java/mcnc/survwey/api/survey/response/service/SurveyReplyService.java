@@ -51,6 +51,7 @@ public class SurveyReplyService {
      *                       - 이미 설문에 응답했으면 에러
      *                       - 요청 질문이 설문의 질문 아이디와 일치하지 않으면 에러
      *                       - 이미 만료된 설문이면 에러
+     * @Author 이건희
      */
     @Transactional
     public void saveSurveyReply(SurveyReplyDTO surveyReplyDTO, String userId) {
@@ -84,6 +85,7 @@ public class SurveyReplyService {
      *
      * @param surveyReplyDTO
      * @param respondedSurvey
+     * @Author 이건희
      */
     private void validateQuestionInputForSurvey(SurveyReplyDTO surveyReplyDTO, Survey respondedSurvey) {
         //질문 ID 집합

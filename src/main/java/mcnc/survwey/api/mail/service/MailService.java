@@ -69,6 +69,7 @@ public class MailService {
      * @param title
      * @param email
      * @param htmlPath
+     * @Author 이강민
      */
     public void sendMail(Context context, String title, String email, String htmlPath) {
         String htmlContent = templateEngine.process(htmlPath, context);//타임리프 템플릿 처리 후 HTML 콘텐츠 최종 생성
@@ -102,6 +103,7 @@ public class MailService {
      * @param surveyId
      * @param encryptedEmailList
      * @throws MessagingException
+     * @Author 이강민
      */
     public void sendInvitationLink(String senderId, Long surveyId, List<String> encryptedEmailList) {
         //암호화 된 이메일 복호화
@@ -131,6 +133,7 @@ public class MailService {
      * - 이메일 형식에 맞지 않을 경우 400 에러 응답
      *
      * @param emailList
+     * @Author 이강민
      */
     public void validateEmailRequest(List<String> emailList) {
         //유효한 이메일인지 검증
@@ -150,6 +153,8 @@ public class MailService {
      *
      * @param userId
      * @param surveyId
+     * @Author 이강민
+     *
      */
     public void sendSurveyExpiredNotification(String userId, Long surveyId) {
         User user = userService.findByUserId(userId);
@@ -163,6 +168,7 @@ public class MailService {
      * 비밀번호 찾기 인증 메일 전송
      *
      * @param user
+     * @Author 이건희
      */
     public void sendPasswordModifyAuthCode(User user) {
         //인증번호 생성
@@ -178,6 +184,7 @@ public class MailService {
      *
      * @param email
      * @throws Exception
+     * @Author 이건희
      */
     public void sendEmailVerifyAuthCode(String email) {
         //인증번호 생성

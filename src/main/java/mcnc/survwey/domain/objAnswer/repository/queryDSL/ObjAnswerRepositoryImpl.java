@@ -16,6 +16,7 @@ public class ObjAnswerRepositoryImpl implements ObjAnswerRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    //사용자가 응답한 객관식 응답 조회
     public List<ObjAnswer> findUserRespondedAnswer(Long surveyId, String userId) {
         return jpaQueryFactory
                 .select(objAnswer)

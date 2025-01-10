@@ -23,6 +23,7 @@ public class UserRedisService {
      *
      * @param suffix
      * @param code
+     * @Author 이건희
      */
     public void saveVerificationCode(String suffix, String code) {
         String key = VERIFICATION_KEY_PREFIX + suffix;
@@ -34,6 +35,7 @@ public class UserRedisService {
      * - 인증번호 인증이 완료된 사용자가 비밀번호 변경 시에 필요한 상태 저장
      *
      * @param suffix
+     * @Author 이건희
      */
     public void saveVerifiedStatus(String suffix) {
         String verifiedKey = VERIFIED_KEY_PREFIX + suffix;
@@ -48,6 +50,7 @@ public class UserRedisService {
      * @param suffix
      * @param inputCode
      * @return
+     * @Author 이건희
      */
     public boolean isCodeVerified(String suffix, String inputCode) {
         String key = VERIFICATION_KEY_PREFIX + suffix;
@@ -66,6 +69,7 @@ public class UserRedisService {
      *
      * @param suffix
      * @return
+     * @Author 이건희
      */
     public boolean isStatusVerified(String suffix) {
         String verifiedKey = VERIFIED_KEY_PREFIX + suffix;
@@ -79,6 +83,7 @@ public class UserRedisService {
      * - redis의 delete는 키가 없는 상태에서 삭제해도 문제가 되지 않음
      *
      * @param suffix
+     * @Author 이건희
      */
     public void deleteVerifiedStatus(String suffix) {
         String verifiedKey = VERIFIED_KEY_PREFIX + suffix;

@@ -29,6 +29,7 @@ public class UserService {
      * 아이디로 사용자 찾기
      * @param userId
      * @return
+     * @Author 이강민
      */
     public User findByUserId(String userId) {
         return userRepository.findById(userId)
@@ -39,6 +40,7 @@ public class UserService {
      * 이메일로 사용자 찾기
      * @param email
      * @return
+     * @Author 이강민
      */
     public boolean isEmailDuplicated(String email){
         return userRepository.existsByEmail(email);
@@ -50,6 +52,7 @@ public class UserService {
      * - 해당 설문에 응답한 성별 분포 수 조회 후 응답
      * @param surveyId
      * @return
+     * @Author 이건희
      */
     public List<SurveyResultDTO.GenderCountDTO> getGenderCountListBySurveyId(Long surveyId) {
         List<Tuple> recordList = userRepository.findGenderCountBySurveyId(surveyId);
@@ -75,6 +78,7 @@ public class UserService {
      * - 해당 설문에 응답한 나이대 분포 수 처리 후 응답
      * @param surveyId
      * @return
+     * @Author 이건희
      */
     public List<SurveyResultDTO.AgeCountDTO> getAgeGroupCountBySurveyId(Long surveyId) {
         List<LocalDate> birthList = userRepository.findBirthListBySurveyId(surveyId);
@@ -90,6 +94,7 @@ public class UserService {
      * - 70대 이하와 80대 이상으로 분류
      * @param birthList
      * @return
+     * @Author 이건희
      */
     private Map<Integer, Integer> groupAgesByDecade(List<LocalDate> birthList) {
         Map<Integer, Integer> ageMap = new LinkedHashMap<>();
@@ -114,6 +119,7 @@ public class UserService {
      * - 객체 생성 후 리스트로 묶어 반환
      * @param ageMap
      * @return
+     * @Author 이건희
      */
     private List<SurveyResultDTO.AgeCountDTO> mapAgeGroupsToDTO(Map<Integer, Integer> ageMap) {
         List<SurveyResultDTO.AgeCountDTO> ageCountDTOList = new ArrayList<>();
@@ -134,6 +140,7 @@ public class UserService {
      * - 생년월일이 없으면 0세로 처리
      * @param birthDate
      * @return
+     * @Author 이건희
      */
     private int calculateAge(LocalDate birthDate) {
         LocalDate currentDate = LocalDate.now();

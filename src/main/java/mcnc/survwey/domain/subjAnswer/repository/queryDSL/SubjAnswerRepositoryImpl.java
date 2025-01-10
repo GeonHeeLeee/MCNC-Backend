@@ -15,6 +15,7 @@ import static mcnc.survwey.domain.subjAnswer.QSubjAnswer.*;
 public class SubjAnswerRepositoryImpl implements SubjAnswerRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
+    //사용자가 응답한 주관식 응답 조회
     public List<Tuple> findUserRespondedAnswer(Long surveyId, String userId) {
         return jpaQueryFactory
                 .select(subjAnswer.response,
